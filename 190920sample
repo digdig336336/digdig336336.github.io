@@ -1,0 +1,18 @@
+ファイル名：form_get_test.html
+
+<html>
+<head><title>フォームサンプルプログラム【GET】</title></head>
+<body>
+
+<form action=”./form_get_test.php” method=”GET”>
+
+<h1>挨拶する</h1>
+<p>以下の人にあいさつをします。</p>
+<input type=”text” name=”myName” value=”” />
+<input type=”submit” name=”buttonName” value=”送信する”>
+</form>
+
+</body>
+</html>
+
+ 
