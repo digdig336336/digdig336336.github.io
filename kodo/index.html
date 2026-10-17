@@ -116,6 +116,21 @@
 .ai-proposal>.btn{justify-self:start}
 @media(max-width:760px){.cloud-card{padding:17px}.cloud-form,.ai-parts{grid-template-columns:1fr}.cloud-actions .btn{flex:1;justify-content:center}}
 
+/* v0.9 — low-friction total-cycle measurement */
+.timer-panel{padding:23px;margin:0 0 22px}.timer-panel .panel-desc{margin:10px 0 16px;line-height:1.8}
+.timer-card{background:#eff8f4;border:1px solid #cee6da;border-radius:12px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.timer-card>div:first-child{display:grid;gap:5px}.timer-card small{color:#4c8577;font-size:11px}.timer-card strong{font-size:34px;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#235c4f}
+.timer-card span{font-size:11px;color:#5c8477}.timer-buttons{display:flex;gap:8px;flex-wrap:wrap}.timer-summaries{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:14px}
+.timer-summaries>div{padding:12px 14px;border:1px solid #e2ece8;border-radius:9px;display:grid;gap:5px}
+.timer-summaries strong{font-size:12px;color:#2c554e}.timer-summaries span{font-size:11px;font-weight:700}.timer-summaries small{font-size:10px;color:#7c9290}
+.timer-log-list{padding:12px;border:1px solid #e3eeea;border-radius:9px;margin-top:14px}
+.timer-log-list summary{cursor:pointer;font-weight:700;font-size:12px}.timer-log-list>div{display:flex;gap:9px;align-items:center;justify-content:space-between;border-bottom:1px solid #edf1ef;padding:8px 0;font-size:11px}
+.timer-log-list>div span{flex:1;color:#5a7c73}.timer-disclaimer{font-size:11px;line-height:1.7;color:#7b928c;margin-top:12px}
+@media(max-width:650px){.timer-card{flex-direction:column;align-items:stretch}.timer-card strong{font-size:30px}.timer-buttons .btn{flex:1}}
+
+
+.data-facts{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media(max-width:680px){.data-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -242,7 +257,7 @@ function fmtYen(value) { return `¥${Math.round(Number(value)).toLocaleString('j
 
 function validateImport(raw) {
   if (!raw || typeof raw !== 'object' || ![1,2].includes(raw.version)) throw new Error('対応していないデータ形式です。');
-  const collections = ['goals', 'scenarios', 'actions', 'links', 'experiments', ...(raw.version===2?['items','actionItems']:[])];
+  const collections = ['goals', 'scenarios', 'actions', 'links', 'experiments', ...(raw.version===2?['items','actionItems']:[]), ...(raw.timeLogs!==undefined?['timeLogs']:[])];
   if (collections.some(k => !Array.isArray(raw[k]))) throw new Error('必要なデータ項目がありません。');
   if ([...raw.goals, ...raw.scenarios, ...raw.actions, ...raw.links, ...raw.experiments].length > 5000) throw new Error('データ件数が多すぎます。');
   const unique = arr => arr.every((v, i) => v && typeof v.id === 'string' && v.id.length <= 100 && arr.findIndex(x => x.id === v.id) === i);
@@ -260,6 +275,12 @@ function validateImport(raw) {
     if (!scenarios.has(a.scenarioId) || typeof a.name !== 'string' || (a.minutes !== null && (!Number.isFinite(Number(a.minutes)) || Number(a.minutes) < 0)) || [a.frequency,a.yen].some(v => !Number.isFinite(Number(v)) || Number(v) < 0)) throw new Error('行動データが不正です。');
   }
   for (const l of raw.links) if (!scenarios.has(l.scenarioId) || !actions.has(l.fromId) || !actions.has(l.toId) || actions.get(l.fromId).scenarioId !== l.scenarioId || actions.get(l.toId).scenarioId !== l.scenarioId || !['causes','precedes'].includes(l.type)) throw new Error('行動同士の関連に不整合があります。');
+  if (raw.timeLogs !== undefined) {
+    if (!Array.isArray(raw.timeLogs) || raw.timeLogs.length>5000) throw new Error('実測記録が多すぎます。');
+    for(const log of raw.timeLogs) {
+      if(!goalIds.has(log.goalId)||!scenarios.has(log.scenarioId)||scenarios.get(log.scenarioId).goalId!==log.goalId||!Number.isInteger(log.durationSeconds)||log.durationSeconds<1||log.durationSeconds>172800||typeof log.createdAt!=='string'||!Number.isFinite(Date.parse(log.createdAt))) throw new Error('実測記録が不正です。');
+    }
+  }
   if (raw.version===2) {
     const items=new Map(raw.items.map(x=>[x.id,x]));
     for(const item of raw.items){
@@ -278,8 +299,8 @@ function validateImport(raw) {
 /** v0.1 browser backups and existing localStorage are preserved and upgraded. */
 function migrateData(raw) {
   validateImport(raw);
-  if(raw.version===2) return {...raw,items:raw.items.map(item=>({...item,placement:item.placement||'undecided'}))};
-  return {...raw,version:2,items:[],actionItems:[]};
+  if(raw.version===2) return {...raw,timeLogs:raw.timeLogs||[],items:raw.items.map(item=>({...item,placement:item.placement||'undecided'}))};
+  return {...raw,version:2,items:[],actionItems:[],timeLogs:raw.timeLogs||[]};
 }
 
 
@@ -329,6 +350,43 @@ function measuredTimeVerdict(before,after) {
   if(before===null||after===null||before===undefined||after===undefined) return null;
   if(!Number.isFinite(before)||!Number.isFinite(after)||before<0||after<0)return null;
   return {savedMinutes:Math.round((before-after)*10)/10,status:before>after?'improved':before<after?'worse':'equal'};
+}
+
+
+/** v0.9 — measure complete work cycles with a one-tap timer, including prep/cleanup. */
+function timerKey(workspace) { return `kodo-work-timer:v1:${workspace}`; }
+function parseActiveTimer(raw, data) {
+  if(!raw)return null;
+  let timer;
+  try{timer=JSON.parse(raw);}catch{return null;}
+  if(!timer || !data?.scenarios?.some(s=>s.id===timer.scenarioId && s.goalId===timer.goalId))return null;
+  if(typeof timer.startedAt!=='string'||!Number.isFinite(timer.accumulatedMs)||timer.accumulatedMs<0||timer.accumulatedMs>48*3600*1000)return null;
+  if(timer.runningSince!==null && (!Number.isFinite(timer.runningSince)||timer.runningSince<0))return null;
+  return timer;
+}
+function timerElapsedMs(timer, now=Date.now()) {
+  if(!timer)return 0;
+  return Math.max(0,timer.accumulatedMs+(timer.runningSince===null?0:Math.max(0,now-timer.runningSince)));
+}
+function timerStart(goalId,scenarioId,now=Date.now()) {
+  return {goalId,scenarioId,startedAt:new Date(now).toISOString(),accumulatedMs:0,runningSince:now};
+}
+function timerPause(timer,now=Date.now()) {
+  return {...timer,accumulatedMs:timerElapsedMs(timer,now),runningSince:null};
+}
+function timerResume(timer,now=Date.now()) {
+  return {...timer,runningSince:timer.runningSince===null?now:timer.runningSince};
+}
+function timeLogReport(data,goalId){
+  const rows=(data.timeLogs||[]).filter(l=>l.goalId===goalId);
+  const groups=[];
+  for(const scenario of data.scenarios.filter(s=>s.goalId===goalId)){
+    const values=rows.filter(l=>l.scenarioId===scenario.id);
+    if(!values.length)continue;
+    const seconds=values.reduce((sum,l)=>sum+l.durationSeconds,0);
+    groups.push({scenarioId:scenario.id,name:scenario.name,count:values.length,minutes:seconds/60,avgMinutes:seconds/60/values.length});
+  }
+  return groups;
 }
 
 
@@ -659,7 +717,7 @@ function normalizeAiAdvice(raw) {
  * Recovery points live only in this browser, and never replace JSON exports.
  */
 const RECOVERY_KEY = 'kodo-recovery:v1';
-const COLLECTIONS = ['goals', 'scenarios', 'actions', 'links', 'items', 'actionItems', 'experiments'];
+const COLLECTIONS = ['goals', 'scenarios', 'actions', 'links', 'items', 'actionItems', 'experiments', 'timeLogs'];
 const LIMIT = 3;
 
 function summarizeChanges(current, incoming) {
@@ -680,7 +738,7 @@ function summarizeChanges(current, incoming) {
 }
 function changeSummaryText(current, incoming) {
   const result = summarizeChanges(current,incoming);
-  const names = {goals:'目的',scenarios:'方法',actions:'行動',links:'関係',items:'道具',actionItems:'紐付け',experiments:'検証'};
+  const names = {goals:'目的',scenarios:'方法',actions:'行動',links:'関係',items:'道具',actionItems:'紐付け',experiments:'検証',timeLogs:'実測'};
   const parts = COLLECTIONS.flatMap(name => {
     const c = result.collections[name];
     if (!c.added && !c.removed && !c.modified) return [];
@@ -815,6 +873,7 @@ const DEMO = {
     {id:'ai-wood-2',itemId:'i-wood',actionId:'a-wn1'},
   ],
   experiments: [],
+  timeLogs: [],
 };
 
 
@@ -828,10 +887,11 @@ const DEMO = {
 
 
 
+
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.8';
+const APP_VERSION = 'v0.9';
 let activeStore = STORE;
-const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[]});
+const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
 const CLOUD_LINK_KEY = 'kodo-cloud-link:v1';
 const deepCopy = value => JSON.parse(JSON.stringify(value));
@@ -856,11 +916,15 @@ const modalRoot = document.getElementById('modal-root');
 let cloud=null, cloudLinked=false, cloudBusy=false, cloudStatus='未接続', cloudError='', cloudQueue=Promise.resolve(), cloudDirty=false;
 let aiBusy=false, aiSuggestions=[], aiMessage='';
 let lastSyncedHash='', localTabConflict=false;
+let activeTimer=null;
+function getStoredTimer(){try{return parseActiveTimer(localStorage.getItem(timerKey(activeStore)),data);}catch{return null;}}
+function persistTimer(){try{if(activeTimer)localStorage.setItem(timerKey(activeStore),JSON.stringify(activeTimer));else localStorage.removeItem(timerKey(activeStore));return true;}catch{notify('計測状態を保存できません。ストレージの空き容量を確認してください。',true);return false;}}
+function elapsedLabel(t){const secs=Math.floor(timerElapsedMs(t)/1000);return `${Math.floor(secs/3600).toString().padStart(2,'0')}:${Math.floor(secs%3600/60).toString().padStart(2,'0')}:${(secs%60).toString().padStart(2,'0')}`;}
 function switchWorkspace(session) {
   const nextKey = workspaceKey(session?.user?.id||null,cloud?.config.url);
   if(nextKey===activeStore)return;
   const next = readWorkspace(localStorage,nextKey,migrateData,session?.user?.id?emptyAccount:()=>deepCopy(DEMO));
-  activeStore=nextKey;data=next;selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;
+  activeStore=nextKey;data=next;activeTimer=getStoredTimer();selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;
   cloudLinked=false;cloudDirty=false;lastSyncedHash='';undoSnapshot=null;aiSuggestions=[];aiMessage='';
 }
 function isCurrentCloud(client,key){return client===cloud && key===activeStore && !!client.userId;}
@@ -890,6 +954,7 @@ function initCloud() {
   } catch {cloud=null;cloudStatus='設定内容を確認してください';}
 }
 initCloud();
+activeTimer=getStoredTimer();
 async function bootstrapCloud() {
   if(!cloud?.userId)return;
   try {
@@ -994,6 +1059,8 @@ function render() {
   const oldScroll=root.querySelector('.graph-scroll');
   const scrollState=oldScroll?{x:oldScroll.scrollLeft,y:oldScroll.scrollTop}:null;
   ensureSelection();
+  // A cloud pull can delete a method while its local timer is still active.
+  if(activeTimer&&!data.scenarios.some(s=>s.id===activeTimer.scenarioId)){activeTimer=null;persistTimer();}
   const g=goal(), s=scenario();
   root.innerHTML = `<div class="app-shell">
     <aside class="sidebar">
@@ -1104,17 +1171,29 @@ function renderEnvironment() {
  ${report.rows.length?`<div class="env-grid">${report.rows.map(item=>{const used=item.usedHere;const upkeep=used.filter(a=>a.kind==='maintenance');const upkeepMinutes=upkeep.reduce((sum,a)=>sum+weeklyMinutes(a),0);const upkeepUnknown=upkeep.filter(a=>a.minutes==null).length;return `<article class="env-card ${item.review?'needs-review':''}"><div class="env-card-top"><div><span class="section-kicker">${item.review?'配置・用途を見直す候補':'FIXED LOCATION'}</span><h3>${esc(item.name)}</h3></div>${btn('edit-item',icon('edit',15),'icon-btn',`data-id="${eAttr(item.id)}" aria-label="道具を編集"`)}</div><div class="env-tags"><span class="env-status ${item.review?'attention':''}">${esc(item.status)}</span><span class="env-status muted">${esc(PLACEMENTS[item.placement])}</span></div><div class="env-home">${icon('target',16)} <span>${esc(item.home||'定位置が未設定です')}</span></div><p>${esc(item.note||'')}</p><div class="env-advice">${esc(item.advice)}</div>${upkeep.length?`<div class="env-upkeep"><strong>この物に関連する後処理・管理</strong><span>${upkeep.length}行動 / 計測分 ${fmtMin(upkeepMinutes)}・週${upkeepUnknown?`（未測定 ${upkeepUnknown}件）`:''}</span><small>${upkeep.map(a=>esc(a.name)).join('、')}。同じ行動を複数の物に紐づけた場合、合計は重複するので参考値です。</small></div>`:''}<details><summary>この方法で使う行動 <strong>${used.length}件</strong>${item.usedElsewhere.length?` <small>（ほかの方法 ${item.usedElsewhere.length}件）</small>`:''}</summary><div class="env-actions">${actions.length?actions.map(a=>{const linked=used.some(x=>x.id===a.id);return `<button type="button" data-action="toggle-item-action" data-item="${eAttr(item.id)}" data-id="${eAttr(a.id)}" aria-pressed="${linked}"><span>${linked?'✓':'+'}</span>${esc(a.name)}</button>`;}).join(''):'<small>行動を登録すると、関連付けができます。</small>'}</div></details></article>`;}).join('')}</div>`:`<div class="empty-state"><h2>まだ道具の登録がありません</h2><p>必要な道具と、使った後に戻す場所を決めましょう。</p>${btn('new-item','道具を登録する','btn-primary')}</div>`}
  <div class="bottom-message"><span class="message-icon">✳</span><div><strong>設計の視点</strong><p>使用記録がないことは「不要」の証明ではありません。使う目的・再入手の難しさ・保管の負担を確認して判断します。</p></div></div>`;
 }
+function renderTimerPanel() {
+ const t=activeTimer;
+ const validScenario=t?data.scenarios.find(s=>s.id===t.scenarioId):null;
+ const summaries=timeLogReport(data,selectedGoal);
+ const logs=(data.timeLogs||[]).filter(l=>l.goalId===selectedGoal).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,12);
+ return `<section class="panel timer-panel"><div class="panel-title">ワンタップで総作業時間を計測 <span>実測</span></div><p class="panel-desc">準備→実作業→片付けまで計測します。休憩や別件は一時停止してください。測った時間は予測値と別に保存します。</p>
+ ${t?`<div class="timer-card"><div><small>計測中の方法：${esc(validScenario?.name||'削除された方法')}</small><strong data-timer-display>${elapsedLabel(t)}</strong><span>${t.runningSince===null?'一時停止中':'計測中'}</span></div><div class="timer-buttons">${t.runningSince===null?btn('timer-resume','再開','btn-outline'):btn('timer-pause','一時停止','btn-outline')}${btn('timer-finish','終了・記録','btn-primary')}${btn('timer-cancel','破棄','btn-danger-outline')}</div></div>`:
+ `<div class="timer-card"><div><small>選択中：${esc(scenario()?.name||'方法を選択してください')}</small><strong>00:00:00</strong><span>計測を開始して、手間の実時間を把握しましょう</span></div>${btn('timer-start','計測開始','btn-primary',selectedScenario?'':'disabled')}</div>`}
+ ${summaries.length?`<div class="timer-summaries">${summaries.map(s=>`<div><strong>${esc(s.name)}</strong><span>${s.count}回計測・平均 ${fmtMin(s.avgMinutes)} / 回</span><small>合計 ${fmtMin(s.minutes)}（休憩など除く）</small></div>`).join('')}</div>`:''}
+ ${logs.length?`<details class="timer-log-list"><summary>実測履歴を開く（最新${logs.length}件）</summary>${logs.map(l=>`<div><span>${esc(data.scenarios.find(s=>s.id===l.scenarioId)?.name||'方法')} · ${esc(l.createdAt.slice(0,10))}</span><strong>${fmtMin(l.durationSeconds/60)}</strong>${btn('delete-time-log','削除','btn-text danger-text',`data-id="${eAttr(l.id)}"`)}</div>`).join('')}</details>`:''}
+ <p class="timer-disclaimer">実測平均は同じ条件・同じ作業量でなければ直接比較できません。方法を変える際は準備・維持管理を含む同じ評価期間の総時間で検証してください。作業の並行・待ち時間の扱いにも注意してください。</p></section>`;
+}
 function renderHistory() {
  const experiments=data.experiments.filter(e=>e.goalId===selectedGoal).slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
  const scenarios=scenariosOfGoal();
  return `<div class="section-head"><div><span class="section-kicker">VERIFY & LEARN</span><h2>改善を記録する</h2><p>机上の試算だけで終わらせず、実際に試して確かめる。</p></div></div>
- <section class="history-layout"><form id="experiment-form" class="panel form-panel"><div class="panel-title">検証結果を記録</div><p class="panel-desc">新しい方法を試した結果を残しましょう。</p><div class="form-grid"><label class="form-field"><span>比較元の方法</span><select name="beforeId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),scenarios.find(s=>s.isBaseline)?.id||scenarios[0]?.id)}</select></label><label class="form-field"><span>試した方法</span><select name="afterId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><div class="form-grid"><label class="form-field"><span>変更前の実測（分/週・任意）</span><input name="beforeActualMinutes" type="number" min="0" step="0.5" placeholder="例：25"></label><label class="form-field"><span>変更後の実測（分/週・任意）</span><input name="afterActualMinutes" type="number" min="0" step="0.5" placeholder="例：12"></label></div><div class="time-measure-note"><strong>総時間の実測（推奨）</strong><p>同じ期間について、準備・作業・管理・後片付けを含む実際の総時間を入力してください。別の時間枠で計測した値は比較しないでください。</p></div><div class="form-grid"><label class="form-field"><span>変更前の実測総時間（分）</span><input name="beforeTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：150"></label><label class="form-field"><span>変更後の実測総時間（分）</span><input name="afterTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：120"></label></div><label class="form-field"><span>実測の対象期間（週）</span><input name="actualObservationWeeks" type="number" min="1" max="260" step="1" value="4"></label><label class="form-field"><span>気づいたこと・改善結果</span><textarea name="note" rows="4" required maxlength="2000" placeholder="実際にやってみて気づいたこと、想定外に増えた作業など"></textarea></label><button type="submit" class="btn btn-primary full">${icon('plus',16)} 記録を保存</button></form>
+ ${renderTimerPanel()}<section class="history-layout"><form id="experiment-form" class="panel form-panel"><div class="panel-title">検証結果を記録</div><p class="panel-desc">新しい方法を試した結果を残しましょう。</p><div class="form-grid"><label class="form-field"><span>比較元の方法</span><select name="beforeId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),scenarios.find(s=>s.isBaseline)?.id||scenarios[0]?.id)}</select></label><label class="form-field"><span>試した方法</span><select name="afterId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><div class="form-grid"><label class="form-field"><span>変更前の実測（分/週・任意）</span><input name="beforeActualMinutes" type="number" min="0" step="0.5" placeholder="例：25"></label><label class="form-field"><span>変更後の実測（分/週・任意）</span><input name="afterActualMinutes" type="number" min="0" step="0.5" placeholder="例：12"></label></div><div class="time-measure-note"><strong>総時間の実測（推奨）</strong><p>同じ期間について、準備・作業・管理・後片付けを含む実際の総時間を入力してください。別の時間枠で計測した値は比較しないでください。</p></div><div class="form-grid"><label class="form-field"><span>変更前の実測総時間（分）</span><input name="beforeTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：150"></label><label class="form-field"><span>変更後の実測総時間（分）</span><input name="afterTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：120"></label></div><label class="form-field"><span>実測の対象期間（週）</span><input name="actualObservationWeeks" type="number" min="1" max="260" step="1" value="4"></label><label class="form-field"><span>気づいたこと・改善結果</span><textarea name="note" rows="4" required maxlength="2000" placeholder="実際にやってみて気づいたこと、想定外に増えた作業など"></textarea></label><button type="submit" class="btn btn-primary full">${icon('plus',16)} 記録を保存</button></form>
  <div class="panel timeline-panel"><div class="panel-title">これまでの検証 <span>${experiments.length}件</span></div>${experiments.length ? `<div class="timeline">${experiments.map(e=>{const before=data.scenarios.find(s=>s.id===e.beforeId);const after=data.scenarios.find(s=>s.id===e.afterId);const delta=e.plannedBeforeMinutes!==undefined&&e.plannedAfterMinutes!==undefined?e.plannedBeforeMinutes-e.plannedAfterMinutes:scenarioTotals(data,e.beforeId).minutes-scenarioTotals(data,e.afterId).minutes;const actualDiff=verifiedSavings(e.beforeActualMinutes,e.afterActualMinutes);const totalVerdict=measuredTimeVerdict(e.beforeTotalActualMinutes,e.afterTotalActualMinutes);return `<article class="timeline-item"><div class="timeline-meta">${new Date(e.createdAt).toLocaleDateString('ja-JP')} <span class="timeline-bullet">●</span></div><strong>${esc(e.beforeName||before?.name||'削除された方法')} → ${esc(e.afterName||after?.name||'削除された方法')}</strong><p>${esc(e.note)}</p><div class="timeline-tags">${totalVerdict?`<span class="time-verified ${totalVerdict.status}">実測総時間（${e.actualObservationWeeks??'?'}週）：${totalVerdict.savedMinutes>=0?'−':'+'}${fmtMin(Math.abs(totalVerdict.savedMinutes))}</span>`:''}${e.plannedHorizonWeeks&&e.plannedTotalsComplete?`<span>予測総時間差（${e.plannedHorizonWeeks}週）：${e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes>=0?'−':'+'}${fmtMin(Math.abs(e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes))}</span>`:''}<span>計画差（週）: ${delta>0?'-':'+'}${fmtMin(Math.abs(delta))}/週</span>${actualDiff!==null?`<span>実測差: ${actualDiff>=0?'−':'+'}${fmtMin(Math.abs(actualDiff))}/週</span>`:e.actualMinutes!==null&&e.actualMinutes!==undefined?`<span>実測（旧形式）: ${fmtMin(e.actualMinutes)}/週</span>`:''}</div><button type="button" data-action="delete-experiment" data-id="${eAttr(e.id)}" class="link-danger">記録を削除</button></article>`;}).join('')}</div>`:`<div class="no-history">${icon('history',32)}<strong>まだ検証の記録はありません</strong><p>新しい方法を実際に試したら、結果をここに記録しましょう。</p></div>`}</div></section>`;
 }
 function renderCloud() {
   const connected=!!cloud?.userId;
   const config=cloud?.config;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.8</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.9</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
   <section class="panel cloud-card"><h2>1. 専用クラウド（接続先を設定済み）</h2><p class="panel-desc">KŌDŌ専用Supabaseに接続します。接続先は設定済みのため、通常は変更不要です。ほかのプロジェクトに接続するときだけ変更してください。入力する鍵は公開用のみです。</p>
     <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||'')}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" placeholder="sb_publishable_..." required value="${eAttr(config?.publishableKey||'')}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></section>
   <section class="panel cloud-card"><h2>2. アカウント</h2><p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'メールアドレスとパスワードで登録・ログインします。'} ログイン時にはアカウント別の端末データへ切り替えます。ゲストの記録や別のアカウントの記録は自動では取り込みません。ログインしただけではクラウドデータで上書きしません。</p>
@@ -1137,7 +1216,7 @@ function renderData() {
   // Restricted previews can deny access to localStorage even when the page renders.
   let recovery = [];
   try { recovery = readRecoveryPoints(recoveryScope()); } catch {}
-  return `<div class="page-heading"><div class="eyebrow">OWN YOUR DATA <span class="line"></span> データと管理</div><div class="heading-row"><div><h1>データは、自分で管理する。</h1><p>この端末に保存され、設定済みならクラウドにも同期されます。</p></div></div></div><div class="settings-grid"><div class="panel setting-panel"><div class="setting-icon">${icon('download',23)}</div><h2>バックアップを書き出す</h2><p>目的・方法・行動・検証記録をJSONファイルに保存します。端末変更前にも書き出してください。</p>${btn('export',`${icon('download',16)} JSONを書き出す`,'btn-primary')}</div><div class="panel setting-panel"><div class="setting-icon">${icon('upload',23)}</div><h2>バックアップから復元</h2><p>このアプリで書き出したJSONファイルを読み込みます。現在のデータは置き換えられます。</p><label class="btn btn-outline import-label">${icon('upload',16)} JSONを読み込む<input id="import-file" type="file" accept=".json,application/json" hidden></label></div></div>${recovery.length ? `<section class="panel setting-panel"><h2>変更前の状態に戻す</h2><p>同期・取り込み・初期化の前の記録を、このブラウザに最大3件保存しています。元に戻す前に、現在の状態も保護します。</p><div class="recovery-list">${recovery.map((p,i)=>`<button class="btn btn-outline" data-action="restore-recovery" data-index="${i}">${esc(p.createdAt.slice(0,16).replace('T',' '))} / ${esc(p.reason)} / ${p.payload.actions.length}行動</button>`).join('')}</div></section>` : ''}<section class="panel data-info"><div class="panel-title">保存状況</div><div class="data-facts"><div><strong>${data.goals.length}</strong><span>目的</span></div><div><strong>${data.scenarios.length}</strong><span>方法</span></div><div><strong>${data.actions.length}</strong><span>行動</span></div><div><strong>${data.experiments.length}</strong><span>検証</span></div><div><strong>${data.items.length}</strong><span>道具</span></div></div><div class="notice"><strong>プライバシー・保存範囲について</strong><p>ゲスト領域とログインアカウントの端末データ・復旧履歴は分離されます。ログイン前の記録を移したい場合は、ゲスト状態でJSONを書き出し、ログイン後に明示的に取り込んでください。ブラウザ内の localStorage に保存するため、共有端末の他人から秘匿できる仕組みではありません。未ログインならブラウザ内の localStorage のみで保存します。クラウド同期は専用プロジェクトへのログイン・初回同期後に動作します。ブラウザのデータを削除すると記録が失われることがあるため、定期的にJSONで保存してください。</p></div><div class="danger-zone"><div><strong>サンプル状態へ戻す</strong><p>すべての記録を消去し、サンプルデータへ戻します。</p></div>${btn('reset-demo','初期化','btn-danger-outline')}</div></section>`;
+  return `<div class="page-heading"><div class="eyebrow">OWN YOUR DATA <span class="line"></span> データと管理</div><div class="heading-row"><div><h1>データは、自分で管理する。</h1><p>この端末に保存され、設定済みならクラウドにも同期されます。</p></div></div></div><div class="settings-grid"><div class="panel setting-panel"><div class="setting-icon">${icon('download',23)}</div><h2>バックアップを書き出す</h2><p>目的・方法・行動・実測・検証記録をJSONファイルに保存します。端末変更前にも書き出してください。</p>${btn('export',`${icon('download',16)} JSONを書き出す`,'btn-primary')}</div><div class="panel setting-panel"><div class="setting-icon">${icon('upload',23)}</div><h2>バックアップから復元</h2><p>このアプリで書き出したJSONファイルを読み込みます。現在のデータは置き換えられます。</p><label class="btn btn-outline import-label">${icon('upload',16)} JSONを読み込む<input id="import-file" type="file" accept=".json,application/json" hidden></label></div></div>${recovery.length ? `<section class="panel setting-panel"><h2>変更前の状態に戻す</h2><p>同期・取り込み・初期化の前の記録を、このブラウザに最大3件保存しています。元に戻す前に、現在の状態も保護します。</p><div class="recovery-list">${recovery.map((p,i)=>`<button class="btn btn-outline" data-action="restore-recovery" data-index="${i}">${esc(p.createdAt.slice(0,16).replace('T',' '))} / ${esc(p.reason)} / ${p.payload.actions.length}行動</button>`).join('')}</div></section>` : ''}<section class="panel data-info"><div class="panel-title">保存状況</div><div class="data-facts"><div><strong>${data.goals.length}</strong><span>目的</span></div><div><strong>${data.scenarios.length}</strong><span>方法</span></div><div><strong>${data.actions.length}</strong><span>行動</span></div><div><strong>${data.experiments.length}</strong><span>検証</span></div><div><strong>${data.timeLogs.length}</strong><span>実測</span></div><div><strong>${data.items.length}</strong><span>道具</span></div></div><div class="notice"><strong>プライバシー・保存範囲について</strong><p>ゲスト領域とログインアカウントの端末データ・復旧履歴は分離されます。ログイン前の記録を移したい場合は、ゲスト状態でJSONを書き出し、ログイン後に明示的に取り込んでください。ブラウザ内の localStorage に保存するため、共有端末の他人から秘匿できる仕組みではありません。未ログインならブラウザ内の localStorage のみで保存します。クラウド同期は専用プロジェクトへのログイン・初回同期後に動作します。ブラウザのデータを削除すると記録が失われることがあるため、定期的にJSONで保存してください。</p></div><div class="danger-zone"><div><strong>サンプル状態へ戻す</strong><p>すべての記録を消去し、サンプルデータへ戻します。</p></div>${btn('reset-demo','初期化','btn-danger-outline')}</div></section>`;
 }
 
 function renderDialog() {
@@ -1214,6 +1293,8 @@ function deleteScenario(sid) {
   data.links=data.links.filter(l=>l.scenarioId!==sid);
   data.actions=data.actions.filter(a=>a.scenarioId!==sid);
   data.scenarios=data.scenarios.filter(s=>s.id!==sid);
+  data.timeLogs=data.timeLogs.filter(l=>l.scenarioId!==sid);
+  if(activeTimer?.scenarioId===sid){activeTimer=null;persistTimer();}
   selectedScenario=null;selectedAction=null;
 }
 function deleteGoal(gid) {
@@ -1298,6 +1379,31 @@ function handleAction(el) {
     case 'delete-goal': if(confirm('この目的と、すべての方法・記録を削除しますか？')){mutate(()=>{deleteGoal(selectedGoal);dialog=null;});notify('目的を削除しました。');}break;
     case 'set-baseline': mutate(()=>data.scenarios.forEach(s=>{if(s.goalId===selectedGoal)s.isBaseline=s.id===el.dataset.id;}));notify('比較基準を変更しました。');break;
     case 'view-scenario': selectedScenario=el.dataset.id;activeTab='analyze';selectedAction=null;render();break;
+    case 'timer-start': {
+      if(activeTimer){notify('計測中の作業があります。先に終了してください。',true);break;}
+      if(!scenario()){notify('方法を選択してください。',true);break;}
+      activeTimer=timerStart(selectedGoal,selectedScenario);
+      if(!persistTimer()){activeTimer=null;break;}
+      activeTab='history';render();break;
+    }
+    case 'timer-pause': if(activeTimer){activeTimer=timerPause(activeTimer);persistTimer();render();}break;
+    case 'timer-resume': if(activeTimer){activeTimer=timerResume(activeTimer);persistTimer();render();}break;
+    case 'timer-cancel': if(activeTimer&&confirm('今回の計測を記録せず破棄しますか？')){activeTimer=null;persistTimer();render();}break;
+    case 'timer-finish': {
+      if(!activeTimer)break;
+      if(localTabConflict){notify('ほかのタブで変更されています。計測を記録する前に競合を解消してください。',true);break;}
+      const seconds=Math.round(timerElapsedMs(activeTimer)/1000);
+      if(seconds<1){notify('計測が短すぎます。1秒以上計測してください。',true);break;}
+      if(seconds>172800){notify('48時間を超える計測は登録できません。',true);break;}
+      const before=deepCopy(data);
+      const log={id:id(),goalId:activeTimer.goalId,scenarioId:activeTimer.scenarioId,durationSeconds:seconds,createdAt:new Date().toISOString()};
+      data.timeLogs.push(log);
+      if(!saveLocal()){data=before;break;}
+      undoSnapshot={data:before,selectedGoal,selectedScenario,selectedAction,activeTab};
+      activeTimer=null;persistTimer();scheduleCloudPush();render();notify(`実測 ${fmtMin(seconds/60)} を保存しました。`);
+      break;
+    }
+    case 'delete-time-log': if(confirm('この実測記録を削除しますか？'))mutate(()=>{data.timeLogs=data.timeLogs.filter(l=>l.id!==el.dataset.id);});break;
     case 'delete-experiment': if(confirm('この検証記録を削除しますか？'))mutate(()=>data.experiments=data.experiments.filter(e=>e.id!==el.dataset.id));break;
     case 'ai-analyze': runAiAnalysis();break;
     case 'ai-draft': {
@@ -1565,6 +1671,9 @@ globalThis.addEventListener?.('storage', ev=>{
  }catch{}
 });
 if(cloud?.userId)bootstrapCloud();
+
+// Refresh only the timer label; no UI redraw while the user edits forms.
+if(typeof setInterval==='function')setInterval(()=>{if(!activeTimer)return;const el=document.querySelector('[data-timer-display]');if(el)el.textContent=elapsedLabel(activeTimer);},1000);
 
 </script>
 </body>
