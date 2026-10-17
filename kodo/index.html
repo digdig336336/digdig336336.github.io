@@ -128,9 +128,14 @@
 .timer-log-list>div span{flex:1;color:#5a7c73}.timer-disclaimer{font-size:11px;line-height:1.7;color:#7b928c;margin-top:12px}
 @media(max-width:650px){.timer-card{flex-direction:column;align-items:stretch}.timer-card strong{font-size:30px}.timer-buttons .btn{flex:1}}
 
-
 .data-facts{grid-template-columns:repeat(6,minmax(0,1fr))}
 @media(max-width:680px){.data-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* v0.10 — comparable measurements without re-entry */
+.log-pair-panel{padding:23px;margin:0 0 23px}.log-pair-panel .panel-desc{margin:10px 0 15px;line-height:1.7}
+.log-pair-panel form{display:grid;gap:13px}.log-pair-panel .form-grid{margin:0}.log-pair-panel .btn{justify-self:start}
+@media(max-width:580px){.log-pair-panel{padding:18px}.log-pair-panel .btn{width:100%;justify-content:center}}
+
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -387,6 +392,22 @@ function timeLogReport(data,goalId){
     groups.push({scenarioId:scenario.id,name:scenario.name,count:values.length,minutes:seconds/60,avgMinutes:seconds/60/values.length});
   }
   return groups;
+}
+/** Only a user-confirmed equal-workload pair may become a measured comparison.
+ * Both records cover a single completed work cycle; never present as weekly data.
+ */
+function compareMeasurementPair(data, beforeId, afterId, workloadConfirmed) {
+  if (!workloadConfirmed) throw new Error('作業量・範囲が同じことを確認してください。');
+  if(beforeId===afterId)throw new Error('異なる実測記録を選んでください。');
+  const logs = data.timeLogs || [];
+  const before=logs.find(l=>l.id===beforeId), after=logs.find(l=>l.id===afterId);
+  if(!before||!after)throw new Error('選択した実測記録が見つかりません。');
+  if(before.goalId!==after.goalId||before.scenarioId===after.scenarioId)throw new Error('同じ目的の異なる方法を選んでください。');
+  if(!data.scenarios.some(s=>s.id===before.scenarioId)||!data.scenarios.some(s=>s.id===after.scenarioId))throw new Error('方法が削除されています。');
+  return {goalId:before.goalId,beforeId:before.scenarioId,afterId:after.scenarioId,
+    beforeTotalActualMinutes:before.durationSeconds/60,afterTotalActualMinutes:after.durationSeconds/60,
+    comparisonScope:'one_cycle',actualObservationWeeks:null,sourceLogIds:[before.id,after.id],
+    savedMinutes:(before.durationSeconds-after.durationSeconds)/60};
 }
 
 
@@ -889,7 +910,7 @@ const DEMO = {
 
 
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.9';
+const APP_VERSION = 'v0.10';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -1183,17 +1204,26 @@ function renderTimerPanel() {
  ${logs.length?`<details class="timer-log-list"><summary>実測履歴を開く（最新${logs.length}件）</summary>${logs.map(l=>`<div><span>${esc(data.scenarios.find(s=>s.id===l.scenarioId)?.name||'方法')} · ${esc(l.createdAt.slice(0,10))}</span><strong>${fmtMin(l.durationSeconds/60)}</strong>${btn('delete-time-log','削除','btn-text danger-text',`data-id="${eAttr(l.id)}"`)}</div>`).join('')}</details>`:''}
  <p class="timer-disclaimer">実測平均は同じ条件・同じ作業量でなければ直接比較できません。方法を変える際は準備・維持管理を含む同じ評価期間の総時間で検証してください。作業の並行・待ち時間の扱いにも注意してください。</p></section>`;
 }
+function renderMeasuredPairForm() {
+ const logs=(data.timeLogs||[]).filter(l=>l.goalId===selectedGoal).slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,40);
+ if(new Set(logs.map(l=>l.scenarioId)).size<2)return '';
+ const options=logs.map(l=>[l.id,`${data.scenarios.find(s=>s.id===l.scenarioId)?.name||'方法'} / ${l.createdAt.slice(0,10)} / ${fmtMin(l.durationSeconds/60)}`]);
+ return `<section class="panel log-pair-panel"><div class="panel-title">実測ログから比較を作る <span>再入力不要</span></div><p class="panel-desc">同じ目的の二つの方法を、それぞれ1回ずつ測った記録から比較します。作業量、対象範囲、休憩の扱いが同等であることが条件です。</p>
+ <form id="paired-log-form"><div class="form-grid"><label class="form-field"><span>変更前の1回分</span><select name="beforeLogId" required>${selectOptions(options,options[0]?.[0])}</select></label><label class="form-field"><span>変更後の1回分</span><select name="afterLogId" required>${selectOptions(options,options[1]?.[0])}</select></label></div>
+ <label class="check-field"><input type="checkbox" name="equalWorkload" required><span><strong>同じ作業量・対象範囲で測定した</strong><small>同じ条件でない場合はチェックせず、別々の参考値として記録してください。</small></span></label>
+ <button type="submit" class="btn btn-primary">${icon('scale',15)} 実測の差を検証履歴へ保存</button></form></section>`;
+}
 function renderHistory() {
  const experiments=data.experiments.filter(e=>e.goalId===selectedGoal).slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
  const scenarios=scenariosOfGoal();
  return `<div class="section-head"><div><span class="section-kicker">VERIFY & LEARN</span><h2>改善を記録する</h2><p>机上の試算だけで終わらせず、実際に試して確かめる。</p></div></div>
- ${renderTimerPanel()}<section class="history-layout"><form id="experiment-form" class="panel form-panel"><div class="panel-title">検証結果を記録</div><p class="panel-desc">新しい方法を試した結果を残しましょう。</p><div class="form-grid"><label class="form-field"><span>比較元の方法</span><select name="beforeId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),scenarios.find(s=>s.isBaseline)?.id||scenarios[0]?.id)}</select></label><label class="form-field"><span>試した方法</span><select name="afterId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><div class="form-grid"><label class="form-field"><span>変更前の実測（分/週・任意）</span><input name="beforeActualMinutes" type="number" min="0" step="0.5" placeholder="例：25"></label><label class="form-field"><span>変更後の実測（分/週・任意）</span><input name="afterActualMinutes" type="number" min="0" step="0.5" placeholder="例：12"></label></div><div class="time-measure-note"><strong>総時間の実測（推奨）</strong><p>同じ期間について、準備・作業・管理・後片付けを含む実際の総時間を入力してください。別の時間枠で計測した値は比較しないでください。</p></div><div class="form-grid"><label class="form-field"><span>変更前の実測総時間（分）</span><input name="beforeTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：150"></label><label class="form-field"><span>変更後の実測総時間（分）</span><input name="afterTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：120"></label></div><label class="form-field"><span>実測の対象期間（週）</span><input name="actualObservationWeeks" type="number" min="1" max="260" step="1" value="4"></label><label class="form-field"><span>気づいたこと・改善結果</span><textarea name="note" rows="4" required maxlength="2000" placeholder="実際にやってみて気づいたこと、想定外に増えた作業など"></textarea></label><button type="submit" class="btn btn-primary full">${icon('plus',16)} 記録を保存</button></form>
- <div class="panel timeline-panel"><div class="panel-title">これまでの検証 <span>${experiments.length}件</span></div>${experiments.length ? `<div class="timeline">${experiments.map(e=>{const before=data.scenarios.find(s=>s.id===e.beforeId);const after=data.scenarios.find(s=>s.id===e.afterId);const delta=e.plannedBeforeMinutes!==undefined&&e.plannedAfterMinutes!==undefined?e.plannedBeforeMinutes-e.plannedAfterMinutes:scenarioTotals(data,e.beforeId).minutes-scenarioTotals(data,e.afterId).minutes;const actualDiff=verifiedSavings(e.beforeActualMinutes,e.afterActualMinutes);const totalVerdict=measuredTimeVerdict(e.beforeTotalActualMinutes,e.afterTotalActualMinutes);return `<article class="timeline-item"><div class="timeline-meta">${new Date(e.createdAt).toLocaleDateString('ja-JP')} <span class="timeline-bullet">●</span></div><strong>${esc(e.beforeName||before?.name||'削除された方法')} → ${esc(e.afterName||after?.name||'削除された方法')}</strong><p>${esc(e.note)}</p><div class="timeline-tags">${totalVerdict?`<span class="time-verified ${totalVerdict.status}">実測総時間（${e.actualObservationWeeks??'?'}週）：${totalVerdict.savedMinutes>=0?'−':'+'}${fmtMin(Math.abs(totalVerdict.savedMinutes))}</span>`:''}${e.plannedHorizonWeeks&&e.plannedTotalsComplete?`<span>予測総時間差（${e.plannedHorizonWeeks}週）：${e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes>=0?'−':'+'}${fmtMin(Math.abs(e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes))}</span>`:''}<span>計画差（週）: ${delta>0?'-':'+'}${fmtMin(Math.abs(delta))}/週</span>${actualDiff!==null?`<span>実測差: ${actualDiff>=0?'−':'+'}${fmtMin(Math.abs(actualDiff))}/週</span>`:e.actualMinutes!==null&&e.actualMinutes!==undefined?`<span>実測（旧形式）: ${fmtMin(e.actualMinutes)}/週</span>`:''}</div><button type="button" data-action="delete-experiment" data-id="${eAttr(e.id)}" class="link-danger">記録を削除</button></article>`;}).join('')}</div>`:`<div class="no-history">${icon('history',32)}<strong>まだ検証の記録はありません</strong><p>新しい方法を実際に試したら、結果をここに記録しましょう。</p></div>`}</div></section>`;
+ ${renderTimerPanel()}${renderMeasuredPairForm()}<section class="history-layout"><form id="experiment-form" class="panel form-panel"><div class="panel-title">検証結果を記録</div><p class="panel-desc">新しい方法を試した結果を残しましょう。</p><div class="form-grid"><label class="form-field"><span>比較元の方法</span><select name="beforeId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),scenarios.find(s=>s.isBaseline)?.id||scenarios[0]?.id)}</select></label><label class="form-field"><span>試した方法</span><select name="afterId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><div class="form-grid"><label class="form-field"><span>変更前の実測（分/週・任意）</span><input name="beforeActualMinutes" type="number" min="0" step="0.5" placeholder="例：25"></label><label class="form-field"><span>変更後の実測（分/週・任意）</span><input name="afterActualMinutes" type="number" min="0" step="0.5" placeholder="例：12"></label></div><div class="time-measure-note"><strong>総時間の実測（推奨）</strong><p>同じ期間について、準備・作業・管理・後片付けを含む実際の総時間を入力してください。別の時間枠で計測した値は比較しないでください。</p></div><div class="form-grid"><label class="form-field"><span>変更前の実測総時間（分）</span><input name="beforeTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：150"></label><label class="form-field"><span>変更後の実測総時間（分）</span><input name="afterTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：120"></label></div><label class="form-field"><span>実測の対象期間（週）</span><input name="actualObservationWeeks" type="number" min="1" max="260" step="1" value="4"></label><label class="form-field"><span>気づいたこと・改善結果</span><textarea name="note" rows="4" required maxlength="2000" placeholder="実際にやってみて気づいたこと、想定外に増えた作業など"></textarea></label><button type="submit" class="btn btn-primary full">${icon('plus',16)} 記録を保存</button></form>
+ <div class="panel timeline-panel"><div class="panel-title">これまでの検証 <span>${experiments.length}件</span></div>${experiments.length ? `<div class="timeline">${experiments.map(e=>{const before=data.scenarios.find(s=>s.id===e.beforeId);const after=data.scenarios.find(s=>s.id===e.afterId);const delta=e.plannedBeforeMinutes!==undefined&&e.plannedAfterMinutes!==undefined?e.plannedBeforeMinutes-e.plannedAfterMinutes:scenarioTotals(data,e.beforeId).minutes-scenarioTotals(data,e.afterId).minutes;const actualDiff=verifiedSavings(e.beforeActualMinutes,e.afterActualMinutes);const totalVerdict=measuredTimeVerdict(e.beforeTotalActualMinutes,e.afterTotalActualMinutes);return `<article class="timeline-item"><div class="timeline-meta">${new Date(e.createdAt).toLocaleDateString('ja-JP')} <span class="timeline-bullet">●</span></div><strong>${esc(e.beforeName||before?.name||'削除された方法')} → ${esc(e.afterName||after?.name||'削除された方法')}</strong><p>${esc(e.note)}</p><div class="timeline-tags">${totalVerdict?`<span class="time-verified ${totalVerdict.status}">${e.comparisonScope==='one_cycle'?'実測1回分':`実測総時間（${e.actualObservationWeeks??'?'}週）`}：${totalVerdict.savedMinutes>=0?'−':'+'}${fmtMin(Math.abs(totalVerdict.savedMinutes))}</span>`:''}${e.plannedHorizonWeeks&&e.plannedTotalsComplete?`<span>予測総時間差（${e.plannedHorizonWeeks}週）：${e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes>=0?'−':'+'}${fmtMin(Math.abs(e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes))}</span>`:''}<span>計画差（週）: ${delta>0?'-':'+'}${fmtMin(Math.abs(delta))}/週</span>${actualDiff!==null?`<span>実測差: ${actualDiff>=0?'−':'+'}${fmtMin(Math.abs(actualDiff))}/週</span>`:e.actualMinutes!==null&&e.actualMinutes!==undefined?`<span>実測（旧形式）: ${fmtMin(e.actualMinutes)}/週</span>`:''}</div><button type="button" data-action="delete-experiment" data-id="${eAttr(e.id)}" class="link-danger">記録を削除</button></article>`;}).join('')}</div>`:`<div class="no-history">${icon('history',32)}<strong>まだ検証の記録はありません</strong><p>新しい方法を実際に試したら、結果をここに記録しましょう。</p></div>`}</div></section>`;
 }
 function renderCloud() {
   const connected=!!cloud?.userId;
   const config=cloud?.config;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.9</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.10</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
   <section class="panel cloud-card"><h2>1. 専用クラウド（接続先を設定済み）</h2><p class="panel-desc">KŌDŌ専用Supabaseに接続します。接続先は設定済みのため、通常は変更不要です。ほかのプロジェクトに接続するときだけ変更してください。入力する鍵は公開用のみです。</p>
     <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||'')}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" placeholder="sb_publishable_..." required value="${eAttr(config?.publishableKey||'')}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></section>
   <section class="panel cloud-card"><h2>2. アカウント</h2><p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'メールアドレスとパスワードで登録・ログインします。'} ログイン時にはアカウント別の端末データへ切り替えます。ゲストの記録や別のアカウントの記録は自動では取り込みません。ログインしただけではクラウドデータで上書きしません。</p>
@@ -1634,6 +1664,18 @@ root.addEventListener('submit',ev=>{
       }catch(err){cloudError=err.message;cloudStatus='認証に失敗しました';}
       finally{cloudBusy=false;render();}
     })();return;
+  }
+  if(ev.target.id==='paired-log-form') {
+    ev.preventDefault();
+    try {
+      const f=ev.target;
+      const beforeLogId=f.elements.namedItem('beforeLogId').value;
+      const afterLogId=f.elements.namedItem('afterLogId').value;
+      const pair=compareMeasurementPair(data,beforeLogId,afterLogId,!!f.elements.namedItem('equalWorkload').checked);
+      if((data.experiments||[]).some(e=>e.comparisonScope==='one_cycle'&&e.sourceLogIds?.[0]===beforeLogId&&e.sourceLogIds?.[1]===afterLogId))throw new Error('この組み合わせはすでに比較済みです。');
+      mutate(()=>data.experiments.push({id:id(),...pair,beforeName:data.scenarios.find(s=>s.id===pair.beforeId)?.name||'',afterName:data.scenarios.find(s=>s.id===pair.afterId)?.name||'',beforeActualMinutes:null,afterActualMinutes:null,plannedTotalsComplete:false,plannedBeforeMinutes:scenarioTotals(data,pair.beforeId).minutes,plannedAfterMinutes:scenarioTotals(data,pair.afterId).minutes,note:'同じ作業量・対象範囲での1回分の実測比較（利用者が確認）',createdAt:new Date().toISOString()}));
+      notify(`実測1回分の差 ${fmtMin(Math.abs(pair.savedMinutes))} を記録しました。`);
+    }catch(err){notify(err.message,true);}return;
   }
   if(ev.target.id!=='experiment-form')return;
   ev.preventDefault();const form=ev.target;
