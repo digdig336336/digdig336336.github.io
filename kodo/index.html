@@ -139,6 +139,18 @@
 /* v0.11 — password recovery */
 .auth-recovery{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:9px}.auth-recovery summary{cursor:pointer;color:var(--accent-dark);font-weight:600}.auth-recovery form{margin-top:13px}.recovery-form{margin-top:16px;padding:15px;background:var(--soft);border-radius:9px}
 
+/* v0.12: make registration discoverable and keep feedback adjacent to the form */
+.auth-feedback{border:1px solid #dcebe7;background:#f1f9f6;padding:13px 14px;border-radius:9px;margin-top:16px;line-height:1.7;font-size:12px;color:#265b53}
+.auth-feedback strong{font-weight:700}
+.auth-feedback .cloud-error{margin-top:7px;color:#a63c38;overflow-wrap:anywhere}
+.cloud-auth-buttons{grid-column:1/-1;margin:3px 0 0}
+.cloud-auth-buttons .btn{font-size:12px;min-height:43px;white-space:normal;text-align:center}
+.cloud-advanced summary{font-size:13px;cursor:pointer;font-weight:600}
+.cloud-advanced[open] form{margin-top:18px}
+.cloud-form small{font-size:10px;color:#71888c;margin-top:5px}
+.signup-shortcut{font-size:11px;min-height:33px}
+@media(max-width:580px){.signup-shortcut{font-size:10px;padding:0 7px}.topbar .save-state{display:none}.cloud-auth-buttons .btn{flex:1 1 100%}.side-nav{overflow-x:auto;max-width:calc(100vw - 64px);scrollbar-width:thin}}
+
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -945,7 +957,7 @@ const DEMO = {
 
 
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.11';
+const APP_VERSION = 'v0.12';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -962,7 +974,7 @@ try { data = readWorkspace(localStorage,STORE,migrateData,()=>deepCopy(DEMO)); }
 let selectedGoal = data.goals[0]?.id || null;
 let selectedScenario = data.scenarios.find(s => s.goalId === selectedGoal && s.isBaseline)?.id || data.scenarios.find(s => s.goalId === selectedGoal)?.id || null;
 let selectedAction = null;
-let activeTab = 'analyze';
+let activeTab = /(?:^\?|&)tab=cloud(?:&|$)/.test(globalThis.location?.search||'') ? 'cloud' : 'analyze';
 let horizonWeeks = 12; // UI preference only; no changes to saved projects.
 let dialog = null;
 let toastTimer;
@@ -972,6 +984,7 @@ const modalRoot = document.getElementById('modal-root');
 let cloud=null, cloudLinked=false, cloudBusy=false, cloudStatus='未接続', cloudError='', cloudQueue=Promise.resolve(), cloudDirty=false;
 let aiBusy=false, aiSuggestions=[], aiMessage='';
 let passwordRecoveryActive=false;
+let authEmailDraft='';
 let lastSyncedHash='', localTabConflict=false;
 let activeTimer=null;
 function getStoredTimer(){try{return parseActiveTimer(localStorage.getItem(timerKey(activeStore)),data);}catch{return null;}}
@@ -1001,14 +1014,20 @@ function rememberCloudLink() {
   localStorage.setItem(CLOUD_LINK_KEY,JSON.stringify({url:cloud.config.url,userId:cloud.userId,revision:cloud.revision,hash:lastSyncedHash}));
 }
 function initCloud() {
+  let config=KODO_DEFAULT_CLOUD;
+  try {config=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null')||KODO_DEFAULT_CLOUD;}
+  catch {cloudStatus='ブラウザの保存領域が使えません。公開サイトを通常のブラウザで開いてください。';}
+  try {cloud=new CloudClient(config);}
+  catch (err) {cloud=null;cloudStatus='接続設定が不正です。詳細設定で接続先を確認してください。';cloudError=err.message;return;}
+  cloud.onSessionChange=session=>{
+    try {if(session)localStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(session));else localStorage.removeItem(CLOUD_SESSION_KEY);}
+    catch { cloudStatus='ログイン情報を保存できません。このブラウザでは再ログインが必要です。'; }
+  };
   try {
-    const config=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null') || KODO_DEFAULT_CLOUD;
-    cloud=new CloudClient(config);
-    cloud.onSessionChange=session=>session?localStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(session)):localStorage.removeItem(CLOUD_SESSION_KEY);
     const session=JSON.parse(localStorage.getItem(CLOUD_SESSION_KEY)||'null');
     if(session?.user?.id&&session?.refresh_token){cloud.setSession(session);switchWorkspace(session);}
     cloudStatus=cloud.userId?'認証の確認待ち':'ログインしてください';
-  } catch {cloud=null;cloudStatus='設定内容を確認してください';}
+  } catch {cloudStatus='ログイン情報の保存を確認できません。通常のブラウザをご利用ください。';}
 }
 initCloud();
 activeTimer=getStoredTimer();
@@ -1131,7 +1150,7 @@ function render() {
       <div class="sidebar-bottom"><div class="sidebar-thought"><span class="tiny-accent"></span><strong>DESIGN PRINCIPLE</strong><p>必要な行動は自然に。<br>不要な行動は生まれないように。</p></div><small>Local-first prototype · ${APP_VERSION}</small></div>
     </aside>
     <main class="main-area">
-      <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> ${['analyze','compare','environment','history','ai','cloud','data'].includes(activeTab)?{analyze:'行動分析',compare:'方法の比較',environment:'道具・定位置',history:'改善の記録',ai:'AI行動分析',cloud:'クラウド同期',data:'データ管理'}[activeTab]:''}</div><div class="topbar-right"><span class="save-state"><span class="save-dot"></span> 自動保存</span>${undoSnapshot?btn('undo',`${icon('back',15)} 元に戻す`,'btn-outline undo-btn','aria-label="直前の変更を元に戻す"'):""}<span class="avatar">K</span></div></header>
+      <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> ${['analyze','compare','environment','history','ai','cloud','data'].includes(activeTab)?{analyze:'行動分析',compare:'方法の比較',environment:'道具・定位置',history:'改善の記録',ai:'AI行動分析',cloud:'クラウド同期',data:'データ管理'}[activeTab]:''}</div><div class="topbar-right">${!cloud?.userId&&activeTab!=='cloud'?`<button type="button" class="btn btn-primary signup-shortcut" data-tab="cloud">新規登録 / ログイン</button>`:''}<span class="save-state"><span class="save-dot"></span> 自動保存</span>${undoSnapshot?btn('undo',`${icon('back',15)} 元に戻す`,'btn-outline undo-btn','aria-label="直前の変更を元に戻す"'):""}<span class="avatar">K</span></div></header>
       <div class="content-area">
         ${activeTab==='data' ? renderData() : activeTab==='cloud'?renderCloud():activeTab==='ai'?renderAi():`${renderTop(g)}${activeTab==='analyze'?renderAnalyze(s):activeTab==='compare'?renderCompare():activeTab==='environment'?renderEnvironment():renderHistory()}`}
       </div>
@@ -1259,17 +1278,22 @@ function renderHistory() {
 function renderCloud() {
   const connected=!!cloud?.userId;
   const config=cloud?.config;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.11</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
-  <section class="panel cloud-card"><h2>1. 専用クラウド（接続先を設定済み）</h2><p class="panel-desc">KŌDŌ専用Supabaseに接続します。接続先は設定済みのため、通常は変更不要です。ほかのプロジェクトに接続するときだけ変更してください。入力する鍵は公開用のみです。</p>
-    <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||'')}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" placeholder="sb_publishable_..." required value="${eAttr(config?.publishableKey||'')}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></section>
-  <section class="panel cloud-card"><h2>2. アカウント</h2><p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'メールアドレスとパスワードで登録・ログインします。'} ログイン時にはアカウント別の端末データへ切り替えます。ゲストの記録や別のアカウントの記録は自動では取り込みません。ログインしただけではクラウドデータで上書きしません。</p>
-    ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`: `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required></label><label class="form-field"><span>パスワード</span><input name="password" type="password" minlength="6" autocomplete="current-password" required></label><div class="cloud-actions"><button class="btn btn-primary" name="intent" value="login" ${cloudBusy?'disabled':''}>ログイン</button><button class="btn btn-outline" name="intent" value="signup" ${cloudBusy?'disabled':''}>新規登録</button></div></form>`}
-    ${!connected?`<details class="auth-recovery"><summary>パスワードを忘れた場合</summary><form id="password-reset-request-form" class="cloud-form"><label class="form-field"><span>登録したメールアドレス</span><input name="email" type="email" autocomplete="email" required></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>再設定メールを送信</button></form></details>`:''}
-    ${connected&&passwordRecoveryActive?`<form id="password-reset-confirm-form" class="cloud-form recovery-form"><strong>新しいパスワードを設定する</strong><label class="form-field"><span>新しいパスワード（8文字以上）</span><input name="password" type="password" minlength="8" autocomplete="new-password" required></label><button class="btn btn-primary" ${cloudBusy?'disabled':''}>パスワードを変更</button></form>`:''}
-    <p class="panel-desc">認証メールから戻るURL： https://digdig336336.github.io/kodo/ （Supabase側で認証リダイレクトURLの許可設定が必要です）</p></section>
-  <section class="panel cloud-card"><h2>3. 同期を確認する</h2><p class="sync-status">${esc(cloudStatus)}</p>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}
-  <div class="cloud-actions">${btn('cloud-pull','クラウド → この端末','btn-outline',!connected||cloudBusy?'disabled':'')}${btn('cloud-push','この端末 → クラウド','btn-primary',!connected||cloudBusy?'disabled':'')}</div>
-  <p class="panel-desc">同期後は編集ごとにクラウドへ送信します。オフライン時や競合時は自動同期を停止し、この端末の記録を保持します。競合時は必ず双方のJSONをバックアップしてから、どちらを採用するか判断してください。</p><p class="panel-desc">ブラウザへのログイン保存は共用端末向きではありません。HTTPSで公開した環境でご利用ください。</p></section>`;
+  const disabled=(cloudBusy||!cloud)?'disabled':'';
+  const status=`<div class="auth-feedback" role="status" aria-live="polite"><strong>${esc(cloudStatus)}</strong>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}</div>`;
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.12</div><h1>アカウント登録と同期</h1><p>メールアドレスで登録して、パソコンとスマートフォンで同じ記録を使えます。</p></div>
+  <section class="panel cloud-card" id="account-panel"><h2>1. 新規登録・ログイン</h2>
+    <p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'① メールアドレスとパスワードを入力 ②「新規登録」 ③ 届いたメールのリンクを確認'}。<strong>登録は無料です。</strong> この画面への入力にOpenAI APIキーは必要ありません。</p>
+    ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`:
+    `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required placeholder="name@example.com" value="${eAttr(authEmailDraft)}"></label><label class="form-field"><span>パスワード（6文字以上）</span><input name="password" type="password" minlength="6" autocomplete="new-password" required placeholder="6文字以上" aria-describedby="cloud-password-hint"><small id="cloud-password-hint">登録とログインに共通で使います</small></label><div class="cloud-actions cloud-auth-buttons"><button type="submit" class="btn btn-primary" name="intent" value="signup" ${disabled}>新規登録（確認メールを送信）</button><button type="submit" class="btn btn-outline" name="intent" value="login" ${disabled}>既存アカウントでログイン</button></div></form>`}
+    ${status}
+    ${!connected?`<details class="auth-recovery"><summary>パスワードを忘れた場合</summary><form id="password-reset-request-form" class="cloud-form"><label class="form-field"><span>登録したメールアドレス</span><input name="email" type="email" autocomplete="email" required></label><button class="btn btn-outline" ${disabled}>再設定メールを送信</button></form></details>`:''}
+    ${connected&&passwordRecoveryActive?`<form id="password-reset-confirm-form" class="cloud-form recovery-form"><strong>新しいパスワードを設定する</strong><label class="form-field"><span>新しいパスワード（8文字以上）</span><input name="password" type="password" minlength="8" autocomplete="new-password" required></label><button class="btn btn-primary" ${disabled}>パスワードを変更</button></form>`:''}
+    <p class="panel-desc">確認メールのリンクを開くと公開版KŌDŌに戻ります。メールが届かない場合は迷惑メールも確認してください。</p></section>
+  <section class="panel cloud-card"><h2>2. 同期を確認する</h2>
+    <div class="cloud-actions">${btn('cloud-pull','クラウド → この端末','btn-outline',!connected||cloudBusy?'disabled':'')}${btn('cloud-push','この端末 → クラウド','btn-primary',!connected||cloudBusy?'disabled':'')}</div>
+    <p class="panel-desc">初回は方向を選びます。ログインだけでは他の端末の記録を勝手に上書きしません。同期前に「データ管理」からJSONバックアップを保存してください。</p></section>
+  <section class="panel cloud-card"><details class="cloud-advanced"><summary>接続先の詳細設定（通常は変更不要）</summary><p class="panel-desc">KŌDŌ専用Supabaseは設定済みです。ほかのプロジェクトへ接続する場合のみ変更してください。秘密鍵・OpenAI APIキーは入力しないでください。</p>
+    <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||KODO_DEFAULT_CLOUD.url)}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" required value="${eAttr(config?.publishableKey||KODO_DEFAULT_CLOUD.publishableKey)}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></details></section>`;
 }
 function renderAi() {
  const s=scenario();const g=goal();
@@ -1691,17 +1715,38 @@ root.addEventListener('submit',ev=>{
     }catch(err){notify(err.message,true);}return;
   }
   if(ev.target.id==='cloud-auth-form') {
-    ev.preventDefault();if(!cloud)return;
-    const f=ev.target;const intent=ev.submitter?.value||'login';
-    const email=f.elements.namedItem('email').value,password=f.elements.namedItem('password').value;
-    cloudBusy=true;render();
+    ev.preventDefault();
+    if(cloudBusy)return;
+    if(!cloud){cloudStatus='Supabase接続先を確認できません。';cloudError='画面下の接続先設定を確認してください。';render();return;}
+    const f=ev.target;
+    const intent=ev.submitter?.value==='signup'?'signup':'login';
+    const email=String(f.elements.namedItem('email')?.value||'').trim();
+    const password=f.elements.namedItem('password')?.value||'';
+    authEmailDraft=email;
+    if(!email.includes('@')||password.length<6){cloudStatus='メールアドレスとパスワード（6文字以上）を入力してください。';cloudError='入力内容を確認してください。';render();return;}
+    cloudBusy=true;
+    const buttons=f.querySelectorAll?.('button[type="submit"]')||[];
+    for(const b of buttons)b.disabled=true;
+    const feedback=root.querySelector?.('.auth-feedback');
+    if(feedback)feedback.textContent=intent==='signup'?'新規登録を送信しています…':'ログインしています…';
     (async()=>{
-      try{
-        if(intent==='signup'){await cloud.signUp(email,password);cloudStatus='登録受付。メール確認が必要な場合は確認してからログインしてください。';}
-        else{await cloud.signIn(email,password);try{switchWorkspace(cloud.session);}catch(e){cloud.signOutLocal();throw e;}cloudStatus='ログインしました。アカウント専用の記録に切り替えました。クラウドから取得するか、新規に登録してください。ログイン前の記録はゲスト領域に残っています。';await bootstrapCloud();}
+      try {
+        if(intent==='signup'){
+          await cloud.signUp(email,password);
+          cloudStatus='登録を受け付けました。確認メールを開いてください。届かない場合は迷惑メールも確認してください。';
+        }else{
+          await cloud.signIn(email,password);
+          try{switchWorkspace(cloud.session);}catch(e){cloud.signOutLocal();throw e;}
+          cloudStatus='ログインしました。同期する方向を選んでください。ログイン前の記録はゲスト領域に残っています。';
+          await bootstrapCloud();
+        }
         cloudError='';
-      }catch(err){cloudError=err.message;cloudStatus='認証に失敗しました';}
-      finally{cloudBusy=false;render();}
+        notify(intent==='signup'?'登録受付：確認メールを確認してください。':'ログインが完了しました。');
+      }catch(err){
+        cloudError=err?.message||'通信エラーが発生しました。';
+        cloudStatus=intent==='signup'?'新規登録に失敗しました。入力内容と通信状況をご確認ください。':'ログインに失敗しました。';
+        notify(`${cloudStatus} ${cloudError}`,true);
+      }finally{cloudBusy=false;render();}
     })();return;
   }
   if(ev.target.id==='password-reset-request-form'){
