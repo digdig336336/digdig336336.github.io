@@ -153,6 +153,9 @@
 
 .cloud-diagnostics{border:1px solid #d7e7e3;background:#f5faf9;border-radius:14px;padding:16px;margin:15px 0;color:#38565a;display:grid;gap:10px}.cloud-diagnostics small{overflow-wrap:anywhere;color:#42605f}.cloud-diagnostics .panel-desc{font-size:12px}.cloud-diagnostics .cloud-actions{margin:0}
 
+
+/* v0.14: direct Supabase endpoint test for Safari DNS / CORS triage */
+.cloud-health-link{display:inline-block;color:var(--accent-dark);font-weight:700;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -682,11 +685,30 @@ class CloudClient {
     }
     return null;
   }
-  /** Authentication-free connectivity check; does not read or send private data. */
+  /** No credentials are transmitted. Distinguish browser CORS/preflight failure from host unreachability.
+   * no-cors response is deliberately treated as a diagnostic signal, NEVER as valid API success. */
   async checkConnectivity() {
-    const status = await this.request('/auth/v1/health', {auth:false});
-    if (!status || typeof status !== 'object') throw new CloudError('接続先から有効な応答がありません。','invalid');
-    return {reachable:true,host:new URL(this.config.url).hostname};
+    try {
+      const status=await this.request('/auth/v1/health', {auth:false});
+      if (!status || typeof status !== 'object') throw new CloudError('接続先から有効な応答がありません。','invalid');
+      return {reachable:true,host:new URL(this.config.url).hostname};
+    } catch(err) {
+      if (!(err instanceof CloudError) || err.code!=='offline') throw err;
+      // This simple GET does not need apikey or custom headers, and does not trigger
+      // the normal CORS preflight. An opaque response confirms only transport, not auth.
+      try {
+        const probe=await this.fetchFn(this.config.url+'/auth/v1/health', {
+          method:'GET',mode:'no-cors',credentials:'omit',cache:'no-store',
+          signal:typeof AbortSignal?.timeout==='function'?AbortSignal.timeout(8000):undefined
+        });
+        if(probe?.type==='opaque' || typeof probe?.status==='number') {
+          throw new CloudError('接続先からの応答はありますが、アプリからのAPI通信がブラウザに遮断されています。CORS・通信フィルターの可能性があります。下の「直接開く」で確認してください。','cors');
+        }
+      }catch(probeError){
+        if(probeError instanceof CloudError)throw probeError;
+      }
+      throw new CloudError('接続先に到達できません。下の「Supabaseの応答を直接開く」を試してください。Safariで開けない場合はWi-Fiを切ってモバイル回線でも確認してください。','offline');
+    }
   }
   async refreshIfNeeded() {
     if(!this.session)return;
@@ -965,7 +987,7 @@ const DEMO = {
 
 
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.13';
+const APP_VERSION = 'v0.14';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -1289,13 +1311,13 @@ function renderCloud() {
   const config=cloud?.config;
   const disabled=(cloudBusy||!cloud)?'disabled':'';
   const status=`<div class="auth-feedback" role="status" aria-live="polite"><strong>${esc(cloudStatus)}</strong>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}</div>`;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.13</div><h1>アカウント登録と同期</h1><p>メールアドレスで登録して、パソコンとスマートフォンで同じ記録を使えます。</p></div>
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.14</div><h1>アカウント登録と同期</h1><p>メールアドレスで登録して、パソコンとスマートフォンで同じ記録を使えます。</p></div>
   <section class="panel cloud-card" id="account-panel"><h2>1. 新規登録・ログイン</h2>
     <p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'① メールアドレスとパスワードを入力 ②「新規登録」 ③ 届いたメールのリンクを確認'}。<strong>登録は無料です。</strong> この画面への入力にOpenAI APIキーは必要ありません。</p>
     ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`:
     `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required placeholder="name@example.com" value="${eAttr(authEmailDraft)}"></label><label class="form-field"><span>パスワード（6文字以上）</span><input name="password" type="password" minlength="6" autocomplete="new-password" required placeholder="6文字以上" aria-describedby="cloud-password-hint"><small id="cloud-password-hint">登録とログインに共通で使います</small></label><div class="cloud-actions cloud-auth-buttons"><button type="submit" class="btn btn-primary" name="intent" value="signup" ${disabled}>新規登録（確認メールを送信）</button><button type="submit" class="btn btn-outline" name="intent" value="login" ${disabled}>既存アカウントでログイン</button></div></form>`}
     ${status}
-    ${!connected?`<div class="cloud-diagnostics"><p>うまく送信できない場合は「通信テスト」を押してください。テストはログイン不要で、パスワードも送信しません。</p><div class="cloud-actions">${btn('cloud-test','Supabaseへの通信テスト','btn-outline',cloudBusy?'disabled':'')}${btn('cloud-reset-config','接続設定を初期値に戻す','btn-outline',cloudBusy?'disabled':'')}</div><small role="status" aria-live="polite">${esc(cloudDiagnostic||'通信未確認')} ／ 接続先: ${esc(config?.url||KODO_DEFAULT_CLOUD.url)}</small><p class="panel-desc">この画面がアプリ内ブラウザで開かれている場合は、SafariにURLをコピーして開き直してください。初回は「既存アカウントでログイン」ではなく「新規登録」を選びます。</p></div>`:''}
+    ${!connected?`<div class="cloud-diagnostics"><p>うまく送信できない場合は「通信テスト」を押してください。テストはログイン不要で、パスワードも送信しません。</p><div class="cloud-actions">${btn('cloud-test','Supabaseへの通信テスト','btn-outline',cloudBusy?'disabled':'')}${btn('cloud-reset-config','接続設定を初期値に戻す','btn-outline',cloudBusy?'disabled':'')}</div><small role="status" aria-live="polite">${esc(cloudDiagnostic||'通信未確認')} ／ 接続先: ${esc(config?.url||KODO_DEFAULT_CLOUD.url)}</small><p class="panel-desc"><a class="cloud-health-link" href="${eAttr((config?.url||KODO_DEFAULT_CLOUD.url)+'/auth/v1/health')}" target="_blank" rel="noopener noreferrer">Supabaseの応答をSafariで直接開く ↗</a></p><p class="panel-desc">直接開いたとき「JSONの表示」や「認証キーが必要です」などのサーバー応答が見えれば、接続先へ到達できています。「サーバーが見つかりません」ならネットワーク・DNS設定を確認してください。初回は「新規登録」を選びます。</p></div>`:''}
     ${!connected?`<details class="auth-recovery"><summary>パスワードを忘れた場合</summary><form id="password-reset-request-form" class="cloud-form"><label class="form-field"><span>登録したメールアドレス</span><input name="email" type="email" autocomplete="email" required></label><button class="btn btn-outline" ${disabled}>再設定メールを送信</button></form></details>`:''}
     ${connected&&passwordRecoveryActive?`<form id="password-reset-confirm-form" class="cloud-form recovery-form"><strong>新しいパスワードを設定する</strong><label class="form-field"><span>新しいパスワード（8文字以上）</span><input name="password" type="password" minlength="8" autocomplete="new-password" required></label><button class="btn btn-primary" ${disabled}>パスワードを変更</button></form>`:''}
     <p class="panel-desc">確認メールのリンクを開くと公開版KŌDŌに戻ります。メールが届かない場合は迷惑メールも確認してください。</p></section>
