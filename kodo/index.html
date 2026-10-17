@@ -1,0 +1,1571 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#142633" />
+  <meta name="description" content="行動の連鎖を可視化し、不要な手間を減らす行動設計アプリ" />
+  <style>
+:root{font-family:'DM Sans','Noto Sans JP',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#142633;background:#f6f8f8;font-synthesis:none;--ink:#142633;--muted:#76858b;--accent:#1e9f89;--accent-dark:#117a69;--line:#e4ecec;--soft:#f5f9f8;--navy:#132834;--shadow:0 5px 24px rgba(18,51,58,.035)}*{box-sizing:border-box}html,body,#root{min-height:100%;margin:0}body{font-size:14px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.43;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #8ddacb;outline-offset:2px}button:hover:not(:disabled){transition:background .14s ease,transform .14s ease,color .14s ease}h1,h2,h3,p{margin:0}svg{flex-shrink:0} .app-shell{display:flex;min-height:100vh}.sidebar{width:246px;background:var(--navy);color:#edf5f4;min-height:100vh;padding:30px 17px 24px;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh}.brand{display:flex;align-items:center;gap:12px;margin:0 12px 37px}.brand-mark{width:43px;height:43px;border:1px solid #537c7f;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#d4eae5;font-size:24px;font-weight:800;letter-spacing:-2px;position:relative}.brand-mark span{position:absolute;font-size:11px;color:#63d0b2;top:7px;right:6px}.brand strong{font-size:20px;letter-spacing:.16em;display:block;line-height:1.3}.brand small{font-size:9px;letter-spacing:.14em;color:#94aeb1}.side-section-title{color:#718f94;font-size:10px;letter-spacing:.14em;font-weight:800;padding:0 15px;display:flex;justify-content:space-between;margin-bottom:13px}.side-section-title span{color:#37636b}.workspace{display:flex;gap:10px;align-items:center;margin:0 0 36px;padding:13px 12px;background:#213945;border:1px solid #35525b;border-radius:11px}.workspace-icon{width:32px;height:32px;background:#345961;display:grid;place-items:center;border-radius:9px;color:#a6ebdd;font-size:21px}.workspace strong,.workspace small{display:block}.workspace strong{font-size:12px}.workspace small{color:#99b6b6;font-size:10px;margin-top:4px}.side-nav{display:grid;gap:5px}.nav-item{width:100%;height:47px;display:flex;align-items:center;text-align:left;gap:13px;color:#9cb5b9;background:none;border:0;border-radius:10px;padding:0 15px;font-size:12px;font-weight:600}.nav-item:hover{color:white;background:#203944}.nav-item.active{color:#ddfff4;background:#275448}.nav-item.active svg{color:#87deba}.nav-dot{height:6px;width:6px;border-radius:50%;background:#a1e3cf;margin-left:auto}.sidebar-bottom{margin-top:auto}.sidebar-thought{background:#1c3640;border:1px solid #2f4b51;border-radius:12px;padding:19px 17px 18px;margin-bottom:22px}.tiny-accent{width:18px;height:3px;background:#51c2a7;display:block;border-radius:3px;margin-bottom:16px}.sidebar-thought strong{font-size:9px;letter-spacing:.17em;color:#9cb9b9}.sidebar-thought p{font-size:12px;line-height:2.1;color:#dde9e8;margin-top:10px;font-weight:600}.sidebar-bottom>small{color:#6f9297;margin-left:12px;font-size:10px}.main-area{flex:1;min-width:0}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid #ebefef;background:#fff}.breadcrumb{font-size:11px;letter-spacing:.07em;font-weight:700;color:#677e85}.breadcrumb span{color:#b8c6c9;padding:0 12px}.topbar-right{display:flex;align-items:center;gap:24px}.save-state{color:#788f92;font-size:11px;display:flex;align-items:center;gap:7px}.save-dot{width:7px;height:7px;border-radius:50%;background:#42b59b}.avatar{width:32px;height:32px;border-radius:50%;background:#e5f1ee;color:#3b8175;display:grid;place-items:center;font-weight:800}.content-area{max-width:1490px;margin:0 auto;padding:42px 48px 75px}.page-heading{margin:0 0 32px}.eyebrow,.section-kicker{font-size:10px;color:var(--accent-dark);font-weight:800;letter-spacing:.16em}.eyebrow{display:flex;align-items:center;gap:10px}.eyebrow .line{width:22px;height:1px;background:#6fae9e}.heading-row{display:flex;justify-content:space-between;align-items:center}.heading-row h1{font-size:clamp(24px,3vw,32px);letter-spacing:-.055em;margin-top:12px;font-weight:800}.heading-row p{font-size:12px;color:var(--muted);margin-top:12px}.heading-art{font-size:74px;line-height:.8;font-weight:200;color:#d3e7df;transform:rotate(-20deg);margin-right:28px}.goal-strip{display:flex;align-items:center;justify-content:space-between;padding:20px 25px;background:white;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);margin-bottom:33px;gap:16px}.goal-strip-left{display:flex;gap:16px;min-width:0;align-items:center}.goal-symbol{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:#e8f5ee;color:#2b8e79}.goal-content{min-width:0}.label{font-size:10px;color:#89999d;letter-spacing:.05em}.select-wrap{display:flex;align-items:center;position:relative;max-width:600px}.select-wrap select{border:0;background:transparent;font-size:18px;font-weight:800;padding:4px 24px 4px 0;color:#1e373d;appearance:none;max-width:100%;cursor:pointer;min-width:0}.select-wrap svg{position:absolute;right:0;pointer-events:none;color:var(--muted)}.goal-description{font-size:11px;color:#819196;margin-top:3px}.goal-buttons,.head-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 15px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;border:1px solid transparent;white-space:nowrap}.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover:not(:disabled){background:var(--accent-dark)}.btn-outline{background:white;color:#375a60;border-color:#d9e6e4}.btn-outline:hover{background:#f0f8f5}.icon-btn{background:white;color:#617b80;border-color:#d9e6e4;padding:0;width:36px}.btn-text{background:transparent;color:#307e72;padding:0 7px}.btn-text:hover{background:#f1f9f7}.btn-small{padding:0 8px;min-height:25px;border:1px solid #e0e9e6;color:#52847a;background:white;font-size:10px}.btn-danger-outline{color:#bf6155;border-color:#e9c9c5;background:#fff}.full{width:100%}.section-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 0 15px;gap:14px}.section-head h2{font-size:17px;font-weight:800;letter-spacing:-.04em;margin-top:8px}.section-head p{color:#93a0a5;font-size:11px;margin-top:9px}.scenario-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:34px}.scenario-card{padding:15px 17px 16px;background:white;border:1px solid #e2eaea;border-radius:11px;text-align:left;display:flex;flex-direction:column;gap:13px;min-width:0;box-shadow:var(--shadow);min-height:124px}.scenario-card:hover{border-color:#8ccaba;background:#fbfffd}.scenario-card.selected{border-color:#33a88d;box-shadow:0 0 0 1px #33a88d,0 8px 25px #0c9f8720}.scenario-card-top{display:flex;align-items:center;justify-content:space-between}.scenario-state{font-size:10px;color:#82959a}.selected-check{background:#34af96;color:white;border-radius:50%;width:18px;height:18px;text-align:center;line-height:18px;font-size:12px}.scenario-card strong{font-size:13px;color:#183640;white-space:normal}.scenario-card-bottom{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:5px;color:#779091;font-size:10px}.scenario-card-bottom span{display:flex;align-items:center;gap:5px}.scenario-card.selected .scenario-card-bottom span:first-child{color:#15886f;font-weight:700}.graph-title{margin-top:7px;margin-bottom:17px}.heading-counter{font-size:9px;margin-left:9px;color:#a3b4b3;letter-spacing:.06em}.analysis-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:15px;align-items:stretch}.graph-panel,.inspector,.panel{background:white;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);min-width:0}.graph-panel{display:flex;flex-direction:column;overflow:hidden}.graph-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:18px 20px;border-bottom:1px solid #e9efef;flex-wrap:wrap}.graph-subtitle{font-size:11px;font-weight:800;color:#324b50;display:flex;align-items:center;gap:8px}.live-chip{color:#4eba99;font-size:12px}.graph-muted{color:#a9b6b9;font-weight:500}.graph-legend{display:flex;gap:12px;align-items:center}.graph-legend span{display:flex;align-items:center;gap:5px;font-size:10px;color:#87999c}.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.legend-dot.core{background:#2da58f}.legend-dot.support{background:#6da8c8}.legend-dot.maintenance{background:#d1a260}.graph-scroll{overflow:auto;max-height:505px;background:#fbfdfc;overscroll-behavior:contain}.graph-canvas{position:relative;min-height:320px}.graph-dots{position:absolute;inset:0;background-image:radial-gradient(#dce8e7 .8px,transparent .8px);background-size:18px 18px;opacity:.75}.graph-edges{position:absolute;inset:0;pointer-events:none}.edge{fill:none;stroke:#96c4b7;stroke-width:1.8;opacity:.85}.edge.sequence{stroke-dasharray:5 5;stroke:#9eacb6}.edge.affected{stroke:#e4a391;stroke-dasharray:4 3}.flow-node{position:absolute;width:196px;min-height:79px;padding:9px 11px 10px;display:flex;flex-direction:column;gap:8px;border:1px solid #d7e7e5;background:white;text-align:left;border-radius:10px;box-shadow:0 4px 16px #1b494c11;color:#183640;z-index:1}.flow-node:hover{transform:translateY(-2px)}.flow-node.active{border:2px solid #249e8c;box-shadow:0 0 0 4px #49c4ac26}.flow-node.will-remove:not(.active){border-color:#d9a99b;background:#fff9f7}.flow-node.core{border-left:4px solid #38ac93}.flow-node.support{border-left:4px solid #6da8c8}.flow-node.maintenance{border-left:4px solid #d3a76e}.node-top,.node-bottom{display:flex;align-items:center;justify-content:space-between}.node-kind{font-size:9px;font-weight:700;color:#93a2a6}.node-number{font-size:10px;color:#a4b8b6}.flow-node strong{font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.node-bottom{font-size:10px;color:#597c7f}.node-bottom span{font-size:9px;color:#a1afb0}.graph-footer{border-top:1px solid #edf2f1;padding:12px 17px;display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:50px}.graph-footer>span{font-size:10px;color:#99a9aa;line-height:1.5}.inspector{min-height:456px;display:flex;flex-direction:column;overflow:hidden}.inspector-top{padding:23px 22px 20px;border-bottom:1px solid #edf0ef}.inspector-small-label{font-size:9px;letter-spacing:.15em;color:var(--accent-dark);font-weight:800}.inspector h3{font-size:16px;margin-top:9px;letter-spacing:-.03em}.inspector-top>p{font-size:11px;color:#87979a;line-height:1.8;margin-top:12px}.inspector-heading-row{display:flex;justify-content:space-between;gap:10px}.minimal-close,.modal-x{border:0;background:transparent;color:#91a4a7;padding:5px;border-radius:7px;height:30px}.minimal-close:hover,.modal-x:hover{background:#eef5f3}.selected-action-name{background:#ecf7f3;color:#286e62;border-radius:8px;font-size:12px;font-weight:700;padding:10px 13px;margin-top:18px}.inspector-top-buttons{display:flex;justify-content:flex-end;margin-top:8px}.inspector-main{padding:22px;display:flex;flex-direction:column;gap:9px;flex:1}.metric-title{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:#778d90}.metric-title span{font-size:10px;font-weight:600;color:#9eaeac}.metric-big{font-size:34px;letter-spacing:-.065em;font-weight:800;color:#1b3842;line-height:1.2}.metric-big.accent{color:#168b76}.metric-big small{font-size:12px;margin-left:5px;letter-spacing:0;font-weight:600;color:#8aa19f}.metric-sub{font-size:10px;color:#a1afb2}.mini-rule{border-top:1px solid #e9efed;margin:14px 0}.summary-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:6px 0;color:#7f9699}.summary-row strong{color:#29424c}.inspector-tip{margin-top:auto;background:#f3f9f6;padding:12px 13px;border-radius:9px;display:flex;align-items:flex-start;gap:10px;color:#3a8b78}.inspector-tip p{font-size:10px;line-height:1.85;color:#64817c}.impact-list{display:flex;flex-direction:column;gap:7px;margin:5px 0}.impact-item{display:flex;gap:9px;align-items:center;font-size:11px;color:#596f74}.impact-item span{width:17px;height:17px;background:#fbeeea;color:#d07863;border-radius:50%;display:grid;place-items:center;font-weight:800}.warning-message,.success-message{display:flex;gap:8px;font-size:10px;line-height:1.6;padding:11px;background:#fff8eb;color:#9c6d30;border-radius:8px;margin:8px 0}.success-message{background:#f0f9f4;color:#41816f}.inspector-disclaimer{font-size:9px;color:#a8b4b6;line-height:1.5}.danger-text{color:#c47163}.bottom-message{display:flex;align-items:center;gap:13px;padding:17px 20px;margin-top:22px;background:#eaf4ef;border-radius:12px}.message-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#cee8dc;color:#388772;font-size:22px}.bottom-message strong{font-size:11px;color:#3b7e6a}.bottom-message p{font-size:11px;color:#69867a;margin-top:5px}.empty-state,.empty-graph{text-align:center;background:white;padding:50px 20px;border:1px solid var(--line);border-radius:12px}.empty-state h2{margin-bottom:10px}.empty-state p,.empty-graph p{color:var(--muted);font-size:12px;margin-bottom:16px}.compare-intro{font-size:12px;color:#6f8a8b;background:#eff7f4;border-radius:10px;padding:16px 18px;line-height:1.9;margin:0 0 17px}.compare-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.comparison-card{background:white;border:1px solid var(--line);border-radius:13px;padding:22px;display:flex;flex-direction:column;min-width:0;gap:11px}.comparison-card.baseline{border-color:#90c6b4}.compare-card-top{display:flex;justify-content:space-between;align-items:center}.pill{background:#e8f5ee;color:#298676;padding:6px 9px;border-radius:5px;font-size:10px;font-weight:800}.pill.dark{background:#2f6f62;color:white}.comparison-card h3{font-size:16px;margin-top:10px;line-height:1.5}.comparison-card>p{color:#91a0a1;font-size:11px;line-height:1.7;min-height:37px}.compare-label{font-size:11px;color:#798e91;margin-top:9px}.compare-number{font-size:31px;font-weight:800;letter-spacing:-.05em}.compare-bar{height:8px;border-radius:10px;background:#ebf1ef;overflow:hidden}.compare-bar>span{display:block;height:100%;background:#2aaa90;border-radius:10px;min-width:0}.compare-bar.secondary>span{background:#91b7c9}.compare-cost{font-size:25px;font-weight:750}.compare-card-footer{display:flex;justify-content:space-between;color:#8ba0a0;font-size:11px;border-top:1px solid #edf1f0;padding:15px 0 6px;margin-top:auto}.positive{color:#168c76;font-weight:800}.negative{color:#c37161;font-weight:800}.compare-note{font-size:11px;color:#809293;margin-top:20px}.history-layout{display:grid;grid-template-columns:390px minmax(0,1fr);gap:15px;align-items:start}.form-panel,.timeline-panel{padding:26px}.panel-title{font-size:16px;font-weight:800;display:flex;justify-content:space-between;align-items:center}.panel-title span{font-size:11px;color:#91a2a4}.panel-desc{font-size:11px;color:#879da0;margin:10px 0 23px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-field{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;color:#47666b;font-size:11px;font-weight:700;min-width:0}.form-field input,.form-field select,.form-field textarea{display:block;width:100%;padding:11px 12px;border:1px solid #dce7e6;border-radius:8px;background:#fff;color:#213b43;font-size:12px;outline-color:#56bfa6;resize:vertical}.form-field textarea{line-height:1.6}.check-field{display:flex;gap:12px;align-items:flex-start;background:#f3f8f6;padding:12px;border-radius:9px;margin:6px 0 17px}.check-field input{accent-color:#249b88;width:17px;height:17px;flex-shrink:0}.check-field strong{display:block;font-size:11px}.check-field small{display:block;color:#8b9b9c;line-height:1.6;margin-top:6px;font-size:10px}.timeline{border-left:1px solid #cddfd9;margin:20px 0 0 7px;padding-left:20px}.timeline-item{position:relative;padding:0 0 26px}.timeline-item:before{content:'';position:absolute;left:-25px;top:2px;width:9px;height:9px;background:#36a58c;border:3px solid white;border-radius:50%;box-shadow:0 0 0 1px #bfe3d9}.timeline-meta{font-size:10px;color:#819696;margin-bottom:10px}.timeline-bullet{display:none}.timeline-item>strong{font-size:13px}.timeline-item>p{font-size:11px;color:#738b8d;line-height:1.8;margin:9px 0}.timeline-tags{display:flex;gap:7px;flex-wrap:wrap}.timeline-tags span{background:#edf6f3;color:#458778;padding:5px 8px;border-radius:5px;font-size:10px}.link-danger{color:#bf7566;background:none;border:0;font-size:10px;text-decoration:underline;padding:7px 0}.no-history{color:#8ca1a4;display:flex;flex-direction:column;align-items:center;gap:13px;padding:100px 0;text-align:center}.no-history strong{color:#516b71}.no-history p{font-size:12px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.setting-panel{padding:28px}.setting-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:13px;background:#e8f5ef;color:#27957e;margin-bottom:20px}.setting-panel h2{font-size:16px;margin-bottom:11px}.setting-panel p{font-size:11px;color:#789194;line-height:1.9;min-height:62px}.setting-panel .btn{margin-top:19px}.data-info{padding:27px}.data-facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:20px}.data-facts>div{border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px;align-items:center;padding:15px}.data-facts>div:last-child{border:0}.data-facts strong{font-size:27px}.data-facts span{font-size:11px;color:#8fa1a5}.notice{margin-top:28px;padding:18px 22px;background:#eff7f4;border-radius:9px}.notice strong{font-size:11px;color:#337966}.notice p{font-size:11px;line-height:1.9;color:#758d85;margin-top:9px}.danger-zone{margin-top:30px;padding-top:25px;border-top:1px solid #edf1f1;display:flex;justify-content:space-between;gap:15px;align-items:center}.danger-zone strong{font-size:12px}.danger-zone p{font-size:11px;color:#86999b;margin-top:8px}.import-label{cursor:pointer;width:max-content}.modal-overlay{position:fixed;inset:0;z-index:30;background:#112a32a6;display:flex;justify-content:center;align-items:center;padding:18px;backdrop-filter:blur(3px)}.modal-box{width:100%;max-width:500px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;background:white;border-radius:16px;box-shadow:0 20px 70px #001e2740}.modal-header{display:flex;justify-content:space-between;padding:26px 30px 22px;border-bottom:1px solid #e9efed;gap:20px}.modal-header h2{font-size:22px;margin-top:9px}.modal-header p{font-size:11px;color:#8a9d9e;margin-top:10px;line-height:1.7}#dialog-form{overflow:auto;display:flex;flex-direction:column;min-height:0}.modal-fields{padding:26px 30px 7px;overflow-y:auto}.modal-footer{padding:18px 30px;display:flex;align-items:center;justify-content:flex-end;gap:10px;border-top:1px solid #ebefee;flex-wrap:wrap}.modal-footer .danger-text{margin-right:auto}.existing-links{border-top:1px solid #e9eeee;padding-top:12px;margin:10px 0}.existing-links>strong{font-size:11px}.existing-links>p{font-size:11px;color:#99a9aa;margin:10px 0}.existing-link{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #edf2f1}.existing-link span{font-size:10px;line-height:1.5}.toast{position:fixed;bottom:25px;right:25px;padding:13px 17px;border-radius:10px;background:#174a43;color:white;z-index:50;box-shadow:0 5px 30px #12342e44;max-width:370px;font-size:12px}.toast.is-danger{background:#a3544a}
+@media(max-width:1150px){.content-area{padding:36px 29px}.topbar{padding:0 29px}.analysis-grid{grid-template-columns:minmax(0,1fr) 278px}.sidebar{width:214px}.graph-toolbar{align-items:flex-start}.graph-legend{margin-top:8px}}
+@media(max-width:920px){.sidebar{width:75px;padding:24px 10px}.brand{margin:0 5px 43px}.brand>div:nth-child(2),.side-section-title,.workspace,.nav-item span,.sidebar-bottom{display:none}.brand-mark{flex-shrink:0}.side-nav{margin-top:5px}.nav-item{justify-content:center;padding:0}.sidebar .nav-item svg{width:21px;height:21px}.content-area{padding:26px}.analysis-grid{grid-template-columns:1fr}.inspector{min-height:unset}.inspector-main{padding:20px}.scenario-list,.compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.history-layout{grid-template-columns:1fr}}
+@media(max-width:580px){.app-shell{display:block}.sidebar{position:sticky;z-index:9;top:0;width:100%;height:58px;min-height:0;flex-direction:row;align-items:center;justify-content:space-between;padding:7px 14px;box-shadow:0 3px 15px #1b3b3b30}.brand{margin:0}.brand-mark{height:35px;width:35px;font-size:19px}.side-nav{display:flex;gap:4px;margin:0}.nav-item{height:38px;width:40px}.sidebar .nav-item svg{width:19px;height:19px}.topbar{height:47px;padding:0 18px}.topbar-right{gap:11px}.avatar{width:26px;height:26px}.breadcrumb{font-size:9px}.breadcrumb span{padding:0 6px}.content-area{padding:26px 14px 65px}.page-heading{margin-bottom:24px}.heading-row h1{font-size:23px;line-height:1.5}.heading-row p{line-height:1.7;margin-top:8px}.heading-art{display:none}.goal-strip{padding:16px;align-items:flex-start;flex-wrap:wrap}.goal-strip-left{gap:11px;flex:1;min-width:220px}.goal-symbol{width:40px;height:40px;flex-shrink:0}.select-wrap select{font-size:15px;max-width:100%}.goal-buttons{margin-left:auto}.scenario-list,.compare-grid,.settings-grid{grid-template-columns:1fr}.scenario-card{min-height:103px}.section-head{flex-direction:column;align-items:stretch}.section-head h2{font-size:16px}.head-actions{justify-content:flex-end}.graph-legend{gap:9px}.graph-toolbar{padding:14px 13px}.graph-footer{align-items:flex-start}.graph-footer>span{max-width:68%}.bottom-message{align-items:flex-start}.form-grid{grid-template-columns:1fr}.modal-fields{padding:21px 20px 5px}.modal-header{padding:21px 20px 16px}.modal-footer{padding:14px 20px}.setting-panel{padding:22px}.data-info{padding:20px}.data-facts strong{font-size:23px}.compare-grid{gap:12px}.compare-intro{font-size:11px}.graph-title{margin-top:3px}.history-layout{gap:12px}.form-panel,.timeline-panel{padding:20px}}
+
+/* v0.2 — quick capture, low-friction review and action suggestions */
+.quick-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#eaf4ef;border:1px solid #d5e7de;border-radius:12px;padding:18px 21px;margin-bottom:28px}
+.quick-intro strong{display:block;font-size:14px;color:#26594f}.quick-intro p{font-size:11px;color:#587a72;line-height:1.7;margin-top:5px}
+.quick-intro .btn{white-space:nowrap}
+.opportunity-panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:23px;margin-top:21px;display:grid;grid-template-columns:1fr 1.35fr;gap:25px;align-items:center}
+.opportunity-panel h3{font-size:16px;margin:8px 0}.opportunity-panel p{font-size:11px;color:#7a9392;line-height:1.8}
+.opportunity-items{display:grid;gap:8px}.opportunity-items button{border:1px solid #e1ebe7;border-radius:9px;background:#f9fcfa;display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;text-align:left;color:#385e5c;font-size:11px}
+.opportunity-items button:hover{background:#eef8f2}.opportunity-items button span{flex:1}.opportunity-items button strong{white-space:nowrap;color:#24846d;font-size:11px}
+.action-index{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 18px}
+.action-index summary{font-weight:700;font-size:12px;color:#315e59;cursor:pointer;line-height:1.7;list-style-position:inside}
+.action-index summary span{color:#89a09d;margin-left:8px}.action-index-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:14px}
+.action-index-items button{background:#f7faf9;border:1px solid #e3efeb;border-radius:7px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;font-size:11px;color:#315f60}
+.action-index-items button:hover{background:#e7f3ed}.action-index-items button span{color:#79958d;font-size:10px}
+.suggestion-block{border-top:1px solid #e7eceb;margin-top:16px;padding-top:16px}
+.suggestion-block>strong{display:block;font-size:11px;color:#335f59}.suggestion-block small{display:block;margin:7px 0 12px;font-size:10px;line-height:1.7;color:#849999}
+.suggestion-block>div{display:flex;flex-wrap:wrap;gap:6px}.suggestion-block .btn{white-space:normal;text-align:left;line-height:1.4;background:#eef7f3;color:#397e6b}
+.no-suggestions{font-size:10px;color:#8aa09d}.quick-warning{font-size:11px;color:#567f73;background:#eaf6f0;border-radius:7px;padding:12px;margin-bottom:14px;line-height:1.7}
+.unmeasured-note{font-size:10px;color:#b67850;background:#fff6eb;padding:6px 9px;border-radius:5px;display:inline-flex;width:max-content;max-width:100%}
+@media(max-width:920px){.opportunity-panel{grid-template-columns:1fr}}
+@media(max-width:580px){.quick-intro{flex-direction:column;align-items:stretch;padding:16px;gap:12px}.quick-intro .btn{width:100%;justify-content:center}.action-index-items{grid-template-columns:1fr}.opportunity-panel{padding:17px}.opportunity-items button{flex-wrap:wrap}.opportunity-items button strong{margin-left:auto}}
+/* v0.2 — environment design */
+.env-controls{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:17px;padding:15px 19px;border:1px solid #e2ece9;border-radius:11px;background:#f8fbf9}
+.env-controls .form-field{min-width:260px;margin:0}.env-controls p{max-width:460px;color:#78918d;font-size:11px;line-height:1.7}
+.env-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.env-card{background:white;border:1px solid var(--line);border-radius:13px;padding:22px;min-width:0}
+.env-card-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.env-card h3{font-size:17px;margin-top:7px}.env-card>p{font-size:11px;color:#8ba09d;line-height:1.8;min-height:28px;margin:12px 0}
+.env-home{display:flex;gap:9px;padding:13px 12px;background:#eef7f1;border-radius:8px;align-items:flex-start;color:#2b7766;font-size:12px;margin-top:16px}
+.env-card details{border-top:1px solid #e9eeee;margin-top:16px;padding-top:14px}.env-card summary{font-size:11px;font-weight:700;color:#496d68;cursor:pointer}.env-card summary strong{font-size:10px;background:#e6f2ed;padding:3px 7px;border-radius:6px;margin-left:5px}
+.env-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.env-actions button{border-radius:7px;border:1px solid #e0eae6;color:#58746d;background:#f9fbfa;padding:8px 10px;cursor:pointer;text-align:left;font-size:10px;line-height:1.7}.env-actions button[aria-pressed="true"]{border-color:#a8d5c7;background:#e8f6f0;color:#277864}
+.env-actions button span{margin-right:5px;font-weight:700}.env-actions small{color:#8b9c9a}
+.data-facts{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:920px){.env-grid{grid-template-columns:1fr}}
+@media(max-width:580px){.env-controls{flex-direction:column;align-items:stretch;gap:9px;padding:14px}.env-controls .form-field{min-width:0}.env-card{padding:18px}.env-actions{grid-template-columns:1fr}.data-facts strong{font-size:21px}.data-facts span{font-size:10px}}
+
+/* v0.2 — evidence-based item audit */
+.env-audit{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.env-audit>div{display:flex;flex-direction:column;gap:5px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 17px}
+.env-audit strong{font-size:21px;color:#214d48}.env-audit span{font-size:10px;color:#7a9290;line-height:1.5}
+.env-card.needs-review{border-color:#e7d7b1}.env-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.env-status{display:inline-block;border-radius:20px;padding:5px 9px;background:#e3f5ed;color:#287a60;font-size:10px}
+.env-status.attention{background:#fff1d8;color:#936c27}.env-status.muted{background:#f2f5f4;color:#708583}
+.env-advice{font-size:11px;line-height:1.7;color:#5c746f;background:#f3f8f6;border-radius:7px;padding:11px 12px}
+.env-card.needs-review .env-advice{background:#fffaed;color:#866a3e}
+.env-card summary small{font-weight:400;color:#869c99}
+@media(max-width:580px){.env-audit{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.env-upkeep{margin-top:13px;padding:12px 13px;background:#f4f6f9;border-radius:8px;display:grid;gap:6px}
+.env-upkeep strong{font-size:11px;color:#3c5861}.env-upkeep span{font-size:12px;font-weight:700;color:#26565c}
+.env-upkeep small{font-size:10px;color:#80949c;line-height:1.7}
+
+/* v0.3 — friction-free narrative capture and single-step undo */
+.quick-cta{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.quick-cta .btn{white-space:nowrap}
+.undo-btn{font-size:11px;padding:6px 10px;display:inline-flex;align-items:center;gap:5px}
+.narrative-guide{background:#f0f7f4;border:1px solid #deede8;padding:13px 15px;border-radius:9px;display:grid;gap:5px;margin:8px 0 14px;color:#487668;font-size:11px;line-height:1.75}
+.narrative-guide strong{color:#2c6657}
+.narrative-parse{width:100%;justify-content:center;margin:0 0 8px}
+.narrative-review{margin:16px 0 4px;padding:17px;background:#fafcfb;border:1px solid #dce9e3;border-radius:11px;display:grid;gap:14px}
+.narrative-review-head{display:grid;gap:5px}.narrative-review-head strong{font-size:13px;color:#214e47}.narrative-review-head small{font-size:10px;color:#7b9188}
+.narrative-steps{display:grid;gap:8px}.narrative-step{display:flex;align-items:center;gap:7px}
+.narrative-step>input{min-width:0;flex:1;border:1px solid #dae6e2;background:white;border-radius:7px;padding:10px 11px;font-size:12px;color:#284942}
+.narrative-step>input:disabled{background:#edf1ef;color:#879b94}
+.narrative-step select{width:116px;border:1px solid #dce6e2;background:white;border-radius:7px;padding:10px 6px;font-size:11px;color:#42665e}
+.narrative-checkbox{display:flex;gap:4px;align-items:center;font-size:10px;color:#7b908b}
+.narrative-checkbox input{width:16px;height:16px;accent-color:#1e9f89}
+.narrative-existing{font-size:10px;color:#889f97}
+.narrative-relations{border-top:1px solid #e4eae7;padding-top:12px;display:grid;gap:5px;line-height:1.7;color:#5c766e;font-size:11px}
+.narrative-relations strong{color:#385d54}.narrative-relations b{color:#1a8e76;margin:0 4px}
+.narrative-alert{font-size:10px;color:#986d28}
+@media(max-width:700px){.quick-cta{width:100%;justify-content:stretch}.quick-cta .btn{flex:1;justify-content:center}.topbar .undo-btn{font-size:0;gap:0;padding:7px}.topbar .undo-btn svg{width:18px;height:18px}.narrative-step{flex-wrap:wrap}.narrative-step>input{flex-basis:calc(100% - 47px)}.narrative-step select{margin-left:24px;flex:1}.narrative-existing{margin-left:6px}}
+.narrative-suggestions{background:#f2f8f5;border:1px solid #dbece4;padding:13px;border-radius:8px;display:grid;gap:9px;color:#3b665b;font-size:11px}
+.narrative-suggestions>strong{font-size:12px}.narrative-suggestions>small{font-size:10px;color:#6e8a80;line-height:1.65}
+.narrative-suggestions label{background:white;display:flex;align-items:center;gap:10px;border:1px solid #e0ece6;border-radius:7px;padding:9px;cursor:pointer}
+.narrative-suggestions label input{accent-color:#1e9f89}.narrative-suggestions label span{font-weight:600}
+.narrative-suggestions label span small{display:block;font-size:10px;color:#859c94;font-weight:400;margin-top:3px}
+
+/* v0.4 — full-cycle time accounting */
+.time-principle{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:20px 22px;margin:18px 0;background:#e9f5ef;border:1px solid #cfe4da;border-radius:12px}
+.time-principle strong{font-size:13px;line-height:1.8;color:#205d4d}.time-principle p{font-size:11px;color:#5b7b71;line-height:1.8;margin-top:6px}.time-period{display:grid;gap:5px;min-width:125px;font-size:11px;color:#346454;font-weight:700}.time-period select{background:white;padding:10px 12px;border:1px solid #cbded3;border-radius:8px;font:inherit;color:#234f43}
+.time-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 17px}.time-summary>div{background:white;padding:18px;border:1px solid #e2ece5;border-radius:11px;display:grid;gap:7px}.time-summary small{font-size:11px;color:#6b9385}.time-summary strong{font-size:24px;color:#285a4c}.time-summary span{font-size:11px;color:#78918a}
+.time-breakdown{display:grid;gap:7px;color:#64847a;font-size:11px;padding:14px 0;line-height:1.7}.time-breakdown b{color:#284f45}.time-payback{font-size:11px;padding:11px 12px;border-radius:8px;background:#eaf7ef;color:#33745d;margin-bottom:14px}.time-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.time-card-actions .btn{font-size:10px;padding:10px 4px;justify-content:center}.compare-card-footer{display:flex;gap:8px;flex-wrap:wrap}.compare-card-footer>span{line-height:1.5}
+.time-measure-note{background:#ecf7f0;color:#2b6654;padding:13px;border-radius:8px}.time-measure-note strong{font-size:12px}.time-measure-note p{font-size:11px;line-height:1.7;margin-top:6px}.time-verified{font-weight:700;border-radius:5px;padding:4px 7px}.time-verified.improved{background:#e4f5e9;color:#236f48}.time-verified.worse{background:#fdf0e9;color:#a75e3f}
+@media(max-width:760px){.time-principle{flex-direction:column;align-items:stretch;padding:16px}.time-summary{grid-template-columns:1fr}.time-card-actions{grid-template-columns:1fr}}
+
+/* v0.5 — cloud sync & AI proposals */
+.cloud-card{padding:26px;margin:0 0 18px;display:grid;gap:16px;line-height:1.7}
+.cloud-card h2{font-size:16px;line-height:1.4}.cloud-card .panel-desc{color:#647b7b;font-size:12px;line-height:1.9}
+.cloud-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:end}
+.cloud-form>button{justify-self:start}.cloud-form .form-field{min-width:0}
+.cloud-form input,.cloud-form select{max-width:100%;width:100%;font-size:13px}
+.cloud-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cloud-error{font-size:12px;border-radius:9px;padding:11px 13px;background:#fff4eb;color:#9b5235;border:1px solid #f3d0b8;overflow-wrap:anywhere}
+.sync-status{background:#eef8f4;border:1px solid #d3e6dd;color:#2b6856;padding:11px 14px;border-radius:9px;font-weight:700;font-size:13px}
+.ai-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,350px),1fr));gap:14px;margin:10px 0 25px}
+.ai-proposal{padding:24px;display:grid;align-content:start;gap:14px;line-height:1.8}
+.ai-proposal h3{font-size:17px}.ai-proposal>p{color:#5f7672;font-size:13px}
+.ai-parts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ai-parts>div{background:#f3f8f6;padding:13px;border-radius:9px}
+.ai-parts strong,.ai-measure strong,.ai-warning strong{font-size:11px;color:#285a4e}
+.ai-parts ul{margin:8px 0 0;padding-left:18px;font-size:12px;color:#556e67}
+.ai-measure,.ai-warning{padding:12px;border:1px solid #dfebe6;border-radius:9px;font-size:12px}
+.ai-warning{background:#fff8ef;border-color:#f1e2d3;color:#8b6241}.ai-warning strong{color:#825c36}
+.ai-proposal>.btn{justify-self:start}
+@media(max-width:760px){.cloud-card{padding:17px}.cloud-form,.ai-parts{grid-template-columns:1fr}.cloud-actions .btn{flex:1;justify-content:center}}
+
+</style>
+  <title>KŌDŌ — 行動設計</title>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="modal-root"></div>
+  <script>
+/** 行動分析はフロントエンドとテストの両方で使う純粋関数に分離。 */
+function getScenarioActions(data, scenarioId) {
+  return data.actions.filter(a => a.scenarioId === scenarioId);
+}
+function getScenarioLinks(data, scenarioId) {
+  return data.links.filter(l => l.scenarioId === scenarioId);
+}
+function weeklyMinutes(action) {
+  return Number(action.minutes ?? 0) * Number(action.frequency || 0);
+}
+function weeklyYen(action) {
+  return Number(action.yen || 0) * Number(action.frequency || 0);
+}
+function scenarioTotals(data, scenarioId) {
+  const actions = getScenarioActions(data, scenarioId);
+  return {
+    minutes: Math.round(actions.reduce((sum, a) => sum + weeklyMinutes(a), 0) * 10) / 10,
+    yen: Math.round(actions.reduce((sum, a) => sum + weeklyYen(a), 0)),
+    count: actions.length,
+    unmeasured: actions.filter(a => a.minutes === null || a.minutes === undefined || a.minutes === '').length,
+  };
+}
+
+/**
+ * Remove the selected action, then only remove its consequences when ALL their
+ * causal triggers have disappeared. An essential action remains and is reported
+ * as a broken dependency. Sequential ('precedes') links never imply removal.
+ * A cause-free action is independent and therefore remains.
+ */
+function simulateRemoval(data, scenarioId, actionId) {
+  const actions = getScenarioActions(data, scenarioId);
+  const nodes = new Map(actions.map(a => [a.id, a]));
+  if (!nodes.has(actionId)) return { removed: [], broken: [], minutes: 0, yen: 0, essentialRemoved: false };
+  const links = getScenarioLinks(data, scenarioId).filter(l => l.type === 'causes');
+  const removed = new Set([actionId]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const a of actions) {
+      if (removed.has(a.id) || a.essential) continue;
+      const incoming = links.filter(l => l.toId === a.id);
+      if (incoming.length > 0 && incoming.every(l => removed.has(l.fromId))) {
+        removed.add(a.id);
+        changed = true;
+      }
+    }
+  }
+  const broken = actions.filter(a => !removed.has(a.id) && a.essential &&
+    links.some(l => l.toId === a.id) &&
+    links.filter(l => l.toId === a.id).every(l => removed.has(l.fromId))
+  ).map(a => a.id);
+  const rem = actions.filter(a => removed.has(a.id));
+  return {
+    removed: [...removed],
+    broken,
+    minutes: Math.round(rem.reduce((sum, a) => sum + weeklyMinutes(a), 0) * 10) / 10,
+    yen: Math.round(rem.reduce((sum, a) => sum + weeklyYen(a), 0)),
+    essentialRemoved: rem.some(a => a.essential),
+  };
+}
+
+/** Reject edges that introduce a cycle, including those across link types. */
+function canLink(data, scenarioId, fromId, toId) {
+  if (fromId === toId) return false;
+  const nodes = new Set(getScenarioActions(data, scenarioId).map(a => a.id));
+  if (!nodes.has(fromId) || !nodes.has(toId)) return false;
+  const links = getScenarioLinks(data, scenarioId);
+  if (links.some(l => l.fromId === fromId && l.toId === toId)) return false;
+  const descendants = new Map();
+  for (const l of links) {
+    if (!descendants.has(l.fromId)) descendants.set(l.fromId, []);
+    descendants.get(l.fromId).push(l.toId);
+  }
+  const visited = new Set();
+  const stack = [toId];
+  while (stack.length) {
+    const next = stack.pop();
+    if (next === fromId) return false;
+    if (visited.has(next)) continue;
+    visited.add(next);
+    stack.push(...(descendants.get(next) || []));
+  }
+  return true;
+}
+
+function buildLayout(actions, links) {
+  const position = {};
+  const levels = new Map(actions.map(a => [a.id, 0]));
+  for (let i = 0; i < actions.length; i++) {
+    let changed = false;
+    for (const l of links) {
+      if (!levels.has(l.fromId) || !levels.has(l.toId)) continue;
+      const candidate = levels.get(l.fromId) + 1;
+      if (candidate > levels.get(l.toId)) { levels.set(l.toId, candidate); changed = true; }
+    }
+    if (!changed) break;
+  }
+  const cols = new Map();
+  actions.forEach(a => {
+    const level = Math.min(15, levels.get(a.id) || 0);
+    if (!cols.has(level)) cols.set(level, []);
+    cols.get(level).push(a);
+  });
+  const maxRows = Math.max(1, ...[...cols.values()].map(c => c.length));
+  const width = Math.max(740, (Math.max(...cols.keys(), 0) + 1) * 246 + 56);
+  const height = Math.max(320, maxRows * 112 + 76);
+  for (const [level, arr] of cols) {
+    arr.forEach((a, index) => {
+      position[a.id] = { x: 30 + level * 246, y: 42 + index * 112 + (maxRows - arr.length) * 56 };
+    });
+  }
+  return { position, width, height };
+}
+
+function fmtMin(value) { return `${Number(value).toLocaleString('ja-JP', { maximumFractionDigits: 1 })}分`; }
+function fmtYen(value) { return `¥${Math.round(Number(value)).toLocaleString('ja-JP')}`; }
+
+function validateImport(raw) {
+  if (!raw || typeof raw !== 'object' || ![1,2].includes(raw.version)) throw new Error('対応していないデータ形式です。');
+  const collections = ['goals', 'scenarios', 'actions', 'links', 'experiments', ...(raw.version===2?['items','actionItems']:[])];
+  if (collections.some(k => !Array.isArray(raw[k]))) throw new Error('必要なデータ項目がありません。');
+  if ([...raw.goals, ...raw.scenarios, ...raw.actions, ...raw.links, ...raw.experiments].length > 5000) throw new Error('データ件数が多すぎます。');
+  const unique = arr => arr.every((v, i) => v && typeof v.id === 'string' && v.id.length <= 100 && arr.findIndex(x => x.id === v.id) === i);
+  if (collections.some(k => !unique(raw[k]))) throw new Error('IDの重複または不正なデータがあります。');
+  const goalIds = new Set(raw.goals.map(x => x.id));
+  const scenarios = new Map(raw.scenarios.map(x => [x.id, x]));
+  const actions = new Map(raw.actions.map(x => [x.id, x]));
+  for (const s of raw.scenarios) {
+    if (!goalIds.has(s.goalId) || typeof s.name !== 'string' ||
+        ['setupMinutes','setupYen','managementMinutesPerWeek'].some(k=>
+          s[k] !== undefined && s[k] !== null && (!Number.isFinite(s[k]) || s[k] < 0 || s[k] > 1000000)))
+      throw new Error('方法の参照先または時間設定が不正です。');
+  }
+  for (const a of raw.actions) {
+    if (!scenarios.has(a.scenarioId) || typeof a.name !== 'string' || (a.minutes !== null && (!Number.isFinite(Number(a.minutes)) || Number(a.minutes) < 0)) || [a.frequency,a.yen].some(v => !Number.isFinite(Number(v)) || Number(v) < 0)) throw new Error('行動データが不正です。');
+  }
+  for (const l of raw.links) if (!scenarios.has(l.scenarioId) || !actions.has(l.fromId) || !actions.has(l.toId) || actions.get(l.fromId).scenarioId !== l.scenarioId || actions.get(l.toId).scenarioId !== l.scenarioId || !['causes','precedes'].includes(l.type)) throw new Error('行動同士の関連に不整合があります。');
+  if (raw.version===2) {
+    const items=new Map(raw.items.map(x=>[x.id,x]));
+    for(const item of raw.items){
+      if(!goalIds.has(item.goalId)||typeof item.name!=='string'||typeof item.home!=='string'||typeof item.note!=='string'||(item.placement!==undefined&&!['workspace','storage','undecided'].includes(item.placement)))throw new Error('道具のデータが不正です。');
+    }
+    const pairs=new Set();
+    for(const rel of raw.actionItems){
+      const pair=`${rel.itemId}:${rel.actionId}`;if(pairs.has(pair))throw new Error('道具と行動の関係が重複しています。');pairs.add(pair);
+      const item=items.get(rel.itemId),a=actions.get(rel.actionId);
+      if(!item||!a||scenarios.get(a.scenarioId)?.goalId!==item.goalId)throw new Error('道具と行動の関係が不正です。');
+    }
+  }
+  return raw;
+}
+
+/** v0.1 browser backups and existing localStorage are preserved and upgraded. */
+function migrateData(raw) {
+  validateImport(raw);
+  if(raw.version===2) return {...raw,items:raw.items.map(item=>({...item,placement:item.placement||'undecided'}))};
+  return {...raw,version:2,items:[],actionItems:[]};
+}
+
+
+
+/** A complete life-cycle comparison, not a proxy based on number of actions.
+ * All values are minutes, per-week recurring actions plus one-off setup.
+ * Unknown action durations propagate into an explicitly incomplete result.
+ */
+function projectTime(data, scenarioId, weeks=12) {
+  if (!Number.isInteger(weeks) || weeks < 1 || weeks > 260) throw new Error('評価期間は1〜260週です。');
+  const scenario=data.scenarios.find(s=>s.id===scenarioId);
+  if (!scenario) throw new Error('方法がありません。');
+  const recurring=scenarioTotals(data,scenarioId);
+  const setupMinutes=scenario.setupMinutes??0;
+  const managementMinutesPerWeek=scenario.managementMinutesPerWeek??0;
+  const setupYen=scenario.setupYen??0;
+  const weeklyMinutes=Math.round((recurring.minutes+managementMinutesPerWeek)*10)/10;
+  return {
+    scenarioId, weeks,
+    actionCount:recurring.count, unmeasured:recurring.unmeasured,
+    actionWeeklyMinutes:recurring.minutes,
+    managementMinutesPerWeek, setupMinutes,
+    weeklyMinutes, totalMinutes:Math.round((setupMinutes+weeklyMinutes*weeks)*10)/10,
+    weeklyYen:recurring.yen, setupYen,
+    totalYen:Math.round(setupYen+recurring.yen*weeks),
+    complete:recurring.unmeasured===0,
+  };
+}
+
+function compareTime(data, baseId, optionId, weeks=12) {
+  const base=projectTime(data,baseId,weeks), option=projectTime(data,optionId,weeks);
+  const savedMinutes=Math.round((base.totalMinutes-option.totalMinutes)*10)/10;
+  const recurringSavedMinutes=Math.round((base.weeklyMinutes-option.weeklyMinutes)*10)/10;
+  const setupDifferenceMinutes=Math.round((option.setupMinutes-base.setupMinutes)*10)/10;
+  const complete=base.complete&&option.complete;
+  const status=!complete?'incomplete':savedMinutes>0?'improved':savedMinutes<0?'worse':'equal';
+  // Payback period only matters if the new method has higher upfront time.
+  const paybackWeeks=recurringSavedMinutes>0
+    ? Math.max(0,setupDifferenceMinutes)/recurringSavedMinutes
+    : setupDifferenceMinutes>0 ? null : 0;
+  return {base,option,complete,status,savedMinutes,recurringSavedMinutes,
+    addedActions:option.actionCount-base.actionCount, paybackWeeks};
+}
+
+/** Measured overall elapsed effort during equal periods (including setup and overhead). */
+function measuredTimeVerdict(before,after) {
+  if(before===null||after===null||before===undefined||after===undefined) return null;
+  if(!Number.isFinite(before)||!Number.isFinite(after)||before<0||after<0)return null;
+  return {savedMinutes:Math.round((before-after)*10)/10,status:before>after?'improved':before<after?'worse':'equal'};
+}
+
+
+/** v0.2: 入力負担を小さくするための依存なし・オフライン補助関数。 */
+const RULES = [
+  { match: /タンブラー|水筒|マグボトル/, items: ['飲み物を準備する', '洗浄する', '乾かして収納する'] },
+  { match: /ペットボトル|使い捨て容器/, items: ['購入する', '分別・廃棄する', '在庫を補充する'] },
+  { match: /料理|調理|ご飯を作る/, items: ['材料を準備する', '調理器具を洗う', '作業台を片付ける'] },
+  { match: /洗濯/, items: ['干す', '取り込む', 'たたんで収納する'] },
+  { match: /掃除|清掃/, items: ['掃除道具を準備する', 'ごみを処理する', '道具を片付ける'] },
+  { match: /木工|工作|加工|作業をする/, items: ['道具を準備する', '切りくずを片付ける', '道具を定位置に戻す'] },
+  { match: /植物|灌水|水やり/, items: ['水やり道具を準備する', '使用後の道具を片付ける', '消耗品を補充する'] },
+  { match: /買い物|購入する/, items: ['必要なものを確認する', '購入品を運ぶ', '収納する'] },
+];
+const GENERIC = ['準備する', '片付ける', '補充する', '保管する', '点検する'];
+
+function parseActionLines(raw, existingNames = []) {
+  const existing = new Set(existingNames.map(n => String(n).trim().toLocaleLowerCase('ja-JP')));
+  const lines = String(raw ?? '').split(/\r?\n/).map(line => line.replace(/^\s*(?:[-*•・]|\d+[.)．、])\s*/, '').trim()).filter(Boolean);
+  const names = []; const skipped = [];
+  for (const line of lines) {
+    const name = line.slice(0,100).trim();
+    const key = name.toLocaleLowerCase('ja-JP');
+    if (line.length > 100 || existing.has(key)) { skipped.push(line); continue; }
+    existing.add(key); names.push(name);
+    if (names.length >= 30) break;
+  }
+  return { names, skipped, truncated: lines.length > 30 };
+}
+
+function suggestNextActions(actionName, existingNames = [], max = 4) {
+  const existing = existingNames.map(v => String(v));
+  const chosen = RULES.filter(r => r.match.test(actionName)).flatMap(r => r.items);
+  const items = chosen.length ? chosen : GENERIC;
+  return [...new Set(items)].filter(n => !existing.some(e => e===n || e.includes(n) || n.includes(e) && e.length >= 4)).slice(0,max);
+}
+
+/** Only domain-specific hypotheses; avoid generic noise in free-text entry. */
+function suggestSpecificConsequences(actionName, existingNames = [], max = 3) {
+  const suggestions = RULES.filter(r=>r.match.test(actionName)).flatMap(r=>r.items);
+  const normalized=new Set(existingNames.map(n=>String(n).trim().toLocaleLowerCase('ja-JP')));
+  return [...new Set(suggestions)].filter(name=>!normalized.has(name.toLocaleLowerCase('ja-JP'))).slice(0,max);
+}
+
+function rankOpportunities(data, scenarioId, simulate, weekly) {
+  return data.actions.filter(a => a.scenarioId===scenarioId && !a.essential).map(a=>{
+    const simulation=simulate(data,scenarioId,a.id);
+    return {action:a,simulation,minutes:simulation.minutes,ownMinutes:weekly(a)};
+  }).filter(x=>!x.simulation.essentialRemoved && !x.simulation.broken.length && x.minutes>0)
+    .sort((a,b)=>b.minutes-a.minutes || a.action.name.localeCompare(b.action.name,'ja')).slice(0,4);
+}
+
+function verifiedSavings(beforeMinutes, afterMinutes) {
+  if (!Number.isFinite(beforeMinutes) || !Number.isFinite(afterMinutes) || beforeMinutes < 0 || afterMinutes < 0) return null;
+  return Math.round((beforeMinutes-afterMinutes)*10)/10;
+}
+
+
+/**
+ * 物を「使う行動」から逆引きする。未登録と不要は同義ではないため、
+ * 廃棄の判断は提案するだけで自動実行しない。
+ */
+const PLACEMENTS = {
+  workspace: '作業場所',
+  storage: '別の保管場所',
+  undecided: '置き場所を検討中',
+};
+
+function analyzeEnvironment(data, goalId, scenarioId) {
+  const scenarios = data.scenarios.filter(s => s.goalId === goalId);
+  const scenarioIds = new Set(scenarios.map(s => s.id));
+  const scenarioActions = data.actions.filter(a => scenarioIds.has(a.scenarioId));
+  const actionsById = new Map(scenarioActions.map(a => [a.id, a]));
+  const itemUsage = new Map();
+  for (const relation of data.actionItems) {
+    const a = actionsById.get(relation.actionId);
+    if (!a) continue;
+    if (!itemUsage.has(relation.itemId)) itemUsage.set(relation.itemId, new Set());
+    itemUsage.get(relation.itemId).add(a.id);
+  }
+  const rows = data.items.filter(item => item.goalId === goalId).map(item => {
+    const usage = [...(itemUsage.get(item.id) || [])].map(id => actionsById.get(id)).filter(Boolean);
+    const usedHere = usage.filter(a => a.scenarioId === scenarioId);
+    const usedElsewhere = usage.filter(a => a.scenarioId !== scenarioId);
+    const placement = PLACEMENTS[item.placement] ? item.placement : 'undecided';
+    let status, advice, review = false;
+    if (!usage.length) {
+      status = '使い道が未登録';
+      advice = placement === 'workspace'
+        ? 'どの方法にも使用記録がありません。作業場所から外して保管・譲渡・処分の要否を検討しましょう。'
+        : '必要になる具体的な行動を確認しましょう。未登録だけで不要と断定しません。';
+      review = true;
+    } else if (!usedHere.length) {
+      status = 'ほかの方法で使用';
+      advice = placement === 'workspace'
+        ? '今選んだ方法では使いません。作業場所に常置する理由があるか見直しましょう。'
+        : '今の方法では使わず、ほかの方法のために保管しています。';
+      review = placement === 'workspace';
+    } else if (!item.home?.trim()) {
+      status = '定位置が未設定';
+      advice = '実際に使う順序に合わせて戻す場所を決めましょう。';
+      review = true;
+    } else if (placement === 'undecided') {
+      status = '配置を決める';
+      advice = '使用する行動が確認できました。作業場所に置くか、別途保管するか決めましょう。';
+      review = true;
+    } else if (placement === 'storage') {
+      status = '保管場所から使用';
+      advice = '使うたびの取り出し・片付けが負担になっていないか確認しましょう。';
+    } else {
+      status = '現在の方法で使用';
+      advice = '実際の動きから配置が合理的か確認しましょう。';
+    }
+    return { ...item, placement, usedHere, usedElsewhere, totalUsage: usage.length, status, advice, review };
+  });
+  rows.sort((a, b) => Number(b.review) - Number(a.review) || a.name.localeCompare(b.name, 'ja'));
+  return {
+    rows,
+    usedHere: rows.filter(r => r.usedHere.length).length,
+    review: rows.filter(r => r.review).length,
+    unused: rows.filter(r => !r.totalUsage).length,
+    items: rows.length,
+  };
+}
+
+
+/**
+ * v0.3 Offline input assistant. This is deliberately not a generative-AI parser.
+ * It only extracts explicitly separated clauses and explicitly marked links.
+ * => / ⇒ denotes a user-specified cause; -> / → denotes order only.
+ * Never infer a causal dependency from Japanese prose automatically.
+ */
+function classifyAction(name) {
+  if (/洗|片付|乾か|廃棄|分別|点検|戻す|収納|補充|保守|処分|後始末|掃除/.test(name)) return 'maintenance';
+  if (/作業する|加工する|飲む|料理する|製作する|制作する|植える|水やりする/.test(name)) return 'core';
+  return 'support';
+}
+
+function parseNarrativeInput(raw, existingNames = [], max = 30) {
+  const text = String(raw ?? '').slice(0, 5000);
+  const existing = new Set(existingNames.map(s => String(s).trim().toLocaleLowerCase('ja-JP')));
+  const steps = [];
+  const links = [];
+  const seen = new Map();
+  const skipped = [];
+  let truncated = false;
+  const tokenize = text.split(/(=>|⇒|->|→|[。！？!?、;；\n\r])/u);
+  let pending = null;
+  let previous = null;
+  for (const part of tokenize) {
+    if (/^(=>|⇒|->|→)$/.test(part)) {
+      pending = part === '⇒' || part === '=>' ? 'causes' : 'precedes';
+      continue;
+    }
+    if (/^[。！？!?、;；\n\r]$/.test(part)) {
+      if (part !== '、') previous = null;
+      // Punctuation is not proof of causality or ordering.
+      pending = null;
+      continue;
+    }
+    const cleaned = part.replace(/^\s*(?:[-*・•]|\d+[.)．、])\s*/, '')
+      .replace(/^\s*(?:まず|次に|それから|その後|最後に)[\s、]*/, '').trim();
+    if (!cleaned || /^(?:朝|昼|夜|今朝|今日|昨日|明日|帰宅後|作業後|午前|午後)$/.test(cleaned)) continue;
+    if (cleaned.length > 100) { skipped.push(cleaned.slice(0,120)); previous = null; pending = null; continue; }
+    const key = cleaned.toLocaleLowerCase('ja-JP');
+    let idx = seen.get(key);
+    if (idx === undefined) {
+      if (steps.length >= max) { truncated = true; previous = null; pending = null; continue; }
+      idx = steps.length;
+      seen.set(key, idx);
+      steps.push({ name: cleaned, kind: classifyAction(cleaned), existing: existing.has(key) });
+    }
+    if (pending && previous !== null && previous !== idx && !links.some(l=>l.from===previous&&l.to===idx)) {
+      links.push({from:previous,to:idx,type:pending});
+    }
+    previous = idx;
+    pending = null;
+  }
+  return { steps, links, skipped, truncated };
+}
+
+/** Link explicit edges first; chronological links only when the user opts in. */
+function planNarrativeLinks(parsed, activeIndices, connectInOrder) {
+  const active = new Set(activeIndices);
+  const result = parsed.links.filter(l => active.has(l.from) && active.has(l.to));
+  if (connectInOrder) {
+    for (let i=1; i<activeIndices.length; i++) {
+      const from=activeIndices[i-1], to=activeIndices[i];
+      if (from===to || result.some(l => l.from===from && l.to===to)) continue;
+      result.push({from,to,type:'precedes'});
+    }
+  }
+  return result;
+}
+
+
+/** KŌDŌ v0.5: intentionally conservative single-document synchronization.
+ * Reads/writes are explicit until one direction is chosen; CAS protects stale devices.
+ * This adapter uses the public Supabase Auth/REST endpoints, no service key in the browser.
+ */
+// Public project location and publishable key only. Never embed service_role, secret or OpenAI keys.
+const KODO_DEFAULT_CLOUD = Object.freeze({
+  url: 'https://qyxxtfncjlbyyepjsqfx.supabase.co',
+  publishableKey: 'sb_publishable_g9aNm418YAXHipUWKIZQjA_1FbkSGfh'
+});
+const CLOUD_CONFIG_KEY = 'kodo-cloud-config:v1';
+const CLOUD_SESSION_KEY = 'kodo-cloud-session:v1';
+
+function validCloudConfig(raw) {
+  const url = String(raw?.url || '').trim().replace(/\/+$/, '');
+  const publishableKey = String(raw?.publishableKey || '').trim();
+  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) throw new Error('SupabaseのプロジェクトURLを入力してください。');
+  let publicKey = /^sb_publishable_[A-Za-z0-9_-]{2,}$/i.test(publishableKey);
+  if (!publicKey && publishableKey.split('.').length === 3) {
+    try {
+      const body=JSON.parse(atob(publishableKey.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      publicKey=body.role==='anon';
+    } catch {}
+  }
+  if (!publicKey || publishableKey.length > 2048) throw new Error('公開用の publishable key（または旧anon key）を入力してください。service_role / secret key は使用できません。');
+  return {url, publishableKey};
+}
+class CloudError extends Error { constructor(message, code='network'){super(message);this.name='CloudError';this.code=code;} }
+
+class CloudClient {
+  constructor(config, {fetchFn=globalThis.fetch, clock=()=>Date.now()}={}) {
+    this.config=validCloudConfig(config);
+    this.fetchFn=fetchFn;
+    this.clock=clock;
+    this.session=null;
+    this.revision=null;
+  }
+  setSession(session){this.session=session;}
+  get userId(){return this.session?.user?.id ?? null;}
+  async request(path, {method='GET', body, auth=true, extraHeaders={}}={}) {
+    if(auth) await this.refreshIfNeeded();
+    const headers={'apikey':this.config.publishableKey, ...extraHeaders};
+    if (body!==undefined) headers['Content-Type']='application/json';
+    if (auth && this.session?.access_token) headers['Authorization']=`Bearer ${this.session.access_token}`;
+    let res;
+    try {res=await this.fetchFn(this.config.url+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)});}
+    catch{throw new CloudError('ネットワークに接続できません。ローカルの記録は保持されています。','offline');}
+    if (!res.ok) {
+      let details;try{details=await res.json();}catch{}
+      const message=String(details?.msg||details?.error_description||details?.message||details?.error||`HTTP ${res.status}`).slice(0,230);
+      if(res.status===401||res.status===403)throw new CloudError(`認証またはアクセス権限を確認してください: ${message}`,'auth');
+      if(res.status===409)throw new CloudError('ほかの端末に更新があります。内容を確認して同期してください。','conflict');
+      throw new CloudError(`クラウド処理に失敗しました: ${message}`,'remote');
+    }
+    if (res.status===204) return null;
+    const contentType=res.headers?.get?.('content-type')??'';
+    if (contentType.includes('application/json') || typeof res.json==='function') {
+      try{return await res.json();}catch{return null;}
+    }
+    return null;
+  }
+  async refreshIfNeeded() {
+    if(!this.session)return;
+    const expiry=Number(this.session.expires_at)||0;
+    if(expiry && expiry*1000>this.clock()+90000)return;
+    if(!this.session.refresh_token)throw new CloudError('ログイン有効期限が切れました。ログインし直してください。','auth');
+    const next=await this.request('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:this.session.refresh_token},auth:false});
+    this.session=normalizeSession(next,this.clock());
+    this.onSessionChange?.(this.session);
+  }
+  async signIn(email,password){
+    const response=await this.request('/auth/v1/token?grant_type=password',{method:'POST',body:{email,password},auth:false});
+    this.session=normalizeSession(response,this.clock());this.revision=null;this.onSessionChange?.(this.session);return this.session;
+  }
+  async signUp(email,password){
+    return this.request('/auth/v1/signup',{method:'POST',body:{email,password},auth:false});
+  }
+  signOutLocal(){this.session=null;this.revision=null;this.onSessionChange?.(null);}
+  async readSnapshot(){
+    if(!this.userId)throw new CloudError('先にログインしてください。','auth');
+    const list=await this.request(`/rest/v1/kodo_user_snapshots?user_id=eq.${encodeURIComponent(this.userId)}&select=user_id,revision,payload,updated_at&limit=1`);
+    if(!Array.isArray(list))throw new CloudError('クラウドの応答形式が不正です。','invalid');
+    return list[0]??null;
+  }
+  async writeSnapshot(payload, expectedRevision) {
+    if(!this.userId)throw new CloudError('先にログインしてください。','auth');
+    const user_id=this.userId;
+    if(JSON.stringify(payload).length > 2500000) throw new CloudError('同期データが大きすぎます。JSONでバックアップしてください。','invalid');
+    let result;
+    if(expectedRevision===null){
+      result=await this.request('/rest/v1/kodo_user_snapshots',{method:'POST',body:{user_id,revision:1,payload},extraHeaders:{Prefer:'return=representation'}});
+    } else {
+      if(!Number.isSafeInteger(expectedRevision)||expectedRevision<1) throw new CloudError('同期の版番号が不正です。','invalid');
+      result=await this.request(`/rest/v1/kodo_user_snapshots?user_id=eq.${encodeURIComponent(user_id)}&revision=eq.${expectedRevision}`,{method:'PATCH',body:{payload,revision:expectedRevision+1,updated_at:new Date(this.clock()).toISOString()},extraHeaders:{Prefer:'return=representation'}});
+    }
+    if(!Array.isArray(result)||result.length!==1)throw new CloudError('クラウド側に別の変更があります。上書きせずに停止しました。','conflict');
+    this.revision=Number(result[0].revision);
+    return this.revision;
+  }
+  async analyze(context){
+    if(!this.userId)throw new CloudError('AI分析にはログインが必要です。','auth');
+    return this.request('/functions/v1/analyze-actions',{method:'POST',body:context});
+  }
+}
+function normalizeSession(raw,now=Date.now()) {
+  if(!raw?.access_token||!raw?.refresh_token||!raw?.user?.id)throw new CloudError('ログイン情報が不正です。','auth');
+  return {access_token:raw.access_token,refresh_token:raw.refresh_token,user:{id:raw.user.id,email:raw.user.email??''},expires_at:raw.expires_at??Math.floor(now/1000)+Number(raw.expires_in??3600)};
+}
+/** Never auto-resolve a revision conflict by last-write-wins. */
+function detectCloudConflict(expectedRevision, incomingRevision){return expectedRevision!==null && incomingRevision!==null && expectedRevision!==incomingRevision;}
+
+
+/** Bounded, deliberately non-authoritative AI analyses. Numbers must be measured. */
+function buildAnalysisContext(data, goalId, scenarioId, horizonWeeks=12) {
+ const g=data.goals.find(x=>x.id===goalId),s=data.scenarios.find(x=>x.id===scenarioId);
+ if(!g||!s||s.goalId!==g.id)throw new Error('対象の目的・方法が見つかりません。');
+ const actions=data.actions.filter(a=>a.scenarioId===s.id).slice(0,60).map(a=>({id:String(a.id).slice(0,100),name:String(a.name).slice(0,100),kind:a.kind,essential:!!a.essential,minutes:a.minutes??null,frequency:a.frequency}));
+ const ids=new Set(actions.map(a=>a.id));
+ const links=data.links.filter(l=>l.scenarioId===s.id&&ids.has(l.fromId)&&ids.has(l.toId)).slice(0,120).map(l=>({fromId:l.fromId,toId:l.toId,type:l.type}));
+ return {goal:String(g.name).slice(0,100),goalDescription:String(g.description||'').slice(0,500),scenario:String(s.name).slice(0,100),scenarioDescription:String(s.description||'').slice(0,500),setupMinutes:s.setupMinutes??0,managementMinutesPerWeek:s.managementMinutesPerWeek??0,horizonWeeks:Math.min(260,Math.max(1,horizonWeeks)),actions,links};
+}
+function normalizeAiAdvice(raw) {
+ if(!raw||!Array.isArray(raw.suggestions))throw new Error('AIの回答を読み取れませんでした。');
+ return raw.suggestions.slice(0,4).map((x,i)=>{
+   if(!x||typeof x.title!=='string'||typeof x.rationale!=='string'||typeof x.measurementPlan!=='string')throw new Error('AI提案の形式が不正です。');
+   const strings=arr=>Array.isArray(arr)?arr.filter(v=>typeof v==='string').slice(0,8).map(v=>v.slice(0,170)):[];
+   return {id:i,title:x.title.slice(0,100),rationale:x.rationale.slice(0,1000),reduce:strings(x.reduce),add:strings(x.add),measurementPlan:x.measurementPlan.slice(0,1000),risks:strings(x.risks)};
+ });
+}
+
+
+/** KŌDŌ v0.6 recovery points and preflight diff for destructive sync/import.
+ * Recovery points live only in this browser, and never replace JSON exports.
+ */
+const RECOVERY_KEY = 'kodo-recovery:v1';
+const COLLECTIONS = ['goals', 'scenarios', 'actions', 'links', 'items', 'actionItems', 'experiments'];
+const LIMIT = 3;
+
+function summarizeChanges(current, incoming) {
+  if (!current || !incoming) throw new Error('比較対象のデータがありません。');
+  const collections = {};
+  for (const name of COLLECTIONS) {
+    const before = Array.isArray(current[name]) ? current[name] : [];
+    const after = Array.isArray(incoming[name]) ? incoming[name] : [];
+    const from = new Map(before.map(x => [String(x.id), JSON.stringify(x)]));
+    const to = new Map(after.map(x => [String(x.id), JSON.stringify(x)]));
+    const added = [...to.keys()].filter(id => !from.has(id)).length;
+    const removed = [...from.keys()].filter(id => !to.has(id)).length;
+    const modified = [...to.keys()].filter(id => from.has(id) && to.get(id) !== from.get(id)).length;
+    collections[name] = { before: before.length, after: after.length, added, removed, modified };
+  }
+  const different = COLLECTIONS.some(x => Object.entries(collections[x]).some(([k,v]) => ['added','removed','modified'].includes(k) && v > 0));
+  return { different, collections };
+}
+function changeSummaryText(current, incoming) {
+  const result = summarizeChanges(current,incoming);
+  const names = {goals:'目的',scenarios:'方法',actions:'行動',links:'関係',items:'道具',actionItems:'紐付け',experiments:'検証'};
+  const parts = COLLECTIONS.flatMap(name => {
+    const c = result.collections[name];
+    if (!c.added && !c.removed && !c.modified) return [];
+    return [`${names[name]}：追加${c.added}・削除${c.removed}・変更${c.modified}`];
+  });
+  return parts.length ? parts.join('\n') : '登録内容の差分はありません。';
+}
+
+function readRecoveryPoints(storage) {
+  try {
+    const saved = JSON.parse(storage.getItem(RECOVERY_KEY) || '[]');
+    if (!Array.isArray(saved)) return [];
+    return saved.filter(p => p && typeof p.reason === 'string' && typeof p.createdAt === 'string' && p.payload && typeof p.payload === 'object' && Array.isArray(p.payload.goals) && Array.isArray(p.payload.actions)).slice(0,LIMIT);
+  } catch { return []; }
+}
+/** Save first, verify, then permit the destructive operation. */
+function saveRecoveryPoint(storage, payload, reason, at = new Date().toISOString()) {
+  const points = readRecoveryPoints(storage);
+  const next = {createdAt: at, reason: String(reason).slice(0,120), payload: JSON.parse(JSON.stringify(payload))};
+  // Preserve the latest three versions while avoiding an immediate duplicate.
+  const rest = points.filter(x => JSON.stringify(x.payload) !== JSON.stringify(next.payload));
+  const serialized = JSON.stringify([next, ...rest].slice(0,LIMIT));
+  if (serialized.length > 6_000_000) throw new Error('復旧用データが大きすぎます。先にJSONを書き出してください。');
+  try {
+    storage.setItem(RECOVERY_KEY, serialized);
+    if (storage.getItem(RECOVERY_KEY) !== serialized) throw new Error('保存結果を確認できません。');
+  } catch {
+    throw new Error('復旧ポイントを保存できません。ストレージ容量を確認し、JSONバックアップを取ってください。操作は中止しました。');
+  }
+  return next;
+}
+
+
+/** v0.8: isolate each signed-in account's local records and recovery points.
+ * Browser localStorage is NOT encrypted; this prevents accidental cross-account display,
+ * not access by someone who controls the same browser/device.
+ */
+const GUEST_WORKSPACE_KEY = 'kodo-design:v1';
+const WORKSPACE_PREFIX = 'kodo-design:account:v1:';
+const ACCOUNT_RECOVERY_PREFIX = 'kodo-recovery:account:v1:';
+
+function workspaceKey(userId, projectUrl) {
+  if (userId === null || userId === undefined) return GUEST_WORKSPACE_KEY;
+  const id = String(userId).toLowerCase();
+  if (!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(id)) throw new Error('アカウントIDが不正です。');
+  const parsed = new URL(String(projectUrl));
+  if(parsed.protocol !== 'https:' || !/^[a-z0-9-]+\.supabase\.co$/.test(parsed.hostname)) throw new Error('同期先が不正です。');
+  return WORKSPACE_PREFIX + parsed.hostname + ':' + id;
+}
+
+function readWorkspace(storage, key, decode, empty) {
+  const raw = storage.getItem(key);
+  if (raw === null) return empty();
+  // Malformed existing data must not be silently overwritten with a demo.
+  try { return decode(JSON.parse(raw)); }
+  catch { throw new Error('端末のデータを読み込めません。上書きせず、JSONバックアップを確認してください。'); }
+}
+
+function recoveryStorage(storage, key) {
+  const namespace = key === GUEST_WORKSPACE_KEY ? null : ACCOUNT_RECOVERY_PREFIX + key.slice(WORKSPACE_PREFIX.length);
+  return {
+    getItem(name) { return storage.getItem(namespace ? `${namespace}:${name}` : name); },
+    setItem(name, value) { return storage.setItem(namespace ? `${namespace}:${name}` : name, value); },
+    removeItem(name) { return storage.removeItem(namespace ? `${namespace}:${name}` : name); }
+  };
+}
+
+
+const DEMO = {
+  version: 2,
+  goals: [
+    { id: 'g-water', name: '外出中の水分補給', description: '水分補給を無理なく続け、付随する手間を減らす', createdAt: '2026-10-17T00:00:00.000Z' },
+    { id: 'g-wood', name: '工房で木工作業をする', description: '道具探しと作業前後の移動を減らす', createdAt: '2026-10-17T00:00:00.000Z' },
+  ],
+  scenarios: [
+    {id:'s-tumbler',goalId:'g-water',name:'タンブラーを持ち歩く',description:'自宅で準備して繰り返し使用',isBaseline:true},
+    {id:'s-bottle',goalId:'g-water',name:'ペットボトルを買う',description:'まとめ買いして使用する想定',isBaseline:false},
+    {id:'s-local',goalId:'g-water',name:'外出先の給水を使う',description:'利用可能な給水設備がある場合の案',isBaseline:false},
+    {id:'s-work-original',goalId:'g-wood',name:'今までの作業方法',description:'道具を都度探し、作業を始める',isBaseline:true},
+    {id:'s-work-new',goalId:'g-wood',name:'道具の定位置を決める',description:'実際の使用順序に合わせて配置',isBaseline:false,setupMinutes:45,setupYen:0,managementMinutesPerWeek:0},
+  ],
+  actions: [
+    {id:'a-t0',scenarioId:'s-tumbler',name:'タンブラーを使う',kind:'core',essential:true,minutes:0,frequency:7,yen:0,note:'この方法自体を表す行動'},
+    {id:'a-t1',scenarioId:'s-tumbler',name:'飲み物を準備する',kind:'support',essential:false,minutes:2,frequency:7,yen:0,note:''},
+    {id:'a-t2',scenarioId:'s-tumbler',name:'持ち帰る',kind:'support',essential:false,minutes:1,frequency:7,yen:0,note:''},
+    {id:'a-t3',scenarioId:'s-tumbler',name:'洗う',kind:'maintenance',essential:true,minutes:3,frequency:7,yen:0,note:''},
+    {id:'a-t4',scenarioId:'s-tumbler',name:'乾かして収納する',kind:'maintenance',essential:false,minutes:1,frequency:7,yen:0,note:''},
+    {id:'a-b0',scenarioId:'s-bottle',name:'ペットボトルを使う',kind:'core',essential:true,minutes:0,frequency:7,yen:0,note:''},
+    {id:'a-b1',scenarioId:'s-bottle',name:'まとめて購入する',kind:'support',essential:false,minutes:5,frequency:1,yen:0,note:'購入時間は仮の値'},
+    {id:'a-b2',scenarioId:'s-bottle',name:'分別・廃棄する',kind:'maintenance',essential:false,minutes:1,frequency:7,yen:0,note:''},
+    {id:'a-b3',scenarioId:'s-bottle',name:'飲み物の代金',kind:'support',essential:false,minutes:0,frequency:7,yen:110,note:'110円/本と仮定。金額は変更可能'},
+    {id:'a-l0',scenarioId:'s-local',name:'現地で給水する',kind:'core',essential:true,minutes:0,frequency:7,yen:0,note:'アクセス可能な給水設備が前提'},
+    {id:'a-l1',scenarioId:'s-local',name:'給水設備を事前確認',kind:'support',essential:false,minutes:3,frequency:1,yen:0,note:'現地の提供形態で作業が変わる'},
+    {id:'a-w0',scenarioId:'s-work-original',name:'木工作業をする',kind:'core',essential:true,minutes:0,frequency:3,yen:0,note:''},
+    {id:'a-w1',scenarioId:'s-work-original',name:'材料を取りに行く',kind:'support',essential:false,minutes:5,frequency:3,yen:0,note:''},
+    {id:'a-w2',scenarioId:'s-work-original',name:'道具を探す',kind:'support',essential:false,minutes:6,frequency:3,yen:0,note:''},
+    {id:'a-w3',scenarioId:'s-work-original',name:'作業場所を片付ける',kind:'maintenance',essential:false,minutes:8,frequency:3,yen:0,note:''},
+    {id:'a-wn0',scenarioId:'s-work-new',name:'木工作業をする',kind:'core',essential:true,minutes:0,frequency:3,yen:0,note:''},
+    {id:'a-wn1',scenarioId:'s-work-new',name:'材料を準備する',kind:'support',essential:false,minutes:3,frequency:3,yen:0,note:''},
+    {id:'a-wn2',scenarioId:'s-work-new',name:'定位置から道具を取る',kind:'support',essential:false,minutes:1,frequency:3,yen:0,note:''},
+    {id:'a-wn3',scenarioId:'s-work-new',name:'道具を元に戻す',kind:'maintenance',essential:false,minutes:3,frequency:3,yen:0,note:''},
+  ],
+  links: [
+    {id:'l-t1',scenarioId:'s-tumbler',fromId:'a-t0',toId:'a-t1',type:'causes'},
+    {id:'l-t2',scenarioId:'s-tumbler',fromId:'a-t0',toId:'a-t2',type:'causes'},
+    {id:'l-t3',scenarioId:'s-tumbler',fromId:'a-t2',toId:'a-t3',type:'causes'},
+    {id:'l-t4',scenarioId:'s-tumbler',fromId:'a-t3',toId:'a-t4',type:'causes'},
+    {id:'l-b1',scenarioId:'s-bottle',fromId:'a-b0',toId:'a-b1',type:'causes'},
+    {id:'l-b2',scenarioId:'s-bottle',fromId:'a-b0',toId:'a-b2',type:'causes'},
+    {id:'l-b3',scenarioId:'s-bottle',fromId:'a-b0',toId:'a-b3',type:'causes'},
+    {id:'l-l1',scenarioId:'s-local',fromId:'a-l0',toId:'a-l1',type:'causes'},
+    {id:'l-w1',scenarioId:'s-work-original',fromId:'a-w0',toId:'a-w1',type:'causes'},
+    {id:'l-w2',scenarioId:'s-work-original',fromId:'a-w0',toId:'a-w2',type:'causes'},
+    {id:'l-w3',scenarioId:'s-work-original',fromId:'a-w0',toId:'a-w3',type:'causes'},
+    {id:'l-wn1',scenarioId:'s-work-new',fromId:'a-wn0',toId:'a-wn1',type:'causes'},
+    {id:'l-wn2',scenarioId:'s-work-new',fromId:'a-wn0',toId:'a-wn2',type:'causes'},
+    {id:'l-wn3',scenarioId:'s-work-new',fromId:'a-wn0',toId:'a-wn3',type:'causes'},
+  ],
+  items: [
+    {id:'i-tumbler',goalId:'g-water',name:'タンブラー',home:'キッチンの水筒収納',placement:'storage',note:'帰宅後は洗って乾燥してから収納'},
+    {id:'i-tool',goalId:'g-wood',name:'よく使う手工具',home:'作業台の工具掛け',placement:'workspace',note:'作業後に定位置へ戻す'},
+    {id:'i-spare',goalId:'g-wood',name:'予備の工具セット',home:'作業台の下',placement:'workspace',note:'使っている行動があるか検討するためのサンプル'},
+    {id:'i-wood',goalId:'g-wood',name:'加工する木材',home:'材料棚',placement:'storage',note:'加工用に必要量だけ取り出す'},
+  ],
+  actionItems: [
+    {id:'ai-t',itemId:'i-tumbler',actionId:'a-t0'},
+    {id:'ai-t-wash',itemId:'i-tumbler',actionId:'a-t3'},
+    {id:'ai-tool-1',itemId:'i-tool',actionId:'a-w2'},
+    {id:'ai-tool-2',itemId:'i-tool',actionId:'a-wn2'},
+    {id:'ai-tool-3',itemId:'i-tool',actionId:'a-wn3'},
+    {id:'ai-wood-1',itemId:'i-wood',actionId:'a-w1'},
+    {id:'ai-wood-2',itemId:'i-wood',actionId:'a-wn1'},
+  ],
+  experiments: [],
+};
+
+
+
+
+
+
+
+
+
+
+
+
+const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
+const APP_VERSION = 'v0.8';
+let activeStore = STORE;
+const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[]});
+const recoveryScope = () => recoveryStorage(localStorage,activeStore);
+const CLOUD_LINK_KEY = 'kodo-cloud-link:v1';
+const deepCopy = value => JSON.parse(JSON.stringify(value));
+const id = () => (globalThis.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const eAttr = esc;
+const clamp = (val, max=1000000) => Math.max(0, Math.min(max, Number(val) || 0));
+const kinds = {core:{name:'中心行動',className:'core'},support:{name:'準備・補助',className:'support'},maintenance:{name:'後処理・管理',className:'maintenance'}};
+
+let data;
+try { data = readWorkspace(localStorage,STORE,migrateData,()=>deepCopy(DEMO)); } catch { data = deepCopy(DEMO); }
+let selectedGoal = data.goals[0]?.id || null;
+let selectedScenario = data.scenarios.find(s => s.goalId === selectedGoal && s.isBaseline)?.id || data.scenarios.find(s => s.goalId === selectedGoal)?.id || null;
+let selectedAction = null;
+let activeTab = 'analyze';
+let horizonWeeks = 12; // UI preference only; no changes to saved projects.
+let dialog = null;
+let toastTimer;
+let undoSnapshot = null;
+const root = document.getElementById('root');
+const modalRoot = document.getElementById('modal-root');
+let cloud=null, cloudLinked=false, cloudBusy=false, cloudStatus='未接続', cloudError='', cloudQueue=Promise.resolve(), cloudDirty=false;
+let aiBusy=false, aiSuggestions=[], aiMessage='';
+let lastSyncedHash='', localTabConflict=false;
+function switchWorkspace(session) {
+  const nextKey = workspaceKey(session?.user?.id||null,cloud?.config.url);
+  if(nextKey===activeStore)return;
+  const next = readWorkspace(localStorage,nextKey,migrateData,session?.user?.id?emptyAccount:()=>deepCopy(DEMO));
+  activeStore=nextKey;data=next;selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;
+  cloudLinked=false;cloudDirty=false;lastSyncedHash='';undoSnapshot=null;aiSuggestions=[];aiMessage='';
+}
+function isCurrentCloud(client,key){return client===cloud && key===activeStore && !!client.userId;}
+
+function hashPayload(payload) { // sync state detection; server CAS is the authoritative conflict control.
+  const text=JSON.stringify(payload);let hash=2166136261;
+  for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619);
+  return `${(hash>>>0).toString(16)}-${text.length}`;
+}
+function saveLocal() {
+  if(localTabConflict){notify('別タブで編集がありました。変更前に画面を再読み込みしてください。',true);return false;}
+  try { localStorage.setItem(activeStore, JSON.stringify(data)); return true; }
+  catch { notify('保存できません。JSONバックアップを作成してください。',true);return false; }
+}
+function rememberCloudLink() {
+  if(!cloud?.userId || !cloudLinked) return;
+  localStorage.setItem(CLOUD_LINK_KEY,JSON.stringify({url:cloud.config.url,userId:cloud.userId,revision:cloud.revision,hash:lastSyncedHash}));
+}
+function initCloud() {
+  try {
+    const config=JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY)||'null') || KODO_DEFAULT_CLOUD;
+    cloud=new CloudClient(config);
+    cloud.onSessionChange=session=>session?localStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(session)):localStorage.removeItem(CLOUD_SESSION_KEY);
+    const session=JSON.parse(localStorage.getItem(CLOUD_SESSION_KEY)||'null');
+    if(session?.user?.id&&session?.refresh_token){cloud.setSession(session);switchWorkspace(session);}
+    cloudStatus=cloud.userId?'認証の確認待ち':'ログインしてください';
+  } catch {cloud=null;cloudStatus='設定内容を確認してください';}
+}
+initCloud();
+async function bootstrapCloud() {
+  if(!cloud?.userId)return;
+  try {
+    const remembered=JSON.parse(localStorage.getItem(CLOUD_LINK_KEY)||'null');
+    const client=cloud, workspace=activeStore;
+    const readStartHash=hashPayload(data);
+    const remote=await client.readSnapshot();
+    if(!isCurrentCloud(client,workspace))return;
+    if(hashPayload(data)!==readStartHash) { cloudLinked=false;cloudStatus='クラウド確認中に端末が更新されました。手動で同期してください。';render();return; }
+    if(!remembered || remembered.url!==cloud.config.url || remembered.userId!==cloud.userId) {cloudStatus=remote?'クラウドに記録があります。取得またはアップロードを選択してください':'クラウド未作成。最初のアップロードが必要です';render();return;}
+    if(hashPayload(data)!==remembered.hash) {cloudStatus='この端末に未同期の編集があります。手動で同期方向を選択してください';render();return;}
+    if(!remote){cloudStatus='クラウド側の記録がありません。手動でアップロードしてください';render();return;}
+    const payload=migrateData(remote.payload);
+    if(Number(remote.revision)!==Number(remembered.revision) && hashPayload(payload)!==hashPayload(data)) saveRecoveryPoint(recoveryScope(),data,'既知端末のクラウド自動取り込み前');
+    cloud.revision=Number(remote.revision);cloudLinked=true;
+    if(Number(remote.revision)!==Number(remembered.revision)){const before=deepCopy(data);data=deepCopy(payload);if(!saveLocal()){data=before;throw new Error('クラウド取得結果を端末に保存できません。');}selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;}
+    lastSyncedHash=hashPayload(data);rememberCloudLink();cloudStatus='クラウドと同期済み';render();
+  }catch(err){cloudLinked=false;cloudError=err.message;cloudStatus='クラウドに接続できません。ローカルデータはそのままです。';render();}
+}
+function scheduleCloudPush() {
+  if(!cloudLinked||!cloud?.userId)return;
+  cloudDirty=true;
+  const client=cloud, workspace=activeStore;
+  cloudQueue=cloudQueue.then(async()=>{
+    if(!cloudDirty||!cloudLinked||!isCurrentCloud(client,workspace))return;
+    const current=deepCopy(data), fingerprint=hashPayload(current);
+    try {
+      await client.writeSnapshot(current,client.revision);
+      if(!isCurrentCloud(client,workspace))return;
+      lastSyncedHash=fingerprint;rememberCloudLink();
+      cloudDirty=hashPayload(data)!==fingerprint;
+      cloudStatus=cloudDirty?'追加の変更を同期中':'クラウドと同期済み';cloudError='';
+      if(cloudDirty)scheduleCloudPush();
+    }catch(err){if(!isCurrentCloud(client,workspace))return;cloudLinked=false;cloudDirty=false;cloudStatus='同期停止（ローカル記録は保持）';cloudError=err.message;}
+    if(activeTab==='cloud')render();
+  }).catch(()=>{cloudLinked=false;cloudStatus='同期停止';});
+}
+
+
+function save() { if(saveLocal())scheduleCloudPush(); }
+function notify(message, danger=false) {
+  const existing = document.querySelector('.toast'); if (existing) existing.remove();
+  const el = document.createElement('div'); el.className = `toast ${danger?'is-danger':''}`; el.textContent = message; document.body.appendChild(el);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 3500);
+}
+function mutate(callback) {
+  if(localTabConflict){notify('別タブで編集されています。再読み込みしてから操作してください。',true);return;}
+  const previous = {data:deepCopy(data),selectedGoal,selectedScenario,selectedAction,activeTab};
+  callback();
+  undoSnapshot = previous;
+  save(); render();
+}
+function undo() {
+  if (!undoSnapshot) return;
+  const previous = undoSnapshot;
+  undoSnapshot = null;
+  data = deepCopy(previous.data);
+  ({selectedGoal,selectedScenario,selectedAction,activeTab} = previous);
+  dialog = null;
+  save();render();notify('直前の変更を元に戻しました。');
+}
+function goal() { return data.goals.find(g => g.id === selectedGoal) || null; }
+function scenario() { return data.scenarios.find(s => s.id === selectedScenario) || null; }
+function scenariosOfGoal() { return data.scenarios.filter(s => s.goalId === selectedGoal); }
+function action() { return data.actions.find(a => a.id === selectedAction) || null; }
+function ensureSelection() {
+  if (!data.goals.some(g => g.id === selectedGoal)) selectedGoal = data.goals[0]?.id || null;
+  if (!data.scenarios.some(s => s.id === selectedScenario && s.goalId === selectedGoal)) selectedScenario = data.scenarios.find(s => s.goalId === selectedGoal)?.id || null;
+  if (!data.actions.some(a => a.id === selectedAction && a.scenarioId === selectedScenario)) selectedAction = null;
+}
+function icon(name, size=20) {
+  const p = {
+    network: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 7.5 11 16M17 7.5 13 16"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    scale: '<path d="M12 3v18M5 6h14M7 6 3 13h8L7 6ZM17 6l-4 7h8l-4-7ZM8 21h8"/>',
+    history: '<path d="M3 12a9 9 0 1 0 2.5-6.2M3 3v5h5M12 7v5l4 2"/>',
+    tool: '<path d="M5 4h14v16H5zM8 8h8M8 12h5M8 16h3"/>',
+    database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 2 18 2 18 0V5M3 12c0 4 18 4 18 0"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+    back: '<path d="M19 12H5m6-6-6 6 6 6"/>',
+    edit: '<path d="M14 5 19 10M4 20l4-.8L20 7a2 2 0 0 0-3-3L4.8 16 4 20Z"/>',
+    trash: '<path d="M4 7h16M10 3h4M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',
+    copy: '<rect x="7" y="7" width="13" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/>',
+    check: '<path d="m4 12 5 5L20 6"/>',
+    download: '<path d="M12 3v12m-4-4 4 4 4-4M4 17v4h16v-4"/>',
+    upload: '<path d="M12 16V4m-4 4 4-4 4 4M4 17v4h16v-4"/>',
+    close: '<path d="M5 5 19 19M19 5 5 19"/>',
+    chevron: '<path d="m7 10 5 5 5-5"/>',
+    alert: '<path d="M12 3 2 21h20L12 3ZM12 9v5M12 18h.01"/>',
+    spark: '<path d="m12 2 1.7 7.3L21 11l-7.3 1.7L12 20l-1.7-7.3L3 11l7.3-1.7L12 2Z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
+    delete: '<path d="M3 3h18v18H3zM8 8l8 8m0-8-8 8"/>',
+  }[name] || '<circle cx="12" cy="12" r="7"/>';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+function btn(actionName, text, cls='', attrs='') { return `<button type="button" class="btn ${cls}" data-action="${actionName}" ${attrs}>${text}</button>`; }
+function numberField(name,label,value,extra='') { return `<label class="form-field"><span>${label}</span><input type="number" step="0.5" min="0" max="1000000" name="${name}" value="${eAttr(value ?? '')}" ${extra}></label>`; }
+function selectOptions(values, selected) { return values.map(([value,label]) => `<option value="${eAttr(value ?? '')}" ${selected===value?'selected':''}>${esc(label)}</option>`).join(''); }
+
+function render() {
+  const oldScroll=root.querySelector('.graph-scroll');
+  const scrollState=oldScroll?{x:oldScroll.scrollLeft,y:oldScroll.scrollTop}:null;
+  ensureSelection();
+  const g=goal(), s=scenario();
+  root.innerHTML = `<div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">K<span>◌</span></div><div><strong>KŌDŌ</strong><small>行動設計 / BETA</small></div></div>
+      <div class="side-section-title">WORKSPACE <span>01</span></div>
+      <div class="workspace"><div class="workspace-icon">◈</div><div><strong>わたしの行動</strong><small>${cloudLinked?'クラウド同期中':'この端末に保存'}</small></div></div>
+      <div class="side-section-title">メニュー</div>
+      <nav class="side-nav" aria-label="メインメニュー">
+        ${[['analyze','network','行動を分析'],['compare','scale','方法を比較'],['environment','tool','道具・定位置'],['history','history','改善の記録'],['ai','spark','AI行動分析'],['cloud','database','クラウド同期'],['data','database','データ管理']].map(([key,ico,name]) => `<button class="nav-item ${activeTab===key?'active':''}" data-tab="${key}" aria-label="${name}" title="${name}" ${activeTab===key?'aria-current="page"':''}>${icon(ico,18)}<span>${name}</span>${activeTab===key?'<span class="nav-dot"></span>':''}</button>`).join('')}
+      </nav>
+      <div class="sidebar-bottom"><div class="sidebar-thought"><span class="tiny-accent"></span><strong>DESIGN PRINCIPLE</strong><p>必要な行動は自然に。<br>不要な行動は生まれないように。</p></div><small>Local-first prototype · ${APP_VERSION}</small></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> ${['analyze','compare','environment','history','ai','cloud','data'].includes(activeTab)?{analyze:'行動分析',compare:'方法の比較',environment:'道具・定位置',history:'改善の記録',ai:'AI行動分析',cloud:'クラウド同期',data:'データ管理'}[activeTab]:''}</div><div class="topbar-right"><span class="save-state"><span class="save-dot"></span> 自動保存</span>${undoSnapshot?btn('undo',`${icon('back',15)} 元に戻す`,'btn-outline undo-btn','aria-label="直前の変更を元に戻す"'):""}<span class="avatar">K</span></div></header>
+      <div class="content-area">
+        ${activeTab==='data' ? renderData() : activeTab==='cloud'?renderCloud():activeTab==='ai'?renderAi():`${renderTop(g)}${activeTab==='analyze'?renderAnalyze(s):activeTab==='compare'?renderCompare():activeTab==='environment'?renderEnvironment():renderHistory()}`}
+      </div>
+    </main>
+  </div>`;
+  renderDialog();
+  if(scrollState){const fresh=root.querySelector('.graph-scroll');if(fresh){fresh.scrollLeft=scrollState.x;fresh.scrollTop=scrollState.y;}}
+}
+function renderTop(g) {
+  return `<div class="page-heading"><div class="eyebrow">BEHAVIOR DESIGN LAB <span class="line"></span> 行動を設計する</div><div class="heading-row"><div><h1>${activeTab==='analyze'?'行動の連鎖を、見える形に。':activeTab==='compare'?'方法を変えると、何が変わる？':activeTab==='environment'?'必要なものに、定位置を。':'改善を、実際の結果で確かめる。'}</h1><p>やることを増やすのではなく、やらなくていいことを見つけよう。</p></div><div class="heading-art">◎</div></div></div>
+  <section class="goal-strip"><div class="goal-strip-left"><div class="goal-symbol">${icon('target',21)}</div><div class="goal-content"><div class="label">分析する目的</div><div class="select-wrap"><select id="goal-select" aria-label="分析する目的">${data.goals.map(x=>`<option value="${eAttr(x.id)}" ${selectedGoal===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>${icon('chevron',15)}</div><div class="goal-description">${esc(g?.description || '目的を設定して、行動を分析しましょう。')}</div></div></div><div class="goal-buttons">${btn('new-goal',`${icon('plus',16)} 目的を追加`,'btn-outline')}${g?btn('edit-goal',`${icon('edit',15)}`,'icon-btn','aria-label="目的を編集" title="目的を編集"'):''}</div></section>`;
+}
+function renderAnalyze(s) {
+  if (!s) return `<div class="empty-state"><h2>まず、方法を登録しましょう</h2><p>目的を達成するために普段行っている方法を登録してください。</p>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-primary')}</div>`;
+  const all=scenariosOfGoal(); const actions=getScenarioActions(data,s.id); const links=getScenarioLinks(data,s.id); const totals=scenarioTotals(data,s.id);
+  const chosen=action(); const sim=chosen?simulateRemoval(data,s.id,chosen.id):null;
+  return `<section class="quick-intro"><div><strong>まず、一通りやってみて記録する。</strong><p>普段の行動を文章で入力し、行動候補に分解できます。内容を確認してから登録するので、無理に構造化する必要はありません。</p></div><div class="quick-cta">${btn('narrative-capture',`${icon('spark',16)} 文章から整理`,'btn-primary')}${btn('quick-capture','1行ずつ記録','btn-outline')}</div></section><div class="section-head"><div><span class="section-kicker">01 / METHODS</span><h2>実現する方法</h2></div>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-outline')}</div>
+  <div class="scenario-list">${all.map(x => {const total=scenarioTotals(data,x.id); return `<button class="scenario-card ${selectedScenario===x.id?'selected':''}" data-scenario="${eAttr(x.id)}"><span class="scenario-card-top"><span class="scenario-state">${x.isBaseline?'現状の方法':'代替・改善案'}</span>${selectedScenario===x.id?'<span class="selected-check">✓</span>':''}</span><strong>${esc(x.name)}</strong><span class="scenario-card-bottom"><span>${icon('clock',14)} ${fmtMin(total.minutes)} / 週</span><span>${fmtYen(total.yen)} / 週</span></span></button>`;}).join('')}</div>
+  <div class="section-head graph-title"><div><span class="section-kicker">02 / ACTION MAP</span><h2>行動の連鎖 <span class="heading-counter">${actions.length} ACTIONS</span></h2><p>行動を選ぶと、それをやめた場合の影響を確認できます。</p></div><div class="head-actions">${btn('edit-scenario',icon('edit',16),'icon-btn','title="方法を編集" aria-label="方法を編集"')}${btn('clone-scenario',`${icon('copy',16)} 方法を複製`,'btn-outline')}${btn('new-action',`${icon('plus',16)} 行動を追加`,'btn-primary')}</div></div>
+  <div class="analysis-grid">
+    <section class="graph-panel"><div class="graph-toolbar"><div class="graph-subtitle"><span class="live-chip">●</span> ${esc(s.name)} <span class="graph-muted">の行動フロー</span></div><div class="graph-legend"><span><i class="legend-dot core"></i>中心</span><span><i class="legend-dot support"></i>準備</span><span><i class="legend-dot maintenance"></i>後処理</span></div></div>
+      ${actions.length?renderGraph(actions,links,sim):`<div class="empty-graph"><p>行動がまだ登録されていません。</p>${btn('new-action','最初の行動を追加','btn-primary')}</div>`}
+      <div class="graph-footer"><span>線は「この行動が次の行動を生む」関係を表します。点線は実行順序です。</span>${btn('new-link',`${icon('plus',14)} 関係を追加`,'btn-text')}</div>
+    </section>
+    <aside class="inspector">${chosen?renderInspector(chosen,sim,totals):renderDefaultInspector(totals,s)}</aside>
+  </div>
+  ${renderOpportunities(s.id)}
+  <details class="action-index"><summary>行動の一覧を開く・選んで編集する <span>${actions.length}件</span></summary><div class="action-index-items">${actions.map(a=>`<button type="button" data-node="${eAttr(a.id)}"><strong>${esc(a.name)}</strong><span>${a.minutes===null?'未測定':fmtMin(weeklyMinutes(a))+' /週'}　${a.essential?'必須':''}</span></button>`).join('')}</div></details>
+  <div class="bottom-message"><span class="message-icon">✳</span><div><strong>設計の視点</strong><p>「これを効率よく行うには？」の前に、「そもそも、この行動を発生させずに済むか？」を考える。</p></div></div>`;
+}
+function renderOpportunities(scenarioId) {
+  const items=rankOpportunities(data,scenarioId,simulateRemoval,weeklyMinutes);
+  if (!items.length) return '';
+  return `<section class="opportunity-panel"><div><span class="section-kicker">03 / WHERE TO START</span><h3>見直すと効果が大きそうな行動</h3><p>登録された時間と因果関係から計算。削減できることを保証するものではありません。</p></div><div class="opportunity-items">${items.map(x=>`<button type="button" data-node="${eAttr(x.action.id)}"><span>${esc(x.action.name)}</span><strong>試算 −${fmtMin(x.minutes)} /週</strong>${icon('arrow',14)}</button>`).join('')}</div></section>`;
+}
+function renderGraph(actions,links,sim) {
+  const layout=buildLayout(actions,links);
+  const aMap=new Map(actions.map(a=>[a.id,a]));
+  const edge=links.map(l=>{
+    const u=layout.position[l.fromId],v=layout.position[l.toId]; if(!u||!v)return '';
+    const x1=u.x+196,y1=u.y+36,x2=v.x,y2=v.y+36,d=Math.max(50,(x2-x1)*.5);
+    return `<path d="M${x1},${y1} C${x1+d},${y1} ${x2-d},${y2} ${x2},${y2}" class="edge ${l.type==='precedes'?'sequence':''} ${sim?.removed.includes(l.toId)?'affected':''}" />`;
+  }).join('');
+  const nodes=actions.map(a=>{const p=layout.position[a.id]; return `<button type="button" data-node="${eAttr(a.id)}" style="left:${p.x}px;top:${p.y}px" class="flow-node ${kinds[a.kind]?.className||'support'} ${selectedAction===a.id?'active':''} ${sim?.removed.includes(a.id)?'will-remove':''}"><span class="node-top"><span class="node-kind">${esc(kinds[a.kind]?.name||'準備・補助')}</span><span class="node-number">${a.essential?'◆':'○'}</span></span><strong>${esc(a.name)}</strong><span class="node-bottom">${a.minutes==null?'未測定':fmtMin(weeklyMinutes(a))+' / 週'} <span>${Number(a.frequency)}回</span></span></button>`;}).join('');
+  return `<div class="graph-scroll" tabindex="0" aria-label="行動連鎖図。横にスクロールできます"><div class="graph-canvas" style="width:${layout.width}px;height:${layout.height}px"><div class="graph-dots"></div><svg class="graph-edges" viewBox="0 0 ${layout.width} ${layout.height}" width="${layout.width}" height="${layout.height}" aria-hidden="true">${edge}</svg>${nodes}</div></div>`;
+}
+function renderDefaultInspector(totals,s) {
+  return `<div class="inspector-top"><div class="inspector-small-label">ANALYSIS SUMMARY</div><h3>現在の方法</h3><p>${esc(s.description||'登録した方法の作業量を確認します。')}</p></div><div class="inspector-main"><div class="metric-title">週間の発生負担 <span>推定</span></div><div class="metric-big">${totals.minutes}<small>分 / 週</small></div><div class="metric-sub">入力済み時間の合計。${totals.unmeasured?`未測定 ${totals.unmeasured}件あり。`:'サンプル値を含みます。'}</div><div class="mini-rule"></div><div class="summary-row"><span>費用</span><strong>${fmtYen(totals.yen)} / 週</strong></div><div class="summary-row"><span>登録行動</span><strong>${totals.count}件</strong></div><div class="inspector-tip">${icon('spark',18)}<p>左の行動を一つ選択すると、その行動をなくした場合に派生作業がどこまで減るかを計算します。</p></div></div>`;
+}
+function renderInspector(a,sim,totals) {
+  const cannot=sim.essentialRemoved || sim.broken.length>0;
+  const removedNames=sim.removed.map(x=>data.actions.find(a=>a.id===x)?.name).filter(Boolean);
+  return `<div class="inspector-top"><div class="inspector-heading-row"><div><div class="inspector-small-label">WHAT IF ANALYSIS</div><h3>この行動をなくすと？</h3></div><button class="minimal-close" data-action="clear-action" aria-label="選択解除">${icon('close',17)}</button></div><div class="selected-action-name">${esc(a.name)}</div><div class="inspector-top-buttons">${btn('edit-action',`${icon('edit',14)} 編集`,'btn-text')}${btn('delete-action',`${icon('trash',14)} 削除`,'btn-text danger-text')}</div></div>
+    <div class="inspector-main"><div class="metric-title">減らせる可能性のある時間 <span>試算</span></div><div class="metric-big accent">−${sim.minutes}<small>分 / 週</small></div><div class="metric-sub">費用: −${fmtYen(sim.yen)} / 週</div><div class="mini-rule"></div><div class="metric-title">一緒に消える行動 <span>${sim.removed.length} 件</span></div><div class="impact-list">${removedNames.map(name=>`<div class="impact-item"><span>−</span>${esc(name)}</div>`).join('')}</div>${cannot?`<div class="warning-message">${icon('alert',16)}<p>中心行動や必須の行動が失われる可能性があります。別の方法に置き換えてから比較してください。</p></div>`:`<div class="success-message">${icon('check',16)}<p>必須行動を残した改善案として複製できます。</p></div>`}
+     ${btn('make-candidate',`${icon('copy',15)} この変更で改善案を作る`,'btn-primary full',cannot?'disabled title="目的達成が難しくなるため、複製できません"':'')}
+    <div class="suggestion-block"><strong>この行動から発生しそうな作業の候補</strong><small>一般的な例です。実際に発生する場合だけ登録してください。</small><div>${suggestNextActions(a.name,getScenarioActions(data,selectedScenario).map(x=>x.name)).map((name,i)=>btn('suggest-action',`${icon('plus',13)} ${esc(name)}`,'btn-small',`data-suggestion="${i}"`)).join('')||'<span class="no-suggestions">既存の記録を確認しましょう</span>'}</div></div>
+    <p class="inspector-disclaimer">削減時間は入力済み分のみ。連鎖は登録した因果関係に基づく推定です。衛生・安全のために必要な行動は削減しないでください。</p></div>`;
+}
+function renderCompare() {
+  const list=scenariosOfGoal();
+  if (!list.length) return `<div class="empty-state">比較する方法がありません。</div>`;
+  const baseline=list.find(s=>s.isBaseline)||list[0];
+  const base=projectTime(data,baseline.id,horizonWeeks);
+  const maxTime=Math.max(1,...list.map(s=>projectTime(data,s.id,horizonWeeks).totalMinutes));
+  return `<div class="section-head"><div><span class="section-kicker">TOTAL TIME FIRST</span><h2>行動数ではなく、総時間を比較する</h2><p>行動が増えても、合計時間が短ければ改善です。</p></div>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-primary')}</div>
+    <section class="time-principle" aria-label="評価方針"><div><strong>総時間 ＝ 初回の準備時間 ＋（毎週の実作業・準備・後片付け・維持管理 ＋ 追加の記録・管理時間）× 期間</strong><p>記録するための手間も対象です。すでに行動として計上している時間は重複入力しないでください。未測定項目があれば、優劣は確定しません。</p></div><label class="time-period"><span>評価期間</span><select id="time-horizon" aria-label="総時間の評価期間">${[1,4,12,26,52].map(w=>`<option value="${w}" ${horizonWeeks===w?'selected':''}>${w}週間</option>`).join('')}</select></label></section>
+    <div class="time-summary"><div><small>現在の方法・${horizonWeeks}週間</small><strong>${fmtMin(base.totalMinutes)}</strong><span>毎週 ${fmtMin(base.weeklyMinutes)} ＋ 初回 ${fmtMin(base.setupMinutes)}${base.unmeasured?` · 未測定${base.unmeasured}件のため暫定値`:""}</span></div><div><small>評価基準</small><strong>合計所要時間</strong><span>件数では順位を決めません</span></div></div>
+    <div class="compare-grid">${list.map(s=>{
+      const comparison=compareTime(data,baseline.id,s.id,horizonWeeks), t=comparison.option;
+      const isBase=s.id===baseline.id;
+      const label=isBase?'比較基準':!comparison.complete?'要測定':comparison.status==='improved'?'時間を削減':comparison.status==='worse'?'時間が増加':'同じ時間';
+      const delta=comparison.savedMinutes;
+      const counts=isBase?`${t.actionCount}行動`:`${t.actionCount}行動（${comparison.addedActions>=0?'+':''}${comparison.addedActions}件）`;
+      const verdict=isBase?'現在の方法':!comparison.complete?'未測定があるため改善判定は保留':delta>0?`総時間 ${fmtMin(delta)}短縮`:delta<0?`総時間 ${fmtMin(-delta)}増加`:'総時間は同じ';
+      return `<article class="comparison-card ${isBase?'baseline':''}"><div class="compare-card-top"><span class="pill ${isBase?'dark':''}">${label}</span>${!isBase?btn('set-baseline','基準にする','btn-small',`data-id="${eAttr(s.id)}"`):''}</div>
+      <h3>${esc(s.name)}</h3><p>${esc(s.description)}</p><div class="compare-label">${horizonWeeks}週間の総時間</div><div class="compare-number">${fmtMin(t.totalMinutes)}</div>
+      ${t.unmeasured?`<div class="unmeasured-note">未測定 ${t.unmeasured}件。合計は下限値で、優劣は未確定です。</div>`:''}
+      <div class="compare-bar"><span style="width:${Math.round(t.totalMinutes/maxTime*100)}%"></span></div>
+      <div class="time-breakdown"><span>毎週の作業・管理：<b>${fmtMin(t.weeklyMinutes)}</b></span><span>うち追加の記録・管理：${fmtMin(t.managementMinutesPerWeek)}</span><span>初回の準備・配置：<b>${fmtMin(t.setupMinutes)}</b></span><span>期間中の費用：<b>${fmtYen(t.totalYen)}</b></span></div>
+      ${!isBase&&comparison.complete&&comparison.recurringSavedMinutes>0&&comparison.setupDifferenceMinutes>0?`<div class="time-payback">準備に増える時間の回収目安：約${Math.ceil(comparison.paybackWeeks)}週（端数切り上げ）</div>`:''}
+      <div class="compare-card-footer"><span>${counts}</span><span class="${!comparison.complete?'':delta>0?'positive':delta<0?'negative':''}">${verdict}</span></div>
+      <div class="time-card-actions">${btn('edit-scenario-by-id',`${icon('edit',15)} 時間・条件を編集`,'btn-outline',`data-id="${eAttr(s.id)}"`)}${btn('view-scenario',`${icon('arrow',15)} 行動を確認`,'btn-outline',`data-id="${eAttr(s.id)}"`)}</div></article>`;
+    }).join('')}</div>
+    <div class="compare-note">※ 共通する作業は各方法に同じ基準で入れてください。未計測がある方法は時間の優劣を確定せず、品質・衛生・安全・環境負荷・費用も別途確認してください。初回費用は週次費用とは別に計上しています。</div>`;
+}
+
+function renderEnvironment() {
+ const report=analyzeEnvironment(data,selectedGoal,selectedScenario);
+ const actions=getScenarioActions(data,selectedScenario);
+ const scenarios=scenariosOfGoal();
+ return `<div class="section-head"><div><span class="section-kicker">ENVIRONMENT DESIGN</span><h2>使う道具と置き場所を決める</h2><p>物を置く理由は、実際に使う行動から決めます。未使用と判定されても自動で捨てることはありません。</p></div>${btn('new-item',`${icon('plus',16)} 道具を登録`,'btn-primary')}</div>
+ <div class="env-controls"><label class="form-field"><span>作業方法を選択</span><select id="environment-scenario">${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label><p>この方法と、ほかの方法で使う道具を区別して表示します。実際に使用する行動を関連付けてください。</p></div>
+ <div class="env-audit" aria-label="道具の見直し状況"><div><strong>${report.items}</strong><span>登録した物</span></div><div><strong>${report.usedHere}</strong><span>この方法で使用</span></div><div><strong>${report.review}</strong><span>配置・用途の確認候補</span></div><div><strong>${report.unused}</strong><span>使い道の記録なし</span></div></div>
+ ${report.rows.length?`<div class="env-grid">${report.rows.map(item=>{const used=item.usedHere;const upkeep=used.filter(a=>a.kind==='maintenance');const upkeepMinutes=upkeep.reduce((sum,a)=>sum+weeklyMinutes(a),0);const upkeepUnknown=upkeep.filter(a=>a.minutes==null).length;return `<article class="env-card ${item.review?'needs-review':''}"><div class="env-card-top"><div><span class="section-kicker">${item.review?'配置・用途を見直す候補':'FIXED LOCATION'}</span><h3>${esc(item.name)}</h3></div>${btn('edit-item',icon('edit',15),'icon-btn',`data-id="${eAttr(item.id)}" aria-label="道具を編集"`)}</div><div class="env-tags"><span class="env-status ${item.review?'attention':''}">${esc(item.status)}</span><span class="env-status muted">${esc(PLACEMENTS[item.placement])}</span></div><div class="env-home">${icon('target',16)} <span>${esc(item.home||'定位置が未設定です')}</span></div><p>${esc(item.note||'')}</p><div class="env-advice">${esc(item.advice)}</div>${upkeep.length?`<div class="env-upkeep"><strong>この物に関連する後処理・管理</strong><span>${upkeep.length}行動 / 計測分 ${fmtMin(upkeepMinutes)}・週${upkeepUnknown?`（未測定 ${upkeepUnknown}件）`:''}</span><small>${upkeep.map(a=>esc(a.name)).join('、')}。同じ行動を複数の物に紐づけた場合、合計は重複するので参考値です。</small></div>`:''}<details><summary>この方法で使う行動 <strong>${used.length}件</strong>${item.usedElsewhere.length?` <small>（ほかの方法 ${item.usedElsewhere.length}件）</small>`:''}</summary><div class="env-actions">${actions.length?actions.map(a=>{const linked=used.some(x=>x.id===a.id);return `<button type="button" data-action="toggle-item-action" data-item="${eAttr(item.id)}" data-id="${eAttr(a.id)}" aria-pressed="${linked}"><span>${linked?'✓':'+'}</span>${esc(a.name)}</button>`;}).join(''):'<small>行動を登録すると、関連付けができます。</small>'}</div></details></article>`;}).join('')}</div>`:`<div class="empty-state"><h2>まだ道具の登録がありません</h2><p>必要な道具と、使った後に戻す場所を決めましょう。</p>${btn('new-item','道具を登録する','btn-primary')}</div>`}
+ <div class="bottom-message"><span class="message-icon">✳</span><div><strong>設計の視点</strong><p>使用記録がないことは「不要」の証明ではありません。使う目的・再入手の難しさ・保管の負担を確認して判断します。</p></div></div>`;
+}
+function renderHistory() {
+ const experiments=data.experiments.filter(e=>e.goalId===selectedGoal).slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+ const scenarios=scenariosOfGoal();
+ return `<div class="section-head"><div><span class="section-kicker">VERIFY & LEARN</span><h2>改善を記録する</h2><p>机上の試算だけで終わらせず、実際に試して確かめる。</p></div></div>
+ <section class="history-layout"><form id="experiment-form" class="panel form-panel"><div class="panel-title">検証結果を記録</div><p class="panel-desc">新しい方法を試した結果を残しましょう。</p><div class="form-grid"><label class="form-field"><span>比較元の方法</span><select name="beforeId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),scenarios.find(s=>s.isBaseline)?.id||scenarios[0]?.id)}</select></label><label class="form-field"><span>試した方法</span><select name="afterId" required>${selectOptions(scenarios.map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><div class="form-grid"><label class="form-field"><span>変更前の実測（分/週・任意）</span><input name="beforeActualMinutes" type="number" min="0" step="0.5" placeholder="例：25"></label><label class="form-field"><span>変更後の実測（分/週・任意）</span><input name="afterActualMinutes" type="number" min="0" step="0.5" placeholder="例：12"></label></div><div class="time-measure-note"><strong>総時間の実測（推奨）</strong><p>同じ期間について、準備・作業・管理・後片付けを含む実際の総時間を入力してください。別の時間枠で計測した値は比較しないでください。</p></div><div class="form-grid"><label class="form-field"><span>変更前の実測総時間（分）</span><input name="beforeTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：150"></label><label class="form-field"><span>変更後の実測総時間（分）</span><input name="afterTotalActualMinutes" type="number" min="0" step="0.5" placeholder="例：120"></label></div><label class="form-field"><span>実測の対象期間（週）</span><input name="actualObservationWeeks" type="number" min="1" max="260" step="1" value="4"></label><label class="form-field"><span>気づいたこと・改善結果</span><textarea name="note" rows="4" required maxlength="2000" placeholder="実際にやってみて気づいたこと、想定外に増えた作業など"></textarea></label><button type="submit" class="btn btn-primary full">${icon('plus',16)} 記録を保存</button></form>
+ <div class="panel timeline-panel"><div class="panel-title">これまでの検証 <span>${experiments.length}件</span></div>${experiments.length ? `<div class="timeline">${experiments.map(e=>{const before=data.scenarios.find(s=>s.id===e.beforeId);const after=data.scenarios.find(s=>s.id===e.afterId);const delta=e.plannedBeforeMinutes!==undefined&&e.plannedAfterMinutes!==undefined?e.plannedBeforeMinutes-e.plannedAfterMinutes:scenarioTotals(data,e.beforeId).minutes-scenarioTotals(data,e.afterId).minutes;const actualDiff=verifiedSavings(e.beforeActualMinutes,e.afterActualMinutes);const totalVerdict=measuredTimeVerdict(e.beforeTotalActualMinutes,e.afterTotalActualMinutes);return `<article class="timeline-item"><div class="timeline-meta">${new Date(e.createdAt).toLocaleDateString('ja-JP')} <span class="timeline-bullet">●</span></div><strong>${esc(e.beforeName||before?.name||'削除された方法')} → ${esc(e.afterName||after?.name||'削除された方法')}</strong><p>${esc(e.note)}</p><div class="timeline-tags">${totalVerdict?`<span class="time-verified ${totalVerdict.status}">実測総時間（${e.actualObservationWeeks??'?'}週）：${totalVerdict.savedMinutes>=0?'−':'+'}${fmtMin(Math.abs(totalVerdict.savedMinutes))}</span>`:''}${e.plannedHorizonWeeks&&e.plannedTotalsComplete?`<span>予測総時間差（${e.plannedHorizonWeeks}週）：${e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes>=0?'−':'+'}${fmtMin(Math.abs(e.plannedBeforeTotalMinutes-e.plannedAfterTotalMinutes))}</span>`:''}<span>計画差（週）: ${delta>0?'-':'+'}${fmtMin(Math.abs(delta))}/週</span>${actualDiff!==null?`<span>実測差: ${actualDiff>=0?'−':'+'}${fmtMin(Math.abs(actualDiff))}/週</span>`:e.actualMinutes!==null&&e.actualMinutes!==undefined?`<span>実測（旧形式）: ${fmtMin(e.actualMinutes)}/週</span>`:''}</div><button type="button" data-action="delete-experiment" data-id="${eAttr(e.id)}" class="link-danger">記録を削除</button></article>`;}).join('')}</div>`:`<div class="no-history">${icon('history',32)}<strong>まだ検証の記録はありません</strong><p>新しい方法を実際に試したら、結果をここに記録しましょう。</p></div>`}</div></section>`;
+}
+function renderCloud() {
+  const connected=!!cloud?.userId;
+  const config=cloud?.config;
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.8</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
+  <section class="panel cloud-card"><h2>1. 専用クラウド（接続先を設定済み）</h2><p class="panel-desc">KŌDŌ専用Supabaseに接続します。接続先は設定済みのため、通常は変更不要です。ほかのプロジェクトに接続するときだけ変更してください。入力する鍵は公開用のみです。</p>
+    <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||'')}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" placeholder="sb_publishable_..." required value="${eAttr(config?.publishableKey||'')}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></section>
+  <section class="panel cloud-card"><h2>2. アカウント</h2><p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'メールアドレスとパスワードで登録・ログインします。'} ログイン時にはアカウント別の端末データへ切り替えます。ゲストの記録や別のアカウントの記録は自動では取り込みません。ログインしただけではクラウドデータで上書きしません。</p>
+    ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`: `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required></label><label class="form-field"><span>パスワード</span><input name="password" type="password" minlength="6" autocomplete="current-password" required></label><div class="cloud-actions"><button class="btn btn-primary" name="intent" value="login" ${cloudBusy?'disabled':''}>ログイン</button><button class="btn btn-outline" name="intent" value="signup" ${cloudBusy?'disabled':''}>新規登録</button></div></form>`}</section>
+  <section class="panel cloud-card"><h2>3. 同期を確認する</h2><p class="sync-status">${esc(cloudStatus)}</p>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}
+  <div class="cloud-actions">${btn('cloud-pull','クラウド → この端末','btn-outline',!connected||cloudBusy?'disabled':'')}${btn('cloud-push','この端末 → クラウド','btn-primary',!connected||cloudBusy?'disabled':'')}</div>
+  <p class="panel-desc">同期後は編集ごとにクラウドへ送信します。オフライン時や競合時は自動同期を停止し、この端末の記録を保持します。競合時は必ず双方のJSONをバックアップしてから、どちらを採用するか判断してください。</p><p class="panel-desc">ブラウザへのログイン保存は共用端末向きではありません。HTTPSで公開した環境でご利用ください。</p></section>`;
+}
+function renderAi() {
+ const s=scenario();const g=goal();
+ return `<div class="page-heading"><div class="eyebrow">AI IMPROVEMENT LAB / v0.8</div><h1>総時間を減らす改善案を考える。</h1><p>AIは仮説を出すだけです。時間の短縮は実測で確かめます。</p></div>
+ <section class="panel cloud-card"><h2>分析対象</h2><div class="cloud-form"><label class="form-field"><span>目的</span><select id="ai-goal-select">${selectOptions(data.goals.map(g=>[g.id,g.name]),selectedGoal)}</select></label><label class="form-field"><span>方法</span><select id="ai-scenario-select">${selectOptions(scenariosOfGoal().map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><p class="panel-desc">${s?`現在 ${getScenarioActions(data,s.id).length}行動、評価期間 ${horizonWeeks}週間。`:''}必要な行動が増えても総時間が短くなる方法を探します。AIへ送るのは選択中の目的・方法・行動とその時間だけです。送信前に機密情報が含まれていないか確認してください。</p>
+ ${btn('ai-analyze',`${icon('spark',16)} ${aiBusy?'分析中...':'AIで改善案を分析'}`,'btn-primary',(!cloud?.userId||!s||aiBusy)?'disabled':'')}
+ ${!cloud?.userId?`<p class="panel-desc">本格的なAI分析には「クラウド同期」でログインし、Edge FunctionとAPIキーをサーバー側に設定してください。</p>`:''}
+ ${aiMessage?`<p class="cloud-error">${esc(aiMessage)}</p>`:''}</section>
+ ${aiSuggestions.length?`<div class="section-head"><div><span class="section-kicker">PROPOSALS</span><h2>AIの改善仮説 <span class="heading-counter">${aiSuggestions.length}件</span></h2></div></div><section class="ai-cards">${aiSuggestions.map(p=>`<article class="panel ai-proposal"><h3>${esc(p.title)}</h3><p>${esc(p.rationale)}</p><div class="ai-parts"><div><strong>減らす・置き換える候補</strong><ul>${p.reduce.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>提案なし</li>'}</ul></div><div><strong>新たに増える行動</strong><ul>${p.add.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>要確認</li>'}</ul></div></div><div class="ai-measure"><strong>検証方法</strong><p>${esc(p.measurementPlan)}</p></div>${p.risks.length?`<div class="ai-warning"><strong>注意・制約</strong><p>${p.risks.map(esc).join(' / ')}</p></div>`:''}<button class="btn btn-outline" data-action="ai-draft" data-ai-index="${p.id}">この案の検討用に方法を複製する</button></article>`).join('')}</section>`:''}
+ <div class="bottom-message"><span class="message-icon">✳</span><div><strong>AIは、所要時間を勝手に埋めません。</strong><p>総時間 ＝ 初回準備 ＋ 評価期間×（実作業・後片付け・記録・維持管理）。未測定時間がある場合、改善判定は保留します。</p></div></div>`;
+}
+function renderData() {
+  // Restricted previews can deny access to localStorage even when the page renders.
+  let recovery = [];
+  try { recovery = readRecoveryPoints(recoveryScope()); } catch {}
+  return `<div class="page-heading"><div class="eyebrow">OWN YOUR DATA <span class="line"></span> データと管理</div><div class="heading-row"><div><h1>データは、自分で管理する。</h1><p>この端末に保存され、設定済みならクラウドにも同期されます。</p></div></div></div><div class="settings-grid"><div class="panel setting-panel"><div class="setting-icon">${icon('download',23)}</div><h2>バックアップを書き出す</h2><p>目的・方法・行動・検証記録をJSONファイルに保存します。端末変更前にも書き出してください。</p>${btn('export',`${icon('download',16)} JSONを書き出す`,'btn-primary')}</div><div class="panel setting-panel"><div class="setting-icon">${icon('upload',23)}</div><h2>バックアップから復元</h2><p>このアプリで書き出したJSONファイルを読み込みます。現在のデータは置き換えられます。</p><label class="btn btn-outline import-label">${icon('upload',16)} JSONを読み込む<input id="import-file" type="file" accept=".json,application/json" hidden></label></div></div>${recovery.length ? `<section class="panel setting-panel"><h2>変更前の状態に戻す</h2><p>同期・取り込み・初期化の前の記録を、このブラウザに最大3件保存しています。元に戻す前に、現在の状態も保護します。</p><div class="recovery-list">${recovery.map((p,i)=>`<button class="btn btn-outline" data-action="restore-recovery" data-index="${i}">${esc(p.createdAt.slice(0,16).replace('T',' '))} / ${esc(p.reason)} / ${p.payload.actions.length}行動</button>`).join('')}</div></section>` : ''}<section class="panel data-info"><div class="panel-title">保存状況</div><div class="data-facts"><div><strong>${data.goals.length}</strong><span>目的</span></div><div><strong>${data.scenarios.length}</strong><span>方法</span></div><div><strong>${data.actions.length}</strong><span>行動</span></div><div><strong>${data.experiments.length}</strong><span>検証</span></div><div><strong>${data.items.length}</strong><span>道具</span></div></div><div class="notice"><strong>プライバシー・保存範囲について</strong><p>ゲスト領域とログインアカウントの端末データ・復旧履歴は分離されます。ログイン前の記録を移したい場合は、ゲスト状態でJSONを書き出し、ログイン後に明示的に取り込んでください。ブラウザ内の localStorage に保存するため、共有端末の他人から秘匿できる仕組みではありません。未ログインならブラウザ内の localStorage のみで保存します。クラウド同期は専用プロジェクトへのログイン・初回同期後に動作します。ブラウザのデータを削除すると記録が失われることがあるため、定期的にJSONで保存してください。</p></div><div class="danger-zone"><div><strong>サンプル状態へ戻す</strong><p>すべての記録を消去し、サンプルデータへ戻します。</p></div>${btn('reset-demo','初期化','btn-danger-outline')}</div></section>`;
+}
+
+function renderDialog() {
+  if (!dialog) { modalRoot.innerHTML=''; return; }
+  const type=dialog.type, editing=!!dialog.id;
+  let title='', fields='', subtitle='';
+  if (type==='goal') {
+    const g=data.goals.find(x=>x.id===dialog.id) || {name:'',description:''};
+    title=editing?'目的を編集':'新しい目的';subtitle='「何を達成したいか」を具体的にしましょう。';
+    fields=`<label class="form-field"><span>目的の名前 *</span><input name="name" maxlength="100" required autofocus value="${eAttr(g.name)}" placeholder="例：朝の準備を簡単にする"></label><label class="form-field"><span>目指す状態</span><textarea name="description" rows="3" maxlength="500" placeholder="何が実現できれば成功？">${esc(g.description)}</textarea></label>`;
+  } else if (type==='scenario') {
+    const s=data.scenarios.find(x=>x.id===dialog.id)||{name:'',description:'',setupMinutes:0,setupYen:0,managementMinutesPerWeek:0};
+    title=editing?'方法を編集':'方法を追加';subtitle='同じ目的を達成する、別のやり方を登録できます。';
+    fields=`<label class="form-field"><span>方法の名前 *</span><input name="name" maxlength="100" required autofocus value="${eAttr(s.name)}" placeholder="例：使い捨て容器をやめる"></label><label class="form-field"><span>方法の特徴・成立条件</span><textarea name="description" maxlength="800" rows="3" placeholder="必要な設備や前提条件など">${esc(s.description)}</textarea></label><div class="form-grid">${numberField('setupMinutes','初回の準備・設置（分）',s.setupMinutes??0)}${numberField('setupYen','初回費用（円）',s.setupYen??0)}</div>${numberField('managementMinutesPerWeek','追加の記録・管理時間（分/週）',s.managementMinutesPerWeek??0)}<div class="quick-warning">準備には道具の配置替え、初期設定なども含めます。記録・管理に使う時間も総時間に含めます。すでに個々の行動として登録した時間は、ここに二重計上しないでください。</div>`;
+  } else if (type==='action') {
+    const a=data.actions.find(x=>x.id===dialog.id)||{name:'',kind:'support',essential:false,minutes:null,frequency:1,yen:0,note:''};
+    title=editing?'行動を編集':'行動を追加';subtitle='1回あたりの手間と頻度を登録。時間が分からなければ空欄で大丈夫です。';
+    fields=`<label class="form-field"><span>行動の名前 *</span><input name="name" maxlength="100" required autofocus value="${eAttr(a.name)}" placeholder="例：洗浄する"></label>
+      <label class="form-field"><span>行動の種類</span><select name="kind">${selectOptions(Object.entries(kinds).map(([k,v])=>[k,v.name]),a.kind)}</select></label>
+      <div class="form-grid">${numberField('minutes','1回の所要時間（分）',a.minutes)}${numberField('frequency','回数 / 週',a.frequency)}</div>
+      ${numberField('yen','1回の費用（円）',a.yen)}
+      <label class="check-field"><input type="checkbox" name="essential" ${a.essential?'checked':''}><span><strong>この方法にとって必須の行動</strong><small>必須にすると、自動削減の対象から保護します。</small></span></label>
+      <label class="form-field"><span>メモ</span><textarea name="note" maxlength="1000" rows="2">${esc(a.note)}</textarea></label>`;
+  } else if (type==='item') {
+    const item=data.items.find(x=>x.id===dialog.id)||{name:'',home:'',note:'',placement:'undecided'};
+    title=editing?'道具・物を編集':'道具・物を登録';subtitle='必要性と定位置を決めます。保管場所は後から変えられます。';
+    fields=`<label class="form-field"><span>道具・物の名前 *</span><input name="name" maxlength="100" required autofocus value="${eAttr(item.name)}" placeholder="例：手工具一式"></label><label class="form-field"><span>定位置</span><input name="home" maxlength="200" value="${eAttr(item.home)}" placeholder="例：作業台の右壁・工具掛け"></label><label class="form-field"><span>現在の配置</span><select name="placement">${selectOptions(Object.entries(PLACEMENTS),item.placement||'undecided')}</select></label><label class="form-field"><span>使う理由・注意</span><textarea name="note" rows="3" maxlength="1000">${esc(item.note)}</textarea></label>`;
+  } else if (type==='quick') {
+    title='行動をまとめて記録';subtitle='観察した行動を1行につき1つ。まずは順番だけでも記録しましょう。';
+    fields=`<label class="form-field"><span>実際に行ったこと（1行に1行動・最大30件）</span><textarea name="lines" autofocus rows="9" maxlength="5000" required placeholder="道具を取りに行く&#10;材料を取り出す&#10;作業する&#10;道具を洗う&#10;元の場所に戻す"></textarea></label><label class="check-field"><input type="checkbox" name="linkSequence" checked><span><strong>入力順で作業をつなぐ</strong><small>点線の「実行順序」としてつなぎます。因果関係は勝手に推定しません。</small></span></label><div class="quick-warning">所要時間を測っていない場合は「未測定」にします。0分とは区別して管理します。</div>`;
+  } else if (type==='narrative') {
+    title='文章から行動を整理'; subtitle='ふだんの言葉で書いて、登録前に確認。AIの自動推論ではなく、端末内で動く簡易解析です。';
+    const raw=dialog.raw||'';
+    const parsed=dialog.draft;
+    fields=`<label class="form-field"><span>行動の説明（日本語・最大5000文字）</span><textarea name="narrativeText" rows="5" maxlength="5000" placeholder="例：朝、タンブラーにお茶を入れる。持ち歩く。帰宅したら洗う。乾かす。
+または：タンブラーを使う ⇒ 洗う → 乾かす">${esc(raw)}</textarea></label>
+      <div class="narrative-guide"><strong>書き方のヒント</strong><span>句読点・改行で行動を区切ります。「A ⇒ B」はAがBを発生させる関係、「A → B」は実行順序です。通常の文章から因果関係は自動確定しません。</span></div>
+      ${btn('parse-narrative',`${icon('spark',15)} 候補を抽出・更新`,'btn-outline narrative-parse')}
+      ${parsed?`<div class="narrative-review"><div class="narrative-review-head"><strong>登録前の確認 — ${parsed.steps.length}候補</strong><small>追加する候補を選び、必要に応じて名前を編集してください。</small></div>
+        ${parsed.steps.length?`<div class="narrative-steps">${parsed.steps.map((step,i)=>`<div class="narrative-step"><label class="narrative-checkbox"><input type="checkbox" name="include-${i}" ${step.existing?'disabled':'checked'}><span>${i+1}</span></label><input type="text" name="step-${i}" maxlength="100" value="${eAttr(step.name)}" ${step.existing?'disabled':''} aria-label="行動${i+1}の名前"><select name="kind-${i}" aria-label="行動${i+1}の種類" ${step.existing?'disabled':''}>${selectOptions(Object.entries(kinds).map(([key,v])=>[key,v.name]),step.kind)}</select>${step.existing?'<small class="narrative-existing">登録済み</small>':''}</div>`).join('')}</div>`:'<p>候補が見つかりません。句読点や改行で区切って再解析してください。</p>'}
+        ${parsed.suggestions?.length?`<div class="narrative-suggestions"><strong>派生しそうな作業の候補</strong><small>一般的な仮説です。実際に必要と確認したものだけを選択してください。選ぶと発生元との因果関係も登録します。</small>${parsed.suggestions.map((suggestion,i)=>`<label><input type="checkbox" name="suggestion-${i}"><span>${esc(suggestion.name)}<small>${esc(parsed.steps[suggestion.parent]?.name)} からの派生候補</small></span></label>`).join('')}</div>`:''}
+        ${parsed.links.length?`<div class="narrative-relations"><strong>明示された関係</strong>${parsed.links.map(l=>`<div>${esc(parsed.steps[l.from]?.name)} <b>${l.type==='causes'?'⇒':'→'}</b> ${esc(parsed.steps[l.to]?.name)}</div>`).join('')}</div>`:''}
+        <label class="check-field"><input type="checkbox" name="linkSequence"><span><strong>選んだ行動を入力順につなぐ</strong><small>これによって追加する関係は「順序のみ」です。因果関係にはなりません。</small></span></label>
+        ${parsed.skipped.length?`<p class="narrative-alert">長すぎる項目 ${parsed.skipped.length}件は除外しました。</p>`:''}${parsed.truncated?'<p class="narrative-alert">30件を超えました。続きは別に登録してください。</p>':''}
+        </div>`:''}`;
+  } else if (type==='link') {
+    const arr=getScenarioActions(data,selectedScenario);
+    title='行動同士をつなぐ';subtitle='原因と順番は別の関係です。派生の削減判定には「発生させる」を使用します。';
+    fields=`<label class="form-field"><span>もとになる行動</span><select name="fromId" required>${selectOptions(arr.map(a=>[a.id,a.name]),selectedAction||arr[0]?.id)}</select></label><label class="form-field"><span>関係の種類</span><select name="type"><option value="causes">発生させる（因果関係）</option><option value="precedes">この後に行う（順序のみ）</option></select></label><label class="form-field"><span>つながる行動</span><select name="toId" required>${selectOptions(arr.map(a=>[a.id,a.name]),arr.find(a=>a.id!==selectedAction)?.id)}</select></label>
+      <div class="existing-links"><strong>登録済みの関係</strong>${getScenarioLinks(data,selectedScenario).length ? getScenarioLinks(data,selectedScenario).map(l=>`<div class="existing-link"><span>${esc(arr.find(a=>a.id===l.fromId)?.name)} ${l.type==='causes'?'→（発生）':'⇢（順序）'} ${esc(arr.find(a=>a.id===l.toId)?.name)}</span><button type="button" class="link-danger" data-action="delete-link" data-id="${eAttr(l.id)}">削除</button></div>`).join(''):'<p>まだつながりはありません。</p>'}</div>`;
+  }
+  modalRoot.innerHTML=`<div class="modal-overlay"><div class="modal-box" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modal-header"><div><span class="section-kicker">EDIT WORKSPACE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button type="button" class="modal-x" data-action="close-dialog" aria-label="閉じる">${icon('close',20)}</button></div><form id="dialog-form"><div class="modal-fields">${fields}</div><div class="modal-footer">${editing&&type==='item'?btn('delete-item','道具を削除','btn-text danger-text'):editing&&type==='goal'?btn('delete-goal','目的を削除','btn-text danger-text'):editing&&type==='scenario'?btn('delete-scenario','方法を削除','btn-text danger-text'):'<span></span>'}${btn('close-dialog','キャンセル','btn-outline')}<button class="btn btn-primary" type="submit" ${type==='narrative'&&!dialog.draft?'disabled title="先に候補を抽出してください"':''}>${icon('check',16)} ${type==='narrative'?'選んだ行動を登録':'保存する'}</button></div></form></div></div>`;
+  modalRoot.querySelector('.modal-overlay')?.addEventListener('click', e=>{if(e.target.classList.contains('modal-overlay')){dialog=null;renderDialog();}});
+  requestAnimationFrame(()=>modalRoot.querySelector('[autofocus]')?.focus());
+}
+function cloneScenario(sourceId, excludeIds=[], suffix='（複製）') {
+  const src=data.scenarios.find(s=>s.id===sourceId);
+  if (!src) return null;
+  const newScenarioId=id();
+  const idMap=new Map();
+  const clonedActions=getScenarioActions(data,sourceId).filter(a=>!excludeIds.includes(a.id)).map(a=>{
+    const newId=id(); idMap.set(a.id,newId);return {...a,id:newId,scenarioId:newScenarioId};
+  });
+  const clonedLinks=getScenarioLinks(data,sourceId).filter(l=>idMap.has(l.fromId)&&idMap.has(l.toId)).map(l=>({...l,id:id(),scenarioId:newScenarioId,fromId:idMap.get(l.fromId),toId:idMap.get(l.toId)}));
+  const clonedItemLinks=data.actionItems.filter(rel=>idMap.has(rel.actionId)).map(rel=>({id:id(),itemId:rel.itemId,actionId:idMap.get(rel.actionId)}));
+  data.scenarios.push({...src,id:newScenarioId,name:src.name+suffix,isBaseline:false});
+  data.actions.push(...clonedActions);data.links.push(...clonedLinks);data.actionItems.push(...clonedItemLinks);
+  selectedScenario=newScenarioId;selectedAction=null;
+  return newScenarioId;
+}
+function deleteScenario(sid) {
+  const removedActions=new Set(data.actions.filter(a=>a.scenarioId===sid).map(a=>a.id));
+  data.actionItems=data.actionItems.filter(rel=>!removedActions.has(rel.actionId));
+  data.links=data.links.filter(l=>l.scenarioId!==sid);
+  data.actions=data.actions.filter(a=>a.scenarioId!==sid);
+  data.scenarios=data.scenarios.filter(s=>s.id!==sid);
+  selectedScenario=null;selectedAction=null;
+}
+function deleteGoal(gid) {
+  data.scenarios.filter(s=>s.goalId===gid).forEach(s=>deleteScenario(s.id));
+  const removedItems=new Set(data.items.filter(item=>item.goalId===gid).map(item=>item.id));
+  data.actionItems=data.actionItems.filter(rel=>!removedItems.has(rel.itemId));
+  data.items=data.items.filter(item=>item.goalId!==gid);
+  data.experiments=data.experiments.filter(e=>e.goalId!==gid);
+  data.goals=data.goals.filter(g=>g.id!==gid);selectedGoal=null;
+}
+function handleAction(el) {
+  const type=el.dataset.action;
+  if (!type) return;
+  switch(type) {
+    case 'new-goal': dialog={type:'goal'};renderDialog();break;
+    case 'edit-goal': dialog={type:'goal',id:selectedGoal};renderDialog();break;
+    case 'edit-scenario-by-id': if(!data.scenarios.some(s=>s.id===el.dataset.id&&s.goalId===selectedGoal))return;dialog={type:'scenario',id:el.dataset.id};renderDialog();break;
+    case 'new-scenario': if(!selectedGoal){notify('先に目的を追加してください',true);break;}dialog={type:'scenario'};renderDialog();break;
+    case 'edit-scenario': dialog={type:'scenario',id:selectedScenario};renderDialog();break;
+    case 'new-action': dialog={type:'action'};renderDialog();break;
+    case 'new-item': dialog={type:'item'};renderDialog();break;
+    case 'edit-item': dialog={type:'item',id:el.dataset.id};renderDialog();break;
+    case 'quick-capture': if(!selectedScenario)return;dialog={type:'quick'};renderDialog();break;
+    case 'narrative-capture': if(!selectedScenario)return;dialog={type:'narrative',raw:'',draft:null};renderDialog();break;
+    case 'parse-narrative': {
+      if(dialog?.type!=='narrative')return;
+      const input=modalRoot.querySelector('[name="narrativeText"]');
+      const raw=input?.value || '';
+      const currentNames=getScenarioActions(data,selectedScenario).map(a=>a.name);
+      const parsed=parseNarrativeInput(raw,currentNames);
+      const seen=new Set([...parsed.steps.map(s=>s.name),...currentNames].map(s=>s.toLocaleLowerCase('ja-JP')));
+      parsed.suggestions=[];
+      parsed.steps.forEach((step,parent)=>{
+        for(const name of suggestSpecificConsequences(step.name,[...seen],3)) {
+          const key=name.toLocaleLowerCase('ja-JP');
+          if(seen.has(key)||parsed.suggestions.length>=8)continue;
+          seen.add(key);parsed.suggestions.push({name,parent,kind:classifyAction(name)});
+        }
+      });
+      if(!parsed.steps.length){notify('文章を短い文や改行で区切ってください。',true);return;}
+      dialog={type:'narrative',raw,draft:parsed};renderDialog();break;
+    }
+    case 'undo': undo();break;
+    case 'suggest-action': {
+      const source=action();if(!source)return;
+      const suggestions=suggestNextActions(source.name,getScenarioActions(data,selectedScenario).map(x=>x.name));
+      const name=suggestions[Number(el.dataset.suggestion)];if(!name)return;
+      mutate(()=>{const aid=id();data.actions.push({id:aid,scenarioId:selectedScenario,name,kind:'maintenance',essential:false,minutes:null,frequency:1,yen:0,note:'候補から登録。必要性と因果関係を確認してください。'});
+        if(canLink(data,selectedScenario,source.id,aid))data.links.push({id:id(),scenarioId:selectedScenario,fromId:source.id,toId:aid,type:'causes'});
+        selectedAction=aid;});notify('候補を登録しました。時間・頻度・必須かどうかを確認してください。');break;
+    }
+    case 'edit-action': dialog={type:'action',id:selectedAction};renderDialog();break;
+    case 'new-link': if(getScenarioActions(data,selectedScenario).length<2){notify('行動を2件以上登録してください');break;}dialog={type:'link'};renderDialog();break;
+    case 'close-dialog': dialog=null;renderDialog();break;
+    case 'clear-action': selectedAction=null;render();break;
+    case 'clone-scenario': mutate(()=>cloneScenario(selectedScenario));notify('方法を複製しました。編集して比較できます。');break;
+    case 'make-candidate': {
+      if(!selectedAction)return;
+      const sim=simulateRemoval(data,selectedScenario,selectedAction);
+      if(sim.essentialRemoved||sim.broken.length){notify('必須行動が失われるため、この案は作れません。',true);return;}
+      mutate(()=>cloneScenario(selectedScenario,sim.removed,'（削減案）'));
+      notify(`${sim.removed.length}件の行動を省いた改善案を作成しました。`);break;
+    }
+    case 'delete-action': {
+      if(!selectedAction || !confirm('この行動だけを削除します。派生行動は自動削除しません。よろしいですか？'))return;
+      mutate(()=>{data.actions=data.actions.filter(a=>a.id!==selectedAction);data.links=data.links.filter(l=>l.fromId!==selectedAction&&l.toId!==selectedAction);data.actionItems=data.actionItems.filter(rel=>rel.actionId!==selectedAction);selectedAction=null;});notify('行動を削除しました。');break;
+    }
+    case 'toggle-item-action': {
+      const itemId=el.dataset.item,actionId=el.dataset.id;
+      if(!data.items.some(item=>item.id===itemId&&item.goalId===selectedGoal)||!getScenarioActions(data,selectedScenario).some(a=>a.id===actionId))return;
+      mutate(()=>{const index=data.actionItems.findIndex(rel=>rel.itemId===itemId&&rel.actionId===actionId);if(index>=0)data.actionItems.splice(index,1);else data.actionItems.push({id:id(),itemId,actionId});});break;
+    }
+    case 'delete-item': {
+      if(!dialog?.id||!confirm('この道具と行動の紐付けを削除しますか？'))return;
+      mutate(()=>{const old=dialog.id;data.items=data.items.filter(item=>item.id!==old);data.actionItems=data.actionItems.filter(rel=>rel.itemId!==old);dialog=null;});notify('道具を削除しました。');break;
+    }
+    case 'delete-link': {
+      const linkId=el.dataset.id;
+      mutate(()=>data.links=data.links.filter(l=>l.id!==linkId));notify('関係を削除しました。');break;
+    }
+    case 'delete-scenario': if(confirm('この方法と、その行動・関係をすべて削除しますか？')){mutate(()=>{deleteScenario(selectedScenario);dialog=null;});notify('方法を削除しました。');}break;
+    case 'delete-goal': if(confirm('この目的と、すべての方法・記録を削除しますか？')){mutate(()=>{deleteGoal(selectedGoal);dialog=null;});notify('目的を削除しました。');}break;
+    case 'set-baseline': mutate(()=>data.scenarios.forEach(s=>{if(s.goalId===selectedGoal)s.isBaseline=s.id===el.dataset.id;}));notify('比較基準を変更しました。');break;
+    case 'view-scenario': selectedScenario=el.dataset.id;activeTab='analyze';selectedAction=null;render();break;
+    case 'delete-experiment': if(confirm('この検証記録を削除しますか？'))mutate(()=>data.experiments=data.experiments.filter(e=>e.id!==el.dataset.id));break;
+    case 'ai-analyze': runAiAnalysis();break;
+    case 'ai-draft': {
+      const idea=aiSuggestions[Number(el.dataset.aiIndex)];if(!idea||!selectedScenario)return;
+      mutate(()=>{
+        cloneScenario(selectedScenario);
+        const s=scenario();
+        if(s){s.name=`${idea.title}`.slice(0,100);s.description=(`AI仮説: ${idea.rationale} / 削減候補: ${idea.reduce.join('、')} / 新規作業: ${idea.add.join('、')} / 検証: ${idea.measurementPlan}`).slice(0,800);}
+        activeTab='analyze';
+      });
+      notify('仮説を検討用の方法に複製しました。行動と時間は変更されていません。実際に編集して比較してください。');break;
+    }
+    case 'cloud-logout': if(cloud){if(cloudBusy){notify('同期処理が終わってからログアウトしてください。',true);break;}cloud.signOutLocal();try{switchWorkspace(null);}catch(e){cloudError=e.message;}cloudLinked=false;cloudStatus='ログアウトしました。アカウントの端末データは分離して残しています。';localStorage.removeItem(CLOUD_LINK_KEY);render();}break;
+    case 'import-guest': {
+      if(!cloud?.userId||cloudBusy)return;
+      let guest;try{guest=readWorkspace(localStorage,STORE,migrateData,()=>deepCopy(DEMO));}catch(err){notify(err.message,true);return;}
+      const change=changeSummaryText(data,guest);
+      if(!confirm(`ゲストで作成した記録を、このアカウントへコピーします。\n${change}\n\nアカウント側の現在のデータは上書きされます。ゲスト側は残ります。続行しますか？`))return;
+      try{saveRecoveryPoint(recoveryScope(),data,'ゲストからの取り込み前');}
+      catch(err){notify(err.message,true);return;}
+      mutate(()=>{data=deepCopy(guest);selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;});
+      notify('ゲストの記録をコピーしました。ゲスト側の記録も残っています。');break;
+    }
+    case 'cloud-push': syncCloud('push');break;
+    case 'cloud-pull': syncCloud('pull');break;
+    case 'export': exportData();break;
+    case 'restore-recovery': {
+      const points=readRecoveryPoints(recoveryScope());
+      const point=points[Number(el.dataset.index)];
+      if(!point)return;
+      const restored=migrateData(point.payload);
+      if(!confirm(`この端末の内容を ${point.createdAt.slice(0,16)} の状態に戻しますか？\n${changeSummaryText(data,restored)}`))return;
+      try{saveRecoveryPoint(recoveryScope(),data,'復旧操作の直前');}
+      catch(e){notify(e.message,true);return;}
+      mutate(()=>{const before=deepCopy(data);data=deepCopy(restored);if(!saveLocal()){data=before;throw new Error('取得したデータを保存できません。');}selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;});
+      notify('保存していた状態に戻しました。');break;
+    }
+    case 'reset-demo': if(confirm('登録データをサンプルに戻します。念のため先にJSONバックアップを取得してください。')){try{saveRecoveryPoint(recoveryScope(),data,'初期化の直前');}catch(e){notify(e.message,true);return;}mutate(()=>{data=deepCopy(DEMO);selectedGoal=data.goals[0].id;selectedScenario=data.scenarios[0].id;selectedAction=null;});notify('サンプル状態に戻しました。直後なら「元に戻す」を使えます。');}break;
+  }
+}
+function handleDialogSubmit(form) {
+  const read=(name)=>form.elements.namedItem(name)?.value?.trim()||'';
+  const type=dialog?.type, idValue=dialog?.id;
+  if(type==='goal') {
+    const name=read('name'); if(!name)return;
+    mutate(()=>{
+      if(idValue)Object.assign(data.goals.find(g=>g.id===idValue),{name,description:read('description')});
+      else {const gid=id();data.goals.push({id:gid,name,description:read('description'),createdAt:new Date().toISOString()});selectedGoal=gid;selectedScenario=null;}
+      dialog=null;selectedAction=null;
+    });
+  } else if(type==='scenario') {
+    const name=read('name');if(!name)return;
+    mutate(()=>{
+      const timings={setupMinutes:clamp(read('setupMinutes')),setupYen:clamp(read('setupYen')),managementMinutesPerWeek:clamp(read('managementMinutesPerWeek'))};
+      if(idValue)Object.assign(data.scenarios.find(s=>s.id===idValue),{name,description:read('description'),...timings});
+      else {const sid=id();data.scenarios.push({id:sid,goalId:selectedGoal,name,description:read('description'),...timings,isBaseline:!scenariosOfGoal().length});selectedScenario=sid;selectedAction=null;}
+      dialog=null;
+    });
+  } else if(type==='item') {
+    const name=read('name');if(!name)return;
+    mutate(()=>{if(idValue)Object.assign(data.items.find(item=>item.id===idValue),{name,home:read('home'),note:read('note'),placement:read('placement')});
+      else data.items.push({id:id(),goalId:selectedGoal,name,home:read('home'),note:read('note'),placement:read('placement')});dialog=null;});
+  } else if(type==='narrative') {
+    const parsed=dialog.draft;
+    if(!parsed){notify('先に「候補を抽出・更新」を押してください。',true);return;}
+    const activeIndices=parsed.steps.map((step,i)=>i).filter(i=>!parsed.steps[i].existing&&form.elements.namedItem(`include-${i}`)?.checked);
+    const selectedSuggestions=(parsed.suggestions||[]).map((suggestion,i)=>({...suggestion,i})).filter(s=>form.elements.namedItem(`suggestion-${s.i}`)?.checked);
+    if(!activeIndices.length&&!selectedSuggestions.length){notify('登録する行動を選んでください。',true);return;}
+    if(selectedSuggestions.some(s=>!parsed.steps[s.parent].existing&&!activeIndices.includes(s.parent))){notify('派生候補を選ぶ場合は、発生元の行動も選んでください。',true);return;}
+    const picked=activeIndices.map(i=>({i,name:read(`step-${i}`),kind:read(`kind-${i}`)}));
+    if(picked.some(x=>!x.name)){notify('名前が空欄の行動があります。',true);return;}
+    const present=new Set(getScenarioActions(data,selectedScenario).map(a=>a.name.toLocaleLowerCase('ja-JP')));
+    for(const x of [...picked,...selectedSuggestions]){const k=x.name.toLocaleLowerCase('ja-JP');if(present.has(k)){notify('同じ名前の行動は登録できません。',true);return;}present.add(k);}
+    const selectedSet=new Set(activeIndices);
+    const candidateEdges=planNarrativeLinks(parsed,activeIndices,!!form.elements.namedItem('linkSequence')?.checked);
+    let linked=0;
+    mutate(()=>{
+      const map=new Map();
+      for(const [index,step] of parsed.steps.entries())if(step.existing){
+        const found=getScenarioActions(data,selectedScenario).find(a=>a.name.toLocaleLowerCase('ja-JP')===step.name.toLocaleLowerCase('ja-JP'));if(found)map.set(index,found.id);
+      }
+      for(const x of picked){const aid=id();map.set(x.i,aid);data.actions.push({id:aid,scenarioId:selectedScenario,name:x.name,kind:x.kind,essential:false,minutes:null,frequency:1,yen:0,note:'文章入力から登録。必要性と所要時間を後から確認。'});}
+      for(const suggestion of selectedSuggestions){
+        const aid=id();data.actions.push({id:aid,scenarioId:selectedScenario,name:suggestion.name,kind:suggestion.kind,essential:false,minutes:null,frequency:1,yen:0,note:'一般的な候補から登録。実際の必要性を必ず確認すること。'});
+        const parentId=map.get(suggestion.parent);
+        if(parentId&&canLink(data,selectedScenario,parentId,aid)){
+          data.links.push({id:id(),scenarioId:selectedScenario,fromId:parentId,toId:aid,type:'causes'});linked++;
+        }
+      }
+      // Explicit causal arrows may refer to previously registered actions. Sequence links only join selected new actions.
+      for(const edge of [...parsed.links.filter(l=>selectedSet.has(l.from)||selectedSet.has(l.to)),...candidateEdges]){
+        const fromId=map.get(edge.from),toId=map.get(edge.to);
+        if(fromId&&toId&&canLink(data,selectedScenario,fromId,toId)){
+          data.links.push({id:id(),scenarioId:selectedScenario,fromId,toId,type:edge.type});linked++;
+        }
+      }
+      selectedAction=null;dialog=null;
+    });
+    notify(`${picked.length+selectedSuggestions.length}件の行動と${linked}件の関係を登録しました。内容を確認してください。`);
+  } else if(type==='quick') {
+    const parsed=parseActionLines(read('lines'),getScenarioActions(data,selectedScenario).map(a=>a.name));
+    if(!parsed.names.length){notify('登録できる新しい行動がありません。',true);return;}
+    const connect=form.elements.namedItem('linkSequence').checked;
+    mutate(()=>{
+      let prev=null;
+      for(const name of parsed.names){const aid=id();data.actions.push({id:aid,scenarioId:selectedScenario,name,kind:'support',essential:false,minutes:null,frequency:1,yen:0,note:''});
+        if(connect && prev && canLink(data,selectedScenario,prev,aid))data.links.push({id:id(),scenarioId:selectedScenario,fromId:prev,toId:aid,type:'precedes'});
+        prev=aid;
+      }
+      selectedAction=null;dialog=null;
+    });
+    notify(`${parsed.names.length}件の行動を登録しました。${parsed.skipped.length?'重複など'+parsed.skipped.length+'件は除外。':''}${parsed.truncated?'31件目以降は再入力してください。':''}`);
+  } else if(type==='action') {
+    const name=read('name');if(!name)return;
+    const values={name,kind:read('kind'),minutes:read('minutes')===''?null:clamp(read('minutes')),frequency:clamp(read('frequency'),10000),yen:clamp(read('yen')),essential:form.elements.namedItem('essential').checked,note:read('note')};
+    mutate(()=>{
+      if(idValue)Object.assign(data.actions.find(a=>a.id===idValue),values);
+      else {const aid=id();data.actions.push({id:aid,scenarioId:selectedScenario,...values});selectedAction=aid;}
+      dialog=null;
+    });
+  } else if(type==='link') {
+    const fromId=read('fromId'),toId=read('toId');
+    if(!canLink(data,selectedScenario,fromId,toId)){notify('同じ行動・重複する関係・循環する関係は登録できません。',true);return;}
+    mutate(()=>{data.links.push({id:id(),scenarioId:selectedScenario,fromId,toId,type:read('type')});dialog=null;});notify('行動の関係を追加しました。');
+  }
+}
+async function syncCloud(direction) {
+ if(cloudBusy||!cloud?.userId)return;
+ // Drain prior automatic writes before manual direction switching.
+ cloudBusy=true;render();
+ try {
+   await cloudQueue;
+   const client=cloud, workspace=activeStore;
+   const checkedLocalHash=hashPayload(data);
+   const remote=await client.readSnapshot();
+   if(!isCurrentCloud(client,workspace))throw new Error('ログイン中のアカウントが変更されました。');
+   if(hashPayload(data)!==checkedLocalHash)throw new Error('クラウド照会中にこの端末の内容が変わりました。同期を中断しました。');
+   if(direction==='pull'){
+     if(!remote){notify('クラウドにはまだ記録がありません。',true);return;}
+     const restored=migrateData(remote.payload);
+     if(!confirm(`クラウドの内容でこの端末を置き換えます。\n${changeSummaryText(data,restored)}\n\n変更前の内容はブラウザ内に退避します。別途JSONも保存してください。`))return;
+     const incremental={...restored,links:[]};
+     for(const l of restored.links){if(!canLink(incremental,l.scenarioId,l.fromId,l.toId))throw new Error('クラウド上の行動連鎖が不正です。');incremental.links.push(l);}
+     saveRecoveryPoint(recoveryScope(),data,'手動クラウド取り込み前');
+     const before=deepCopy(data);data=deepCopy(restored);if(!saveLocal()){data=before;throw new Error('取得したデータを保存できません。');}selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;undoSnapshot=null;
+     client.revision=Number(remote.revision);cloudLinked=true;cloudDirty=false;lastSyncedHash=hashPayload(data);rememberCloudLink();cloudStatus='クラウドから取得しました。以後の変更は自動で送信します。';cloudError='';
+   } else {
+     const last=cloud.revision;
+     if(remote && last!==null && Number(remote.revision)!==last)throw new Error('他端末の更新が見つかりました。自動上書きはしません。');
+     if(remote && !confirm(`クラウドにある記録を、この端末の内容で置き換えます。\n${changeSummaryText(migrateData(remote.payload),data)}\n\nクラウドの現在データを端末内に退避します。別途JSONも保存してください。`))return;
+     if(!remote && !confirm('現在の端末のデータをクラウドに初めて保存しますか？'))return;
+     if(remote)saveRecoveryPoint(recoveryScope(),migrateData(remote.payload),'クラウド上書き前');
+     const uploaded=deepCopy(data), uploadedHash=hashPayload(uploaded);
+     await client.writeSnapshot(uploaded,remote?Number(remote.revision):null);
+     if(!isCurrentCloud(client,workspace))throw new Error('同期中のアカウントが変更されました。');
+     cloudLinked=true;cloudDirty=hashPayload(data)!==uploadedHash;lastSyncedHash=uploadedHash;rememberCloudLink();cloudStatus=cloudDirty?'クラウドへ保存しました。追加の変更を同期します。':'クラウドへ保存しました。以後の変更は自動で送信します。';cloudError='';
+     if(cloudDirty)scheduleCloudPush();
+   }
+ }catch(err){cloudLinked=false;cloudStatus='同期停止。ローカルの記録は保持しています。';cloudError=err.message;}
+ finally{cloudBusy=false;render();}
+}
+async function runAiAnalysis() {
+ if(aiBusy||!cloud?.userId||!scenario())return;
+ aiBusy=true;aiMessage='';aiSuggestions=[];render();
+ try{
+   const context=buildAnalysisContext(data,selectedGoal,selectedScenario,horizonWeeks);
+   const result=await cloud.analyze(context);
+   aiSuggestions=normalizeAiAdvice(result);aiMessage=aiSuggestions.length?'':'改善案を生成できませんでした。';
+ }catch(err){aiMessage=err.message;}
+ finally{aiBusy=false;render();}
+}
+function exportData() {
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'}),href=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=href;a.download=`kodo-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1000);
+  notify('バックアップを作成しました。');
+}
+root.addEventListener('click',ev=>{
+  const tab=ev.target.closest('[data-tab]');if(tab){activeTab=tab.dataset.tab;render();return;}
+  const scenarioButton=ev.target.closest('[data-scenario]');if(scenarioButton){selectedScenario=scenarioButton.dataset.scenario;selectedAction=null;render();return;}
+  const node=ev.target.closest('[data-node]');if(node){selectedAction=node.dataset.node;render();return;}
+  const actionButton=ev.target.closest('[data-action]');if(actionButton)handleAction(actionButton);
+});
+root.addEventListener('change',async ev=>{
+  if(ev.target.id==='time-horizon'){horizonWeeks=Math.max(1,Math.min(260,Number(ev.target.value)||12));render();return;}
+  if(ev.target.id==='ai-goal-select'){selectedGoal=ev.target.value;selectedScenario=scenariosOfGoal()[0]?.id||null;selectedAction=null;aiSuggestions=[];render();return;}
+  if(ev.target.id==='ai-scenario-select'){selectedScenario=ev.target.value;aiSuggestions=[];render();return;}
+  if(ev.target.id==='environment-scenario'){selectedScenario=ev.target.value;render();return;}
+  if(ev.target.id==='goal-select'){selectedGoal=ev.target.value;selectedScenario=null;selectedAction=null;render();return;}
+  if(ev.target.id==='import-file'){
+    const file=ev.target.files?.[0];if(!file)return;
+    if(!confirm(cloudLinked?'現在のデータを置き換え、クラウドにも同期します。事前にJSONバックアップを取りましたか？':'現在のデータをバックアップの内容で置き換えますか？'))return;
+    try{
+      if(file.size>3*1024*1024)throw new Error('ファイルが大きすぎます。');
+      const imported=migrateData(JSON.parse(await file.text()));
+      // Reject cyclic links in imported data before using the flow renderer.
+      const incremental={...imported,links:[]};
+      for(const l of imported.links){if(!canLink(incremental,l.scenarioId,l.fromId,l.toId))throw new Error('行動の関係に循環または重複があります。');incremental.links.push(l);}
+      saveRecoveryPoint(recoveryScope(),data,'JSON取り込み前');
+      undoSnapshot={data:deepCopy(data),selectedGoal,selectedScenario,selectedAction,activeTab};
+      data=deepCopy(imported);selectedGoal=data.goals[0]?.id||null;selectedScenario=null;selectedAction=null;save();render();notify('データを復元しました。直後なら「元に戻す」で復旧できます。');
+    }catch(err){notify(`読み込みできませんでした: ${err.message}`,true);}
+  }
+});
+root.addEventListener('submit',ev=>{
+  if(ev.target.id==='cloud-config-form') {
+    ev.preventDefault();const f=ev.target;
+    try {
+      const config=validCloudConfig({url:f.elements.namedItem('url').value,publishableKey:f.elements.namedItem('publishableKey').value});
+      const changed=!cloud||cloud.config.url!==config.url||cloud.config.publishableKey!==config.publishableKey;
+      if(changed && cloud?.userId){notify('同期先を変更する前にログアウトし、アカウントを確認してください。',true);return;}
+      cloud=new CloudClient(config);cloud.onSessionChange=session=>session?localStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(session)):localStorage.removeItem(CLOUD_SESSION_KEY);
+      localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(config));
+      if(changed){localStorage.removeItem(CLOUD_SESSION_KEY);localStorage.removeItem(CLOUD_LINK_KEY);cloudLinked=false;cloudStatus='設定を保存しました。ログインしてください。';}
+      render();
+    }catch(err){notify(err.message,true);}return;
+  }
+  if(ev.target.id==='cloud-auth-form') {
+    ev.preventDefault();if(!cloud)return;
+    const f=ev.target;const intent=ev.submitter?.value||'login';
+    const email=f.elements.namedItem('email').value,password=f.elements.namedItem('password').value;
+    cloudBusy=true;render();
+    (async()=>{
+      try{
+        if(intent==='signup'){await cloud.signUp(email,password);cloudStatus='登録受付。メール確認が必要な場合は確認してからログインしてください。';}
+        else{await cloud.signIn(email,password);try{switchWorkspace(cloud.session);}catch(e){cloud.signOutLocal();throw e;}cloudStatus='ログインしました。アカウント専用の記録に切り替えました。クラウドから取得するか、新規に登録してください。ログイン前の記録はゲスト領域に残っています。';await bootstrapCloud();}
+        cloudError='';
+      }catch(err){cloudError=err.message;cloudStatus='認証に失敗しました';}
+      finally{cloudBusy=false;render();}
+    })();return;
+  }
+  if(ev.target.id!=='experiment-form')return;
+  ev.preventDefault();const form=ev.target;
+  const beforeId=form.elements.namedItem('beforeId').value,afterId=form.elements.namedItem('afterId').value;
+  if(beforeId===afterId){notify('異なる二つの方法を指定してください。',true);return;}
+  const beforeObserved=form.elements.namedItem('beforeActualMinutes').value;
+  const afterObserved=form.elements.namedItem('afterActualMinutes').value;
+  const beforeTotalRaw=form.elements.namedItem('beforeTotalActualMinutes').value;
+  const afterTotalRaw=form.elements.namedItem('afterTotalActualMinutes').value;
+  if((beforeTotalRaw.trim()==='')!==(afterTotalRaw.trim()==='')){notify('総時間の実測は変更前・変更後の両方を入力してください。',true);return;}
+  mutate(()=>data.experiments.push({id:id(),goalId:selectedGoal,beforeId,afterId,
+    beforeTotalActualMinutes:beforeTotalRaw.trim()===''?null:clamp(beforeTotalRaw),
+    afterTotalActualMinutes:afterTotalRaw.trim()===''?null:clamp(afterTotalRaw),
+    actualObservationWeeks:Math.max(1,Math.min(260,Number(form.elements.namedItem('actualObservationWeeks').value)||4)),
+    plannedHorizonWeeks:horizonWeeks,plannedBeforeTotalMinutes:projectTime(data,beforeId,horizonWeeks).totalMinutes,plannedAfterTotalMinutes:projectTime(data,afterId,horizonWeeks).totalMinutes,plannedTotalsComplete:projectTime(data,beforeId,horizonWeeks).complete&&projectTime(data,afterId,horizonWeeks).complete,
+    beforeActualMinutes:beforeObserved.trim()===''?null:clamp(beforeObserved),afterActualMinutes:afterObserved.trim()===''?null:clamp(afterObserved),note:form.elements.namedItem('note').value.trim(),beforeName:data.scenarios.find(s=>s.id===beforeId)?.name||'',afterName:data.scenarios.find(s=>s.id===afterId)?.name||'',plannedBeforeMinutes:scenarioTotals(data,beforeId).minutes,plannedAfterMinutes:scenarioTotals(data,afterId).minutes,createdAt:new Date().toISOString()}));
+  notify('検証記録を保存しました。');
+});
+modalRoot.addEventListener('click',ev=>{const el=ev.target.closest('[data-action]');if(el)handleAction(el);});
+modalRoot.addEventListener('submit',ev=>{if(ev.target.id==='dialog-form'){ev.preventDefault();handleDialogSubmit(ev.target);}});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&dialog){dialog=null;renderDialog();}});
+render();
+// Concurrent tabs can share localStorage but not the in-memory editing state.
+// Never silently overwrite changes made in another tab.
+globalThis.addEventListener?.('storage', ev=>{
+ if(ev.key!==activeStore || ev.newValue===null)return;
+ try {
+  const next=migrateData(JSON.parse(ev.newValue));
+  if(hashPayload(next)!==hashPayload(data)){
+   localTabConflict=true;cloudLinked=false;cloudDirty=false;
+   cloudStatus='別タブで編集がありました。JSONをバックアップし、画面を再読込してから同期してください。';
+   cloudError='同じブラウザの複数タブで同時編集しないでください。';
+   notify('別タブで変更がありました。JSONバックアップを確認し、再読み込みしてください。',true);render();
+  }
+ }catch{}
+});
+if(cloud?.userId)bootstrapCloud();
+
+</script>
+</body>
+</html>
