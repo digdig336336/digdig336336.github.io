@@ -136,6 +136,9 @@
 .log-pair-panel form{display:grid;gap:13px}.log-pair-panel .form-grid{margin:0}.log-pair-panel .btn{justify-self:start}
 @media(max-width:580px){.log-pair-panel{padding:18px}.log-pair-panel .btn{width:100%;justify-content:center}}
 
+/* v0.11 — password recovery */
+.auth-recovery{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:9px}.auth-recovery summary{cursor:pointer;color:var(--accent-dark);font-weight:600}.auth-recovery form{margin-top:13px}.recovery-form{margin-top:16px;padding:15px;background:var(--soft);border-radius:9px}
+
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -615,6 +618,7 @@ const KODO_DEFAULT_CLOUD = Object.freeze({
 });
 const CLOUD_CONFIG_KEY = 'kodo-cloud-config:v1';
 const CLOUD_SESSION_KEY = 'kodo-cloud-session:v1';
+const KODO_PUBLIC_APP_URL = 'https://digdig336336.github.io/kodo/';
 
 function validCloudConfig(raw) {
   const url = String(raw?.url || '').trim().replace(/\/+$/, '');
@@ -678,7 +682,25 @@ class CloudClient {
     this.session=normalizeSession(response,this.clock());this.revision=null;this.onSessionChange?.(this.session);return this.session;
   }
   async signUp(email,password){
-    return this.request('/auth/v1/signup',{method:'POST',body:{email,password},auth:false});
+    return this.request('/auth/v1/signup?redirect_to='+encodeURIComponent(KODO_PUBLIC_APP_URL),{method:'POST',body:{email,password},auth:false});
+  }
+  async requestPasswordReset(email){
+    if(typeof email!=='string'||!email.includes('@'))throw new CloudError('メールアドレスを入力してください。','invalid');
+    return this.request('/auth/v1/recover?redirect_to='+encodeURIComponent(KODO_PUBLIC_APP_URL),{method:'POST',body:{email},auth:false});
+  }
+  async updatePassword(password){
+    if(!this.userId)throw new CloudError('ログイン情報を確認してください。','auth');
+    if(typeof password!=='string'||password.length<8)throw new CloudError('8文字以上の新しいパスワードを設定してください。','invalid');
+    return this.request('/auth/v1/user',{method:'PUT',body:{password}});
+  }
+  async acceptAuthRedirect(tokens){
+    if(!tokens?.access_token||!tokens?.refresh_token||typeof tokens.access_token!=='string'||typeof tokens.refresh_token!=='string')throw new CloudError('確認リンクが無効です。','auth');
+    // Do not trust a user_id supplied in a URL. Ask Supabase to verify this JWT.
+    const user=await this.request('/auth/v1/user',{auth:false,extraHeaders:{Authorization:'Bearer '+tokens.access_token}});
+    if(!user?.id||typeof user.id!=='string'||!/^([0-9a-f]{8}-){1}[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id))throw new CloudError('確認リンクの認証に失敗しました。','auth');
+    const session=normalizeSession({...tokens,user:{id:user.id,email:user.email||''}},this.clock());
+    this.session=session;this.revision=null;this.onSessionChange?.(session);
+    return session;
   }
   signOutLocal(){this.session=null;this.revision=null;this.onSessionChange?.(null);}
   async readSnapshot(){
@@ -707,6 +729,19 @@ class CloudClient {
     return this.request('/functions/v1/analyze-actions',{method:'POST',body:context});
   }
 }
+function parseAuthCallback(hash) {
+  if(typeof hash!=='string'||!hash.startsWith('#'))return null;
+  const p=new URLSearchParams(hash.slice(1));
+  const error=p.get('error_description')||p.get('error_code')||p.get('error');
+  if(error)return {error:'メール認証リンクが無効、または期限切れです。もう一度操作してください。'};
+  const access_token=p.get('access_token'),refresh_token=p.get('refresh_token');
+  if(!access_token&&!refresh_token)return null;
+  if(!access_token||!refresh_token||access_token.length>8192||refresh_token.length>8192)return {error:'メール認証リンクが不完全です。'};
+  const type=p.get('type')||'';
+  const expires_in=Number(p.get('expires_in'));
+  return {access_token,refresh_token,type,expires_in:Number.isFinite(expires_in)&&expires_in>0&&expires_in<=86400?expires_in:3600};
+}
+
 function normalizeSession(raw,now=Date.now()) {
   if(!raw?.access_token||!raw?.refresh_token||!raw?.user?.id)throw new CloudError('ログイン情報が不正です。','auth');
   return {access_token:raw.access_token,refresh_token:raw.refresh_token,user:{id:raw.user.id,email:raw.user.email??''},expires_at:raw.expires_at??Math.floor(now/1000)+Number(raw.expires_in??3600)};
@@ -910,7 +945,7 @@ const DEMO = {
 
 
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.10';
+const APP_VERSION = 'v0.11';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -936,6 +971,7 @@ const root = document.getElementById('root');
 const modalRoot = document.getElementById('modal-root');
 let cloud=null, cloudLinked=false, cloudBusy=false, cloudStatus='未接続', cloudError='', cloudQueue=Promise.resolve(), cloudDirty=false;
 let aiBusy=false, aiSuggestions=[], aiMessage='';
+let passwordRecoveryActive=false;
 let lastSyncedHash='', localTabConflict=false;
 let activeTimer=null;
 function getStoredTimer(){try{return parseActiveTimer(localStorage.getItem(timerKey(activeStore)),data);}catch{return null;}}
@@ -1223,18 +1259,21 @@ function renderHistory() {
 function renderCloud() {
   const connected=!!cloud?.userId;
   const config=cloud?.config;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.10</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.11</div><h1>複数の端末で、同じ記録を。</h1><p>各端末の変更が競合した場合は自動上書きせず停止します。JSONバックアップも残してください。</p></div>
   <section class="panel cloud-card"><h2>1. 専用クラウド（接続先を設定済み）</h2><p class="panel-desc">KŌDŌ専用Supabaseに接続します。接続先は設定済みのため、通常は変更不要です。ほかのプロジェクトに接続するときだけ変更してください。入力する鍵は公開用のみです。</p>
     <form id="cloud-config-form" class="cloud-form"><label class="form-field"><span>Project URL</span><input name="url" placeholder="https://xxxxx.supabase.co" required value="${eAttr(config?.url||'')}"></label><label class="form-field"><span>Publishable key</span><input name="publishableKey" autocomplete="off" placeholder="sb_publishable_..." required value="${eAttr(config?.publishableKey||'')}"></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>接続先を変更して保存</button></form></section>
   <section class="panel cloud-card"><h2>2. アカウント</h2><p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'メールアドレスとパスワードで登録・ログインします。'} ログイン時にはアカウント別の端末データへ切り替えます。ゲストの記録や別のアカウントの記録は自動では取り込みません。ログインしただけではクラウドデータで上書きしません。</p>
-    ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`: `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required></label><label class="form-field"><span>パスワード</span><input name="password" type="password" minlength="6" autocomplete="current-password" required></label><div class="cloud-actions"><button class="btn btn-primary" name="intent" value="login" ${cloudBusy?'disabled':''}>ログイン</button><button class="btn btn-outline" name="intent" value="signup" ${cloudBusy?'disabled':''}>新規登録</button></div></form>`}</section>
+    ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`: `<form id="cloud-auth-form" class="cloud-form"><label class="form-field"><span>メールアドレス</span><input name="email" type="email" autocomplete="email" required></label><label class="form-field"><span>パスワード</span><input name="password" type="password" minlength="6" autocomplete="current-password" required></label><div class="cloud-actions"><button class="btn btn-primary" name="intent" value="login" ${cloudBusy?'disabled':''}>ログイン</button><button class="btn btn-outline" name="intent" value="signup" ${cloudBusy?'disabled':''}>新規登録</button></div></form>`}
+    ${!connected?`<details class="auth-recovery"><summary>パスワードを忘れた場合</summary><form id="password-reset-request-form" class="cloud-form"><label class="form-field"><span>登録したメールアドレス</span><input name="email" type="email" autocomplete="email" required></label><button class="btn btn-outline" ${cloudBusy?'disabled':''}>再設定メールを送信</button></form></details>`:''}
+    ${connected&&passwordRecoveryActive?`<form id="password-reset-confirm-form" class="cloud-form recovery-form"><strong>新しいパスワードを設定する</strong><label class="form-field"><span>新しいパスワード（8文字以上）</span><input name="password" type="password" minlength="8" autocomplete="new-password" required></label><button class="btn btn-primary" ${cloudBusy?'disabled':''}>パスワードを変更</button></form>`:''}
+    <p class="panel-desc">認証メールから戻るURL： https://digdig336336.github.io/kodo/ （Supabase側で認証リダイレクトURLの許可設定が必要です）</p></section>
   <section class="panel cloud-card"><h2>3. 同期を確認する</h2><p class="sync-status">${esc(cloudStatus)}</p>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}
   <div class="cloud-actions">${btn('cloud-pull','クラウド → この端末','btn-outline',!connected||cloudBusy?'disabled':'')}${btn('cloud-push','この端末 → クラウド','btn-primary',!connected||cloudBusy?'disabled':'')}</div>
   <p class="panel-desc">同期後は編集ごとにクラウドへ送信します。オフライン時や競合時は自動同期を停止し、この端末の記録を保持します。競合時は必ず双方のJSONをバックアップしてから、どちらを採用するか判断してください。</p><p class="panel-desc">ブラウザへのログイン保存は共用端末向きではありません。HTTPSで公開した環境でご利用ください。</p></section>`;
 }
 function renderAi() {
  const s=scenario();const g=goal();
- return `<div class="page-heading"><div class="eyebrow">AI IMPROVEMENT LAB / v0.8</div><h1>総時間を減らす改善案を考える。</h1><p>AIは仮説を出すだけです。時間の短縮は実測で確かめます。</p></div>
+ return `<div class="page-heading"><div class="eyebrow">AI IMPROVEMENT LAB / v0.11</div><h1>総時間を減らす改善案を考える。</h1><p>AIは仮説を出すだけです。時間の短縮は実測で確かめます。</p></div>
  <section class="panel cloud-card"><h2>分析対象</h2><div class="cloud-form"><label class="form-field"><span>目的</span><select id="ai-goal-select">${selectOptions(data.goals.map(g=>[g.id,g.name]),selectedGoal)}</select></label><label class="form-field"><span>方法</span><select id="ai-scenario-select">${selectOptions(scenariosOfGoal().map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><p class="panel-desc">${s?`現在 ${getScenarioActions(data,s.id).length}行動、評価期間 ${horizonWeeks}週間。`:''}必要な行動が増えても総時間が短くなる方法を探します。AIへ送るのは選択中の目的・方法・行動とその時間だけです。送信前に機密情報が含まれていないか確認してください。</p>
  ${btn('ai-analyze',`${icon('spark',16)} ${aiBusy?'分析中...':'AIで改善案を分析'}`,'btn-primary',(!cloud?.userId||!s||aiBusy)?'disabled':'')}
  ${!cloud?.userId?`<p class="panel-desc">本格的なAI分析には「クラウド同期」でログインし、Edge FunctionとAPIキーをサーバー側に設定してください。</p>`:''}
@@ -1446,7 +1485,7 @@ function handleAction(el) {
       });
       notify('仮説を検討用の方法に複製しました。行動と時間は変更されていません。実際に編集して比較してください。');break;
     }
-    case 'cloud-logout': if(cloud){if(cloudBusy){notify('同期処理が終わってからログアウトしてください。',true);break;}cloud.signOutLocal();try{switchWorkspace(null);}catch(e){cloudError=e.message;}cloudLinked=false;cloudStatus='ログアウトしました。アカウントの端末データは分離して残しています。';localStorage.removeItem(CLOUD_LINK_KEY);render();}break;
+    case 'cloud-logout': if(cloud){if(cloudBusy){notify('同期処理が終わってからログアウトしてください。',true);break;}cloud.signOutLocal();passwordRecoveryActive=false;try{switchWorkspace(null);}catch(e){cloudError=e.message;}cloudLinked=false;cloudStatus='ログアウトしました。アカウントの端末データは分離して残しています。';localStorage.removeItem(CLOUD_LINK_KEY);render();}break;
     case 'import-guest': {
       if(!cloud?.userId||cloudBusy)return;
       let guest;try{guest=readWorkspace(localStorage,STORE,migrateData,()=>deepCopy(DEMO));}catch(err){notify(err.message,true);return;}
@@ -1665,6 +1704,20 @@ root.addEventListener('submit',ev=>{
       finally{cloudBusy=false;render();}
     })();return;
   }
+  if(ev.target.id==='password-reset-request-form'){
+    ev.preventDefault();if(!cloud||cloudBusy)return;
+    const email=ev.target.elements.namedItem('email').value;
+    cloudBusy=true;render();
+    cloud.requestPasswordReset(email).then(()=>{cloudStatus='再設定メールを受け付けました。届いたリンクから再設定してください。';cloudError='';}).catch(err=>{cloudError=err.message;cloudStatus='再設定メールの送信に失敗しました。';}).finally(()=>{cloudBusy=false;render();});
+    return;
+  }
+  if(ev.target.id==='password-reset-confirm-form'){
+    ev.preventDefault();if(!cloud?.userId||cloudBusy||!passwordRecoveryActive)return;
+    const password=ev.target.elements.namedItem('password').value;
+    cloudBusy=true;render();
+    cloud.updatePassword(password).then(()=>{passwordRecoveryActive=false;cloudStatus='パスワードを更新しました。';cloudError='';}).catch(err=>{cloudError=err.message;cloudStatus='パスワード変更に失敗しました。';}).finally(()=>{cloudBusy=false;render();});
+    return;
+  }
   if(ev.target.id==='paired-log-form') {
     ev.preventDefault();
     try {
@@ -1712,7 +1765,27 @@ globalThis.addEventListener?.('storage', ev=>{
   }
  }catch{}
 });
-if(cloud?.userId)bootstrapCloud();
+async function handleAuthCallback(){
+ const hash=globalThis.location?.hash||'';
+ const callback=parseAuthCallback(hash);
+ if(!callback)return;
+ // Strip credentials from the address bar before any asynchronous work.
+ try{globalThis.history?.replaceState?.(null,'',globalThis.location.pathname+globalThis.location.search);}catch{}
+ activeTab='cloud';render();
+ if(callback.error){cloudError=callback.error;cloudStatus='認証リンクを確認してください。';render();return;}
+ if(!cloud){cloudError='Supabaseの接続設定を確認してください。';render();return;}
+ const client=cloud;
+ cloudBusy=true;render();
+ try{
+   const session=await client.acceptAuthRedirect(callback);
+   if(client!==cloud)return;
+   switchWorkspace(session);
+   passwordRecoveryActive=callback.type==='recovery';
+   cloudError='';cloudStatus=passwordRecoveryActive?'新しいパスワードを設定してください。':'メール認証が完了しました。同期する方向を選択してください。';
+ }catch(err){cloudError=err.message;cloudStatus='認証リンクの処理に失敗しました。';}
+ finally{cloudBusy=false;render();}
+}
+handleAuthCallback().then(()=>{if(cloud?.userId)bootstrapCloud();}).catch(()=>{cloudStatus='メール認証の処理に失敗しました。';render();});
 
 // Refresh only the timer label; no UI redraw while the user edits forms.
 if(typeof setInterval==='function')setInterval(()=>{if(!activeTimer)return;const el=document.querySelector('[data-timer-display]');if(el)el.textContent=elapsedLabel(activeTimer);},1000);
