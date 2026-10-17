@@ -656,7 +656,11 @@ class CloudError extends Error { constructor(message, code='network'){super(mess
 class CloudClient {
   constructor(config, {fetchFn=globalThis.fetch, clock=()=>Date.now()}={}) {
     this.config=validCloudConfig(config);
-    this.fetchFn=fetchFn;
+    // Browser fetch is a Web API method that may require `this === globalThis`.
+    // Calling an extracted native fetch as `this.fetchFn()` otherwise throws
+    // `TypeError: Illegal invocation` before any request is sent (iOS WebKit/Chromium).
+    // Bind all adapters to globalThis; injected fakes must be context independent.
+    this.fetchFn=fetchFn.bind(globalThis);
     this.clock=clock;
     this.session=null;
     this.revision=null;
@@ -987,7 +991,7 @@ const DEMO = {
 
 
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.14';
+const APP_VERSION = 'v0.15';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -1311,7 +1315,7 @@ function renderCloud() {
   const config=cloud?.config;
   const disabled=(cloudBusy||!cloud)?'disabled':'';
   const status=`<div class="auth-feedback" role="status" aria-live="polite"><strong>${esc(cloudStatus)}</strong>${cloudError?`<p class="cloud-error" role="alert">${esc(cloudError)}</p>`:''}</div>`;
-  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.14</div><h1>アカウント登録と同期</h1><p>メールアドレスで登録して、パソコンとスマートフォンで同じ記録を使えます。</p></div>
+  return `<div class="page-heading"><div class="eyebrow">CLOUD SYNC / v0.15</div><h1>アカウント登録と同期</h1><p>メールアドレスで登録して、パソコンとスマートフォンで同じ記録を使えます。</p></div>
   <section class="panel cloud-card" id="account-panel"><h2>1. 新規登録・ログイン</h2>
     <p class="panel-desc">${connected?`ログイン中: ${esc(cloud.session.user.email||cloud.userId)}`:'① メールアドレスとパスワードを入力 ②「新規登録」 ③ 届いたメールのリンクを確認'}。<strong>登録は無料です。</strong> この画面への入力にOpenAI APIキーは必要ありません。</p>
     ${connected?`${btn('cloud-logout','ログアウト','btn-outline',cloudBusy?'disabled':'')}${localStorage.getItem(STORE)?`<div class="cloud-actions">${btn('import-guest','ゲストで作成した記録を取り込む','btn-outline',cloudBusy?'disabled':'')}</div>`:''}`:
