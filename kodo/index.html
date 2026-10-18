@@ -153,9 +153,15 @@
 
 .cloud-diagnostics{border:1px solid #d7e7e3;background:#f5faf9;border-radius:14px;padding:16px;margin:15px 0;color:#38565a;display:grid;gap:10px}.cloud-diagnostics small{overflow-wrap:anywhere;color:#42605f}.cloud-diagnostics .panel-desc{font-size:12px}.cloud-diagnostics .cloud-actions{margin:0}
 
-
 /* v0.14: direct Supabase endpoint test for Safari DNS / CORS triage */
 .cloud-health-link{display:inline-block;color:var(--accent-dark);font-weight:700;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+/* v0.16 voice-first capture / reviewed AI organization */
+.voice-input-actions{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.voice-input-actions .btn{flex:1 1 180px;min-height:43px;justify-content:center}
+.voice-ai-summary{background:#f0f8f4;border:1px solid #cce6d9;border-radius:10px;padding:14px;display:grid;gap:8px;color:#365e53;font-size:12px;line-height:1.65}
+.voice-ai-summary p{white-space:pre-wrap;overflow-wrap:anywhere}.voice-ai-summary small{font-size:11px;color:#58786e}
+@media(max-width:580px){.voice-input-actions{flex-direction:column}.voice-input-actions .btn{width:100%;flex:auto}}
+
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -624,6 +630,48 @@ function planNarrativeLinks(parsed, activeIndices, connectInOrder) {
 }
 
 
+/** Speech transcript payload. Whitespace-only normalization; never remove durations, negations or conditions. */
+function prepareVoiceTranscript(value, max = 2500) {
+  if (typeof value !== 'string') throw new Error('文章を入力してください。');
+  const text = value.replace(/\r\n?/g, '\n').replace(/[ \t\u3000]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  if (!text) throw new Error('音声入力または文章入力をしてください。');
+  if (text.length > max) throw new Error(`AI整理は${max}文字以内で利用してください。前後に分けて入力してください。`);
+  return text;
+}
+/** The AI only proposes; names and types must be reviewed by the user. */
+function normalizeVoiceOrganization(raw, existingNames = []) {
+  if (!raw || !Array.isArray(raw.steps) || typeof raw.summary !== 'string') throw new Error('AIの整理結果を読み取れませんでした。');
+  if (raw.steps.length > 30) throw new Error('AIの行動候補が多すぎます。');
+  const existing = new Set(existingNames.map(v=>String(v).trim().toLocaleLowerCase('ja-JP')));
+  const seen = new Set();
+  const steps = [];
+  for (const item of raw.steps) {
+    if (!item || typeof item.name !== 'string') throw new Error('AIが不正な行動候補を返しました。');
+    const name = item.name.trim();
+    if (!name || name.length > 100) throw new Error('AIが不正な行動名を返しました。');
+    const key=name.toLocaleLowerCase('ja-JP');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const kind = ['core','support','maintenance'].includes(item.kind) ? item.kind : 'support';
+    steps.push({name,kind,existing:existing.has(key)});
+  }
+  if (!steps.length) throw new Error('行動が見つかりませんでした。別の言い方でお試しください。');
+  return {steps,links:[],suggestions:[],skipped:[],truncated:false,summary:raw.summary.trim().slice(0,500),viaAi:true};
+}
+
+/** Browser speech recognition is optional; native keyboard dictation always remains possible. */
+function speechRecognitionConstructor(environment = globalThis) {
+  return environment.SpeechRecognition || environment.webkitSpeechRecognition || null;
+}
+function appendVoiceTranscript(existing, recognized, limit=5000) {
+  const part=String(recognized??'').trim();
+  if(!part)return String(existing??'');
+  const original=String(existing??'').trim();
+  const merged=original ? `${original}\n${part}` : part;
+  return merged.slice(0,limit);
+}
+
+
 /** KŌDŌ v0.5: intentionally conservative single-document synchronization.
  * Reads/writes are explicit until one direction is chosen; CAS protects stale devices.
  * This adapter uses the public Supabase Auth/REST endpoints, no service key in the browser.
@@ -769,6 +817,10 @@ class CloudClient {
     if(!Array.isArray(result)||result.length!==1)throw new CloudError('クラウド側に別の変更があります。上書きせずに停止しました。','conflict');
     this.revision=Number(result[0].revision);
     return this.revision;
+  }
+  async organizeActions(transcript){
+    if(!this.userId)throw new CloudError('AI整理にはログインが必要です。','auth');
+    return this.request('/functions/v1/organize-actions',{method:'POST',body:{transcript}});
   }
   async analyze(context){
     if(!this.userId)throw new CloudError('AI分析にはログインが必要です。','auth');
@@ -990,8 +1042,9 @@ const DEMO = {
 
 
 
+
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.15';
+const APP_VERSION = 'v0.16';
 let activeStore = STORE;
 const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
@@ -1017,6 +1070,7 @@ const root = document.getElementById('root');
 const modalRoot = document.getElementById('modal-root');
 let cloud=null, cloudLinked=false, cloudBusy=false, cloudStatus='未接続', cloudError='', cloudQueue=Promise.resolve(), cloudDirty=false;
 let aiBusy=false, aiSuggestions=[], aiMessage='';
+let narrativeAiBusy=false, speechRecognizer=null, speechActive=false;
 let passwordRecoveryActive=false;
 let authEmailDraft='';
 let cloudDiagnostic='';
@@ -1202,7 +1256,7 @@ function renderAnalyze(s) {
   if (!s) return `<div class="empty-state"><h2>まず、方法を登録しましょう</h2><p>目的を達成するために普段行っている方法を登録してください。</p>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-primary')}</div>`;
   const all=scenariosOfGoal(); const actions=getScenarioActions(data,s.id); const links=getScenarioLinks(data,s.id); const totals=scenarioTotals(data,s.id);
   const chosen=action(); const sim=chosen?simulateRemoval(data,s.id,chosen.id):null;
-  return `<section class="quick-intro"><div><strong>まず、一通りやってみて記録する。</strong><p>普段の行動を文章で入力し、行動候補に分解できます。内容を確認してから登録するので、無理に構造化する必要はありません。</p></div><div class="quick-cta">${btn('narrative-capture',`${icon('spark',16)} 文章から整理`,'btn-primary')}${btn('quick-capture','1行ずつ記録','btn-outline')}</div></section><div class="section-head"><div><span class="section-kicker">01 / METHODS</span><h2>実現する方法</h2></div>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-outline')}</div>
+  return `<section class="quick-intro"><div><strong>まず、一通りやってみて記録する。</strong><p>普段の行動を文章で入力し、行動候補に分解できます。内容を確認してから登録するので、無理に構造化する必要はありません。</p></div><div class="quick-cta">${btn('narrative-capture',`${icon('spark',16)} 音声・文章で記録`,'btn-primary')}${btn('quick-capture','1行ずつ記録','btn-outline')}</div></section><div class="section-head"><div><span class="section-kicker">01 / METHODS</span><h2>実現する方法</h2></div>${btn('new-scenario',`${icon('plus',16)} 方法を追加`,'btn-outline')}</div>
   <div class="scenario-list">${all.map(x => {const total=scenarioTotals(data,x.id); return `<button class="scenario-card ${selectedScenario===x.id?'selected':''}" data-scenario="${eAttr(x.id)}"><span class="scenario-card-top"><span class="scenario-state">${x.isBaseline?'現状の方法':'代替・改善案'}</span>${selectedScenario===x.id?'<span class="selected-check">✓</span>':''}</span><strong>${esc(x.name)}</strong><span class="scenario-card-bottom"><span>${icon('clock',14)} ${fmtMin(total.minutes)} / 週</span><span>${fmtYen(total.yen)} / 週</span></span></button>`;}).join('')}</div>
   <div class="section-head graph-title"><div><span class="section-kicker">02 / ACTION MAP</span><h2>行動の連鎖 <span class="heading-counter">${actions.length} ACTIONS</span></h2><p>行動を選ぶと、それをやめた場合の影響を確認できます。</p></div><div class="head-actions">${btn('edit-scenario',icon('edit',16),'icon-btn','title="方法を編集" aria-label="方法を編集"')}${btn('clone-scenario',`${icon('copy',16)} 方法を複製`,'btn-outline')}${btn('new-action',`${icon('plus',16)} 行動を追加`,'btn-primary')}</div></div>
   <div class="analysis-grid">
@@ -1377,13 +1431,15 @@ function renderDialog() {
     title='行動をまとめて記録';subtitle='観察した行動を1行につき1つ。まずは順番だけでも記録しましょう。';
     fields=`<label class="form-field"><span>実際に行ったこと（1行に1行動・最大30件）</span><textarea name="lines" autofocus rows="9" maxlength="5000" required placeholder="道具を取りに行く&#10;材料を取り出す&#10;作業する&#10;道具を洗う&#10;元の場所に戻す"></textarea></label><label class="check-field"><input type="checkbox" name="linkSequence" checked><span><strong>入力順で作業をつなぐ</strong><small>点線の「実行順序」としてつなぎます。因果関係は勝手に推定しません。</small></span></label><div class="quick-warning">所要時間を測っていない場合は「未測定」にします。0分とは区別して管理します。</div>`;
   } else if (type==='narrative') {
-    title='文章から行動を整理'; subtitle='ふだんの言葉で書いて、登録前に確認。AIの自動推論ではなく、端末内で動く簡易解析です。';
+    title='音声・文章から行動を整理'; subtitle='声で話して、AIまたは端末内で整理。登録前に必ず確認・修正できます。';
     const raw=dialog.raw||'';
     const parsed=dialog.draft;
     fields=`<label class="form-field"><span>行動の説明（日本語・最大5000文字）</span><textarea name="narrativeText" rows="5" maxlength="5000" placeholder="例：朝、タンブラーにお茶を入れる。持ち歩く。帰宅したら洗う。乾かす。
 または：タンブラーを使う ⇒ 洗う → 乾かす">${esc(raw)}</textarea></label>
-      <div class="narrative-guide"><strong>書き方のヒント</strong><span>句読点・改行で行動を区切ります。「A ⇒ B」はAがBを発生させる関係、「A → B」は実行順序です。通常の文章から因果関係は自動確定しません。</span></div>
-      ${btn('parse-narrative',`${icon('spark',15)} 候補を抽出・更新`,'btn-outline narrative-parse')}
+      <div class="voice-input-actions">${btn('toggle-narrative-voice',speechActive?'■ 音声入力を停止':'🎙 話して入力する','btn-outline')}${btn('parse-narrative',`${icon('spark',15)} 端末内で候補を抽出`,'btn-outline')}${btn('organize-narrative-ai',narrativeAiBusy?'AI整理中…':'✨ AIで短く整理して抽出','btn-primary',narrativeAiBusy?'disabled':'')}</div>
+      <div class="narrative-guide"><strong>音声入力の方法</strong><span>マイクボタンは対応ブラウザのみ。iPhoneでは入力欄をタップしてキーボードのマイクも使えます。AIを選ぶと文章を専用サーバーへ送信します（ログイン必須・AIの利用枠を消費）。端末内抽出はログイン不要です。</span><span>「A ⇒ B」は明示的な因果、「A → B」は順序。AIは因果関係と時間を勝手に確定しません。</span></div>
+      ${dialog.aiError?`<div class="narrative-alert" role="alert">${esc(dialog.aiError)}</div>`:''}
+      ${parsed?.viaAi?`<section class="voice-ai-summary"><strong>AIが整理した要点（登録前の確認用）</strong><p>${esc(parsed.summary)}</p>${parsed.unverified?.length?`<small>未確認：${parsed.unverified.map(esc).join('、')}</small>`:''}<small>時間・頻度は未測定のまま登録し、後から確認してください。AIが提案した因果関係は自動登録しません。</small></section>`:''}
       ${parsed?`<div class="narrative-review"><div class="narrative-review-head"><strong>登録前の確認 — ${parsed.steps.length}候補</strong><small>追加する候補を選び、必要に応じて名前を編集してください。</small></div>
         ${parsed.steps.length?`<div class="narrative-steps">${parsed.steps.map((step,i)=>`<div class="narrative-step"><label class="narrative-checkbox"><input type="checkbox" name="include-${i}" ${step.existing?'disabled':'checked'}><span>${i+1}</span></label><input type="text" name="step-${i}" maxlength="100" value="${eAttr(step.name)}" ${step.existing?'disabled':''} aria-label="行動${i+1}の名前"><select name="kind-${i}" aria-label="行動${i+1}の種類" ${step.existing?'disabled':''}>${selectOptions(Object.entries(kinds).map(([key,v])=>[key,v.name]),step.kind)}</select>${step.existing?'<small class="narrative-existing">登録済み</small>':''}</div>`).join('')}</div>`:'<p>候補が見つかりません。句読点や改行で区切って再解析してください。</p>'}
         ${parsed.suggestions?.length?`<div class="narrative-suggestions"><strong>派生しそうな作業の候補</strong><small>一般的な仮説です。実際に必要と確認したものだけを選択してください。選ぶと発生元との因果関係も登録します。</small>${parsed.suggestions.map((suggestion,i)=>`<label><input type="checkbox" name="suggestion-${i}"><span>${esc(suggestion.name)}<small>${esc(parsed.steps[suggestion.parent]?.name)} からの派生候補</small></span></label>`).join('')}</div>`:''}
@@ -1398,7 +1454,7 @@ function renderDialog() {
       <div class="existing-links"><strong>登録済みの関係</strong>${getScenarioLinks(data,selectedScenario).length ? getScenarioLinks(data,selectedScenario).map(l=>`<div class="existing-link"><span>${esc(arr.find(a=>a.id===l.fromId)?.name)} ${l.type==='causes'?'→（発生）':'⇢（順序）'} ${esc(arr.find(a=>a.id===l.toId)?.name)}</span><button type="button" class="link-danger" data-action="delete-link" data-id="${eAttr(l.id)}">削除</button></div>`).join(''):'<p>まだつながりはありません。</p>'}</div>`;
   }
   modalRoot.innerHTML=`<div class="modal-overlay"><div class="modal-box" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modal-header"><div><span class="section-kicker">EDIT WORKSPACE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button type="button" class="modal-x" data-action="close-dialog" aria-label="閉じる">${icon('close',20)}</button></div><form id="dialog-form"><div class="modal-fields">${fields}</div><div class="modal-footer">${editing&&type==='item'?btn('delete-item','道具を削除','btn-text danger-text'):editing&&type==='goal'?btn('delete-goal','目的を削除','btn-text danger-text'):editing&&type==='scenario'?btn('delete-scenario','方法を削除','btn-text danger-text'):'<span></span>'}${btn('close-dialog','キャンセル','btn-outline')}<button class="btn btn-primary" type="submit" ${type==='narrative'&&!dialog.draft?'disabled title="先に候補を抽出してください"':''}>${icon('check',16)} ${type==='narrative'?'選んだ行動を登録':'保存する'}</button></div></form></div></div>`;
-  modalRoot.querySelector('.modal-overlay')?.addEventListener('click', e=>{if(e.target.classList.contains('modal-overlay')){dialog=null;renderDialog();}});
+  modalRoot.querySelector('.modal-overlay')?.addEventListener('click', e=>{if(e.target.classList.contains('modal-overlay')){stopNarrativeSpeech();dialog=null;renderDialog();}});
   requestAnimationFrame(()=>modalRoot.querySelector('[autofocus]')?.focus());
 }
 function cloneScenario(sourceId, excludeIds=[], suffix='（複製）') {
@@ -1434,6 +1490,51 @@ function deleteGoal(gid) {
   data.experiments=data.experiments.filter(e=>e.goalId!==gid);
   data.goals=data.goals.filter(g=>g.id!==gid);selectedGoal=null;
 }
+function stopNarrativeSpeech() {
+ if (speechRecognizer) { const r=speechRecognizer; speechRecognizer=null; speechActive=false; try{r.abort();}catch{} }
+}
+function toggleNarrativeSpeech() {
+ if(dialog?.type!=='narrative')return;
+ if(speechRecognizer){stopNarrativeSpeech();renderDialog();return;}
+ const Speech=speechRecognitionConstructor();
+ if(!Speech){notify('このブラウザでは画面内マイクに対応していません。入力欄をタップし、iPhoneキーボードのマイクで話してください。',true);return;}
+ try{
+  const r=new Speech();r.lang='ja-JP';r.continuous=true;r.interimResults=false;
+  r.onresult=e=>{
+   if(dialog?.type!=='narrative')return;
+   const parts=[];
+   for(let i=e.resultIndex??0;i<e.results.length;i++){const result=e.results[i];if(result.isFinal&&result[0]?.transcript)parts.push(result[0].transcript);}
+   if(!parts.length)return;
+   const textarea=modalRoot.querySelector('[name="narrativeText"]');if(!textarea)return;
+   textarea.value=appendVoiceTranscript(textarea.value,parts.join('。'));
+   textarea.dispatchEvent(new Event('input',{bubbles:true}));
+  };
+  r.onerror=e=>{if(e.error!=='aborted')notify('音声認識を完了できませんでした。キーボードの音声入力も利用できます。',true);};
+  r.onend=()=>{if(speechRecognizer===r){speechRecognizer=null;speechActive=false;const el=modalRoot.querySelector('[data-action="toggle-narrative-voice"]');if(el)el.textContent='🎙 話して入力する';}};
+  speechRecognizer=r;speechActive=true;r.start();
+  const el=modalRoot.querySelector('[data-action="toggle-narrative-voice"]');if(el)el.textContent='■ 音声入力を停止';
+ }catch{stopNarrativeSpeech();notify('マイクを利用できません。ブラウザの許可を確認するか、キーボードの音声入力をご利用ください。',true);}
+}
+async function organizeNarrativeWithAi(){
+ if(dialog?.type!=='narrative'||narrativeAiBusy)return;
+ const raw=modalRoot.querySelector('[name="narrativeText"]')?.value||'';
+ let transcript;
+ try{transcript=prepareVoiceTranscript(raw);}catch(err){notify(err.message,true);return;}
+ if(!cloud?.userId){notify('AIでの整理にはクラウド画面からログインが必要です。ログイン前でも「端末内で候補を抽出」は使えます。',true);return;}
+ const currentDialog=dialog, currentClient=cloud, currentWorkspace=activeStore;
+ narrativeAiBusy=true;dialog={...currentDialog,raw,aiError:'',draft:null};
+ renderDialog();
+ const pendingDialog=dialog;
+ try{
+  const result=await currentClient.organizeActions(transcript);
+  if(dialog!==pendingDialog||cloud!==currentClient||activeStore!==currentWorkspace)return;
+  const existing=getScenarioActions(data,selectedScenario).map(x=>x.name);
+  const draft=normalizeVoiceOrganization(result,existing);
+  draft.unverified=Array.isArray(result.unverified)?result.unverified.slice(0,6).map(String):[];
+  dialog={...pendingDialog,draft,aiError:''};
+ }catch(err){if(dialog!==pendingDialog)return;dialog={...pendingDialog,aiError:err.message||'AI整理ができませんでした。'};}
+ finally{narrativeAiBusy=false;if(dialog?.type==='narrative')renderDialog();}
+}
 function handleAction(el) {
   const type=el.dataset.action;
   if (!type) return;
@@ -1448,10 +1549,13 @@ function handleAction(el) {
     case 'edit-item': dialog={type:'item',id:el.dataset.id};renderDialog();break;
     case 'quick-capture': if(!selectedScenario)return;dialog={type:'quick'};renderDialog();break;
     case 'narrative-capture': if(!selectedScenario)return;dialog={type:'narrative',raw:'',draft:null};renderDialog();break;
+    case 'toggle-narrative-voice': toggleNarrativeSpeech();break;
+    case 'organize-narrative-ai': organizeNarrativeWithAi();break;
     case 'parse-narrative': {
       if(dialog?.type!=='narrative')return;
       const input=modalRoot.querySelector('[name="narrativeText"]');
       const raw=input?.value || '';
+      stopNarrativeSpeech();
       const currentNames=getScenarioActions(data,selectedScenario).map(a=>a.name);
       const parsed=parseNarrativeInput(raw,currentNames);
       const seen=new Set([...parsed.steps.map(s=>s.name),...currentNames].map(s=>s.toLocaleLowerCase('ja-JP')));
@@ -1464,7 +1568,7 @@ function handleAction(el) {
         }
       });
       if(!parsed.steps.length){notify('文章を短い文や改行で区切ってください。',true);return;}
-      dialog={type:'narrative',raw,draft:parsed};renderDialog();break;
+      dialog={type:'narrative',raw,draft:parsed,aiError:''};renderDialog();break;
     }
     case 'undo': undo();break;
     case 'suggest-action': {
@@ -1477,7 +1581,7 @@ function handleAction(el) {
     }
     case 'edit-action': dialog={type:'action',id:selectedAction};renderDialog();break;
     case 'new-link': if(getScenarioActions(data,selectedScenario).length<2){notify('行動を2件以上登録してください');break;}dialog={type:'link'};renderDialog();break;
-    case 'close-dialog': dialog=null;renderDialog();break;
+    case 'close-dialog': stopNarrativeSpeech();dialog=null;renderDialog();break;
     case 'clear-action': selectedAction=null;render();break;
     case 'clone-scenario': mutate(()=>cloneScenario(selectedScenario));notify('方法を複製しました。編集して比較できます。');break;
     case 'make-candidate': {
@@ -1639,7 +1743,7 @@ function handleDialogSubmit(form) {
       for(const [index,step] of parsed.steps.entries())if(step.existing){
         const found=getScenarioActions(data,selectedScenario).find(a=>a.name.toLocaleLowerCase('ja-JP')===step.name.toLocaleLowerCase('ja-JP'));if(found)map.set(index,found.id);
       }
-      for(const x of picked){const aid=id();map.set(x.i,aid);data.actions.push({id:aid,scenarioId:selectedScenario,name:x.name,kind:x.kind,essential:false,minutes:null,frequency:1,yen:0,note:'文章入力から登録。必要性と所要時間を後から確認。'});}
+      for(const x of picked){const aid=id();map.set(x.i,aid);data.actions.push({id:aid,scenarioId:selectedScenario,name:x.name,kind:x.kind,essential:false,minutes:null,frequency:1,yen:0,note:parsed.viaAi?(`AI整理による候補。要約: ${parsed.summary||''} / 未確認: ${(parsed.unverified||[]).join('、')} / 時間・頻度は再確認。`).slice(0,1000):'文章入力から登録。必要性と所要時間を後から確認。'});}
       for(const suggestion of selectedSuggestions){
         const aid=id();data.actions.push({id:aid,scenarioId:selectedScenario,name:suggestion.name,kind:suggestion.kind,essential:false,minutes:null,frequency:1,yen:0,note:'一般的な候補から登録。実際の必要性を必ず確認すること。'});
         const parentId=map.get(suggestion.parent);
@@ -1854,8 +1958,13 @@ root.addEventListener('submit',ev=>{
   notify('検証記録を保存しました。');
 });
 modalRoot.addEventListener('click',ev=>{const el=ev.target.closest('[data-action]');if(el)handleAction(el);});
+modalRoot.addEventListener('input',ev=>{
+  if(ev.target.name!=='narrativeText'||dialog?.type!=='narrative')return;
+  dialog.raw=ev.target.value;
+  if(dialog.draft){dialog.draft=null;const submit=modalRoot.querySelector('#dialog-form button[type="submit"]');if(submit)submit.disabled=true;}
+});
 modalRoot.addEventListener('submit',ev=>{if(ev.target.id==='dialog-form'){ev.preventDefault();handleDialogSubmit(ev.target);}});
-document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&dialog){dialog=null;renderDialog();}});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&dialog){stopNarrativeSpeech();dialog=null;renderDialog();}});
 render();
 // Concurrent tabs can share localStorage but not the in-memory editing state.
 // Never silently overwrite changes made in another tab.
