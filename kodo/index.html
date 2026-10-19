@@ -162,6 +162,35 @@
 .voice-ai-summary p{white-space:pre-wrap;overflow-wrap:anywhere}.voice-ai-summary small{font-size:11px;color:#58786e}
 @media(max-width:580px){.voice-input-actions{flex-direction:column}.voice-input-actions .btn{width:100%;flex:auto}}
 
+
+/* v0.17 — meaningful parallel work during non-controllable waits */
+.overlap-intro,.overlap-form,.overlap-result{padding:23px;margin:0 0 18px;line-height:1.85}
+.overlap-intro{background:#eaf6f0;border:1px solid #cee7db}.overlap-intro strong{color:#23614e;font-size:14px}.overlap-intro p{font-size:12px;color:#52796c;margin-top:7px}
+.overlap-form{display:grid;gap:16px}.overlap-form .panel-title{font-size:17px}.overlap-form .form-grid{margin:0}.overlap-form .form-field{min-width:0}.overlap-form input[type="number"],.overlap-form input[type="text"]{width:100%;max-width:100%}
+.overlap-form>.btn{justify-self:start}.overlap-checks{display:grid;gap:9px}.overlap-checks label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid #dcebe4;background:#f7fbf9;border-radius:9px;cursor:pointer}.overlap-checks input{accent-color:#1e9f89;margin-top:6px}.overlap-checks strong,.overlap-checks small{display:block}.overlap-checks strong{font-size:12px;color:#335b50}.overlap-checks small{color:#718b81;font-size:11px;margin-top:4px;line-height:1.7}
+.overlap-result{display:grid;gap:13px}.overlap-result-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.overlap-result-head h3{font-size:17px}.overlap-result-head small{color:#7b958c;font-size:11px}.overlap-result-actions{display:flex;gap:6px;flex-wrap:wrap}.overlap-result-actions .btn{font-size:11px;padding:8px}
+.overlap-labels{display:flex;gap:8px;flex-wrap:wrap}.overlap-labels span{background:#eaf5f0;color:#376e5b;font-size:11px;padding:6px 10px;border-radius:7px}.overlap-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.overlap-metrics>div{background:#f2f7f5;border:1px solid #e0ece6;border-radius:10px;padding:14px;display:grid;gap:6px}.overlap-metrics strong{font-size:21px;color:#23614c;font-variant-numeric:tabular-nums}.overlap-metrics small{font-size:11px;color:#617d71}
+.overlap-bars{display:grid;gap:8px}.overlap-bars>div{display:grid;grid-template-columns:45px 1fr;align-items:center;gap:11px;font-size:11px;color:#5c8173}.overlap-bar-track{height:13px;border-radius:8px;background:#eef3f1;overflow:hidden}.overlap-bar-before{height:100%;background:#9eafa9;border-radius:8px}.overlap-bar-after{height:100%;background:#1e9f89;border-radius:8px}
+.overlap-calc,.overlap-labor,.overlap-unconfirmed,.overlap-disclaimer{font-size:12px;line-height:1.75}.overlap-calc strong{color:#22654f}.overlap-labor{background:#f1f8f5;color:#456d5d;border-radius:9px;padding:11px}.overlap-unconfirmed{background:#fff6e9;color:#8a623c;padding:11px;border-radius:9px}.overlap-disclaimer{color:#758a83;font-size:11px}
+@media(max-width:700px){.overlap-intro,.overlap-form,.overlap-result{padding:16px}.overlap-metrics{grid-template-columns:1fr}.overlap-result-head{flex-direction:column}.overlap-form>.btn{width:100%;justify-content:center}.overlap-labels span{width:100%}}
+
+/* v0.18 — investment, revenue, time profit (two separate ledgers) */
+.value-intro,.value-form-panel,.value-results,.value-compare{padding:24px;margin:0 0 18px;line-height:1.75}
+.value-intro{background:#eaf7f0;border:1px solid #d0e7da}.value-intro strong{font-size:17px;color:#255c4b}.value-intro p{margin-top:8px;font-size:12px;color:#4b7263}
+.value-caution{color:#9a6437!important;font-size:12px;line-height:1.75}.value-form-panel h2,.value-results h2,.value-compare h2{font-size:18px;margin-bottom:7px}.value-form-panel .panel-desc{margin:0 0 15px}
+.value-settings{display:grid;grid-template-columns:2fr 1fr 1.2fr;gap:12px;margin:18px 0}
+.value-settings .form-field,.value-form .form-field{min-width:0}.value-settings input,.value-settings select,.value-form input[type="number"]{width:100%;max-width:100%}
+.value-form{display:grid;gap:15px}.value-form .form-grid{margin:0}.value-form>.btn{justify-self:start}
+.value-form small{font-size:11px;color:#7c908a}.value-disclaimer{margin-top:13px;font-size:11px;color:#6e8580;line-height:1.85}
+.value-results h2 small{font-size:11px;color:#81918b;font-weight:400;margin-left:8px}
+.value-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}
+.value-metrics>div{padding:16px 13px;background:#f2f8f5;border:1px solid #e0eee6;border-radius:11px;display:grid;gap:6px;min-width:0}
+.value-metrics small{font-size:11px;color:#577267}.value-metrics strong{font-size:23px;color:#226d54;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.value-metrics span,.value-mini{font-size:11px;color:#678277;overflow-wrap:anywhere}.value-mini{padding:12px;background:#f7f9f7;border-radius:8px}
+.value-compare-list{display:grid;gap:10px;margin-top:13px}.value-compare-row{border:1px solid #e0ebe5;border-radius:10px;padding:13px;display:grid;gap:5px}
+.value-compare-row strong{color:#2f5548;font-size:13px}.value-compare-row span{font-size:12px;color:#3f8068}.value-compare-row small{font-size:11px;color:#6b8a7c}
+@media(max-width:780px){.value-settings{grid-template-columns:1fr}.value-metrics{grid-template-columns:1fr}.value-intro,.value-form-panel,.value-results,.value-compare{padding:16px}.value-form>.btn{width:100%;justify-content:center}}
+
 </style>
   <title>KŌDŌ — 行動設計</title>
 </head>
@@ -169,6 +198,63 @@
   <div id="root"></div>
   <div id="modal-root"></div>
   <script>
+/** Parallel-work model. The second task already exists in the original workflow.
+ * A machine's unattended waiting time is elapsed time, not human labor.
+ * The result is conditional on safety and dependency checks supplied by the user.
+ */
+const OVERLAP_MAX = 500;
+const validNumber = n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100000;
+const validText = s => typeof s === 'string' && s.trim().length > 0 && s.length <= 120;
+
+function validateOverlapPlan(plan) {
+  if (!plan || typeof plan !== 'object' || !validText(plan.id) || !validText(plan.name) ||
+      !validText(plan.waitTask) || !validText(plan.otherTask) ||
+      !['safeConfirmed','independentConfirmed','existingWorkConfirmed'].every(k => typeof plan[k] === 'boolean') ||
+      !Number.isInteger(plan.weeklyFrequency) || plan.weeklyFrequency < 1 || plan.weeklyFrequency > 10000) {
+    throw new Error('並行作業の名前・条件・頻度を確認してください。');
+  }
+  for (const k of ['setupMinutes', 'waitMinutes', 'otherMinutes', 'finishMinutes', 'switchMinutes']) {
+    if (plan[k] !== null && !validNumber(plan[k])) throw new Error('計測時間は0以上の数値か、未測定にしてください。');
+  }
+  if (plan.waitMinutes === 0 || plan.otherMinutes === 0) throw new Error('待ち時間と別の作業時間は0分より長くしてください。');
+  return true;
+}
+const rounded = n => Math.round(n * 100) / 100;
+function calculateOverlap(plan, weeks=12) {
+  validateOverlapPlan(plan);
+  if (!Number.isInteger(weeks) || weeks < 1 || weeks > 260) throw new Error('評価期間は1〜260週です。');
+  const safe = plan.safeConfirmed && plan.independentConfirmed && plan.existingWorkConfirmed;
+  const missing = ['setupMinutes','waitMinutes','otherMinutes','finishMinutes','switchMinutes'].filter(k=>plan[k] === null);
+  const base = {status:!safe?'unconfirmed':missing.length?'unmeasured':'ready',missing, safe, weeks,
+    constraints:{safeConfirmed:plan.safeConfirmed,independentConfirmed:plan.independentConfirmed,existingWorkConfirmed:plan.existingWorkConfirmed}};
+  // Do not assert real savings when unknown times or safety constraints are pending.
+  if (!safe || missing.length) return {...base,serialElapsed:null,parallelElapsed:null,savedEach:null,savedWeekly:null,savedPeriod:null,laborBefore:null,laborAfter:null,laborExtra:null};
+  const {setupMinutes:setup,waitMinutes:wait,otherMinutes:other,finishMinutes:finish,switchMinutes:shift,weeklyFrequency:freq}=plan;
+  const serialElapsed = setup + wait + other + finish;
+  const parallelElapsed = setup + Math.max(wait, other + shift) + finish;
+  const laborBefore = setup + other + finish;
+  const laborAfter = laborBefore + shift;
+  const savedEach=rounded(serialElapsed-parallelElapsed);
+  return {...base,status:savedEach>0?'improved':savedEach<0?'worse':'equal',
+    serialElapsed:rounded(serialElapsed),parallelElapsed:rounded(parallelElapsed),
+    savedEach,savedWeekly:rounded(savedEach*freq),savedPeriod:rounded(savedEach*freq*weeks),
+    laborBefore:rounded(laborBefore),laborAfter:rounded(laborAfter),laborExtra:rounded(shift)};
+}
+
+/** Input intentionally keeps blank values unknown, rather than inventing durations. */
+function overlapFromForm(fields, id) {
+  const number = k => fields[k] === '' || fields[k] === null || fields[k] === undefined ? null : Number(fields[k]);
+  const p={id,name:String(fields.name||'').trim(),waitTask:String(fields.waitTask||'').trim(),otherTask:String(fields.otherTask||'').trim(),
+    setupMinutes:number('setupMinutes'),waitMinutes:number('waitMinutes'),otherMinutes:number('otherMinutes'),finishMinutes:number('finishMinutes'),switchMinutes:number('switchMinutes'),
+    weeklyFrequency:Number(fields.weeklyFrequency),safeConfirmed:fields.safeConfirmed===true,
+    independentConfirmed:fields.independentConfirmed===true,existingWorkConfirmed:fields.existingWorkConfirmed===true};
+  validateOverlapPlan(p);
+  return p;
+}
+
+
+
+
 /** 行動分析はフロントエンドとテストの両方で使う純粋関数に分離。 */
 function getScenarioActions(data, scenarioId) {
   return data.actions.filter(a => a.scenarioId === scenarioId);
@@ -302,6 +388,7 @@ function validateImport(raw) {
           s[k] !== undefined && s[k] !== null && (!Number.isFinite(s[k]) || s[k] < 0 || s[k] > 1000000)))
       throw new Error('方法の参照先または時間設定が不正です。');
   }
+  for (const s of raw.scenarios) { if (s.returns !== undefined && s.returns !== null) validateReturns(s.returns); }
   for (const a of raw.actions) {
     if (!scenarios.has(a.scenarioId) || typeof a.name !== 'string' || (a.minutes !== null && (!Number.isFinite(Number(a.minutes)) || Number(a.minutes) < 0)) || [a.frequency,a.yen].some(v => !Number.isFinite(Number(v)) || Number(v) < 0)) throw new Error('行動データが不正です。');
   }
@@ -324,14 +411,19 @@ function validateImport(raw) {
       if(!item||!a||scenarios.get(a.scenarioId)?.goalId!==item.goalId)throw new Error('道具と行動の関係が不正です。');
     }
   }
+  if (raw.overlapPlans !== undefined) {
+    if (!Array.isArray(raw.overlapPlans) || raw.overlapPlans.length > OVERLAP_MAX) throw new Error('並行作業の登録件数が多すぎます。');
+    if (!unique(raw.overlapPlans)) throw new Error('並行作業のIDが不正です。');
+    for (const plan of raw.overlapPlans) validateOverlapPlan(plan);
+  }
   return raw;
 }
 
 /** v0.1 browser backups and existing localStorage are preserved and upgraded. */
 function migrateData(raw) {
   validateImport(raw);
-  if(raw.version===2) return {...raw,timeLogs:raw.timeLogs||[],items:raw.items.map(item=>({...item,placement:item.placement||'undecided'}))};
-  return {...raw,version:2,items:[],actionItems:[],timeLogs:raw.timeLogs||[]};
+  if(raw.version===2) return {...raw,overlapPlans:raw.overlapPlans||[],timeLogs:raw.timeLogs||[],items:raw.items.map(item=>({...item,placement:item.placement||'undecided'}))};
+  return {...raw,version:2,items:[],actionItems:[],timeLogs:raw.timeLogs||[],overlapPlans:[]};
 }
 
 
@@ -381,6 +473,79 @@ function measuredTimeVerdict(before,after) {
   if(before===null||after===null||before===undefined||after===undefined) return null;
   if(!Number.isFinite(before)||!Number.isFinite(after)||before<0||after<0)return null;
   return {savedMinutes:Math.round((before-after)*10)/10,status:before>after?'improved':before<after?'worse':'equal'};
+}
+
+
+
+// Financial and time ledgers are deliberately independent. No arbitrary exchange
+// between yen and minutes is made unless the user explicitly sets an hourly rate.
+const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+const money = n => Math.round(n * 100) / 100;
+const value = x => typeof x === 'number' && Number.isFinite(x) && x >= 0 && x <= 1e9;
+const fields = ['cashIncomeOnce','cashIncomePerWeek','timeIncomeOnceMinutes','timeIncomePerWeekMinutes'];
+
+function validateReturns(r) {
+  if (!r || typeof r !== 'object' || Array.isArray(r)) throw new Error('収益の入力内容が不正です。');
+  if (typeof r.qualityConfirmed !== 'boolean' || typeof r.note !== 'string' || r.note.length > 1000)
+    throw new Error('成果の成立条件を確認してください。');
+  if (fields.some(k => r[k] !== null && !value(r[k])))
+    throw new Error('収益は0以上の数値か「未測定」にしてください。');
+  return true;
+}
+
+function returnsFromForm(fieldsIn) {
+  const r = {qualityConfirmed:fieldsIn.qualityConfirmed===true,note:String(fieldsIn.note||'').trim().slice(0,1000)};
+  for (const k of fields) {
+    const raw = fieldsIn[k];
+    r[k] = raw === null || raw === undefined || String(raw).trim() === '' ? null : Number(raw);
+  }
+  validateReturns(r);
+  return r;
+}
+
+function projectProfit(data, scenarioId, weeks=12, yenPerHour=null) {
+  const cost=projectTime(data,scenarioId,weeks);
+  const s=data.scenarios.find(x=>x.id===scenarioId);
+  if (!s) throw new Error('方法がありません。');
+  const r=s.returns || null;
+  if (r !== null) validateReturns(r);
+  if (yenPerHour !== null && !value(yenPerHour)) throw new Error('時間の評価額を確認してください。');
+  const moneyKnown=!!r && value(r.cashIncomeOnce) && value(r.cashIncomePerWeek);
+  const timeKnown=!!r && value(r.timeIncomeOnceMinutes) && value(r.timeIncomePerWeekMinutes) && cost.complete;
+  const cashIncome=moneyKnown ? money(r.cashIncomeOnce + r.cashIncomePerWeek*weeks) : null;
+  const timeIncome=timeKnown ? round2(r.timeIncomeOnceMinutes + r.timeIncomePerWeekMinutes*weeks) : null;
+  const cashCost=cost.totalYen;
+  const timeCost=cost.complete?cost.totalMinutes:null;
+  const cashProfit=moneyKnown ? money(cashIncome-cashCost) : null;
+  const timeProfit=timeKnown ? round2(timeIncome-timeCost) : null;
+  const score = yenPerHour===null || cashProfit===null || timeProfit===null ? null : money(cashProfit+timeProfit/60*yenPerHour);
+  return {
+    scenarioId, weeks, cashIncome, timeIncome, cashCost, timeCost, cashProfit, timeProfit, score,
+    cashKnown:moneyKnown, timeKnown, complete:moneyKnown&&timeKnown,
+    qualityConfirmed:r?.qualityConfirmed===true,
+    note:r?.note||'',
+    cashIncomeOnce:r?.cashIncomeOnce??null, cashIncomePerWeek:r?.cashIncomePerWeek??null,
+    timeIncomeOnceMinutes:r?.timeIncomeOnceMinutes??null, timeIncomePerWeekMinutes:r?.timeIncomePerWeekMinutes??null,
+    cashRoi:moneyKnown && cashCost>0 ? round2(cashProfit/cashCost*100) : null,
+  };
+}
+
+/** Pareto status only when cash/time estimates are complete AND outcome quality is accepted. */
+function compareProfit(data, baseId, optionId, weeks=12, yenPerHour=null) {
+  const base=projectProfit(data,baseId,weeks,yenPerHour);
+  const option=projectProfit(data,optionId,weeks,yenPerHour);
+  const a=data.scenarios.find(s=>s.id===baseId), b=data.scenarios.find(s=>s.id===optionId);
+  if (!a || !b || a.goalId!==b.goalId) throw new Error('同じ目的の方法だけを比較してください。');
+  if (!base.complete || !option.complete) return {status:'incomplete',base,option,cashDiff:null,timeDiff:null,scoreDiff:null,qualityReady:false};
+  const cashDiff=money(option.cashProfit-base.cashProfit);
+  const timeDiff=round2(option.timeProfit-base.timeProfit);
+  const scoreDiff=option.score===null ? null : money(option.score-base.score);
+  const qualityReady=base.qualityConfirmed && option.qualityConfirmed;
+  const status=!qualityReady?'unconfirmed':
+    cashDiff>=0&&timeDiff>=0&&(cashDiff>0||timeDiff>0)?'dominates':
+    cashDiff<=0&&timeDiff<=0&&(cashDiff<0||timeDiff<0)?'dominated':
+    cashDiff===0&&timeDiff===0?'equal':'tradeoff';
+  return {status,base,option,cashDiff,timeDiff,scoreDiff,qualityReady};
 }
 
 
@@ -852,10 +1017,10 @@ function detectCloudConflict(expectedRevision, incomingRevision){return expected
 function buildAnalysisContext(data, goalId, scenarioId, horizonWeeks=12) {
  const g=data.goals.find(x=>x.id===goalId),s=data.scenarios.find(x=>x.id===scenarioId);
  if(!g||!s||s.goalId!==g.id)throw new Error('対象の目的・方法が見つかりません。');
- const actions=data.actions.filter(a=>a.scenarioId===s.id).slice(0,60).map(a=>({id:String(a.id).slice(0,100),name:String(a.name).slice(0,100),kind:a.kind,essential:!!a.essential,minutes:a.minutes??null,frequency:a.frequency}));
+ const actions=data.actions.filter(a=>a.scenarioId===s.id).slice(0,60).map(a=>({id:String(a.id).slice(0,100),name:String(a.name).slice(0,100),kind:a.kind,essential:!!a.essential,minutes:a.minutes??null,frequency:a.frequency,yen:a.yen??0}));
  const ids=new Set(actions.map(a=>a.id));
  const links=data.links.filter(l=>l.scenarioId===s.id&&ids.has(l.fromId)&&ids.has(l.toId)).slice(0,120).map(l=>({fromId:l.fromId,toId:l.toId,type:l.type}));
- return {goal:String(g.name).slice(0,100),goalDescription:String(g.description||'').slice(0,500),scenario:String(s.name).slice(0,100),scenarioDescription:String(s.description||'').slice(0,500),setupMinutes:s.setupMinutes??0,managementMinutesPerWeek:s.managementMinutesPerWeek??0,horizonWeeks:Math.min(260,Math.max(1,horizonWeeks)),actions,links};
+ return {goal:String(g.name).slice(0,100),goalDescription:String(g.description||'').slice(0,500),scenario:String(s.name).slice(0,100),scenarioDescription:String(s.description||'').slice(0,500),setupMinutes:s.setupMinutes??0,setupYen:s.setupYen??0,returns:s.returns||null,managementMinutesPerWeek:s.managementMinutesPerWeek??0,horizonWeeks:Math.min(260,Math.max(1,horizonWeeks)),actions,links};
 }
 function normalizeAiAdvice(raw) {
  if(!raw||!Array.isArray(raw.suggestions))throw new Error('AIの回答を読み取れませんでした。');
@@ -871,7 +1036,7 @@ function normalizeAiAdvice(raw) {
  * Recovery points live only in this browser, and never replace JSON exports.
  */
 const RECOVERY_KEY = 'kodo-recovery:v1';
-const COLLECTIONS = ['goals', 'scenarios', 'actions', 'links', 'items', 'actionItems', 'experiments', 'timeLogs'];
+const COLLECTIONS = ['goals', 'scenarios', 'actions', 'links', 'items', 'actionItems', 'experiments', 'timeLogs', 'overlapPlans'];
 const LIMIT = 3;
 
 function summarizeChanges(current, incoming) {
@@ -892,7 +1057,7 @@ function summarizeChanges(current, incoming) {
 }
 function changeSummaryText(current, incoming) {
   const result = summarizeChanges(current,incoming);
-  const names = {goals:'目的',scenarios:'方法',actions:'行動',links:'関係',items:'道具',actionItems:'紐付け',experiments:'検証',timeLogs:'実測'};
+  const names = {goals:'目的',scenarios:'方法',actions:'行動',links:'関係',items:'道具',actionItems:'紐付け',experiments:'検証',timeLogs:'実測',overlapPlans:'並行作業'};
   const parts = COLLECTIONS.flatMap(name => {
     const c = result.collections[name];
     if (!c.added && !c.removed && !c.modified) return [];
@@ -1028,6 +1193,7 @@ const DEMO = {
   ],
   experiments: [],
   timeLogs: [],
+  overlapPlans: [],
 };
 
 
@@ -1043,10 +1209,12 @@ const DEMO = {
 
 
 
+
+
 const STORE = GUEST_WORKSPACE_KEY; // keep previous guest data exactly as it was
-const APP_VERSION = 'v0.16';
+const APP_VERSION = 'v0.18';
 let activeStore = STORE;
-const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[]});
+const emptyAccount = () => ({version:2,goals:[],scenarios:[],actions:[],links:[],items:[],actionItems:[],experiments:[],timeLogs:[],overlapPlans:[]});
 const recoveryScope = () => recoveryStorage(localStorage,activeStore);
 const CLOUD_LINK_KEY = 'kodo-cloud-link:v1';
 const deepCopy = value => JSON.parse(JSON.stringify(value));
@@ -1063,6 +1231,7 @@ let selectedScenario = data.scenarios.find(s => s.goalId === selectedGoal && s.i
 let selectedAction = null;
 let activeTab = /(?:^\?|&)tab=cloud(?:&|$)/.test(globalThis.location?.search||'') ? 'cloud' : 'analyze';
 let horizonWeeks = 12; // UI preference only; no changes to saved projects.
+let timeYenPerHour = null; // optional subjective evaluation, never counted as cash income
 let dialog = null;
 let toastTimer;
 let undoSnapshot = null;
@@ -1076,6 +1245,7 @@ let authEmailDraft='';
 let cloudDiagnostic='';
 let lastSyncedHash='', localTabConflict=false;
 let activeTimer=null;
+let editingOverlapId=null;
 function getStoredTimer(){try{return parseActiveTimer(localStorage.getItem(timerKey(activeStore)),data);}catch{return null;}}
 function persistTimer(){try{if(activeTimer)localStorage.setItem(timerKey(activeStore),JSON.stringify(activeTimer));else localStorage.removeItem(timerKey(activeStore));return true;}catch{notify('計測状態を保存できません。ストレージの空き容量を確認してください。',true);return false;}}
 function elapsedLabel(t){const secs=Math.floor(timerElapsedMs(t)/1000);return `${Math.floor(secs/3600).toString().padStart(2,'0')}:${Math.floor(secs%3600/60).toString().padStart(2,'0')}:${(secs%60).toString().padStart(2,'0')}`;}
@@ -1234,14 +1404,14 @@ function render() {
       <div class="workspace"><div class="workspace-icon">◈</div><div><strong>わたしの行動</strong><small>${cloudLinked?'クラウド同期中':'この端末に保存'}</small></div></div>
       <div class="side-section-title">メニュー</div>
       <nav class="side-nav" aria-label="メインメニュー">
-        ${[['analyze','network','行動を分析'],['compare','scale','方法を比較'],['environment','tool','道具・定位置'],['history','history','改善の記録'],['ai','spark','AI行動分析'],['cloud','database','クラウド同期'],['data','database','データ管理']].map(([key,ico,name]) => `<button class="nav-item ${activeTab===key?'active':''}" data-tab="${key}" aria-label="${name}" title="${name}" ${activeTab===key?'aria-current="page"':''}>${icon(ico,18)}<span>${name}</span>${activeTab===key?'<span class="nav-dot"></span>':''}</button>`).join('')}
+        ${[['analyze','network','行動を分析'],['compare','scale','方法を比較'],['profit','spark','投資と利益'],['environment','tool','道具・定位置'],['overlap','clock','待ち時間を活かす'],['history','history','改善の記録'],['ai','spark','AI行動分析'],['cloud','database','クラウド同期'],['data','database','データ管理']].map(([key,ico,name]) => `<button class="nav-item ${activeTab===key?'active':''}" data-tab="${key}" aria-label="${name}" title="${name}" ${activeTab===key?'aria-current="page"':''}>${icon(ico,18)}<span>${name}</span>${activeTab===key?'<span class="nav-dot"></span>':''}</button>`).join('')}
       </nav>
-      <div class="sidebar-bottom"><div class="sidebar-thought"><span class="tiny-accent"></span><strong>DESIGN PRINCIPLE</strong><p>必要な行動は自然に。<br>不要な行動は生まれないように。</p></div><small>Local-first prototype · ${APP_VERSION}</small></div>
+      <div class="sidebar-bottom"><div class="sidebar-thought"><span class="tiny-accent"></span><strong>DESIGN PRINCIPLE</strong><p>価値を生む行動を育てる。<br>不要な行動は生まない。</p></div><small>Local-first prototype · ${APP_VERSION}</small></div>
     </aside>
     <main class="main-area">
-      <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> ${['analyze','compare','environment','history','ai','cloud','data'].includes(activeTab)?{analyze:'行動分析',compare:'方法の比較',environment:'道具・定位置',history:'改善の記録',ai:'AI行動分析',cloud:'クラウド同期',data:'データ管理'}[activeTab]:''}</div><div class="topbar-right">${!cloud?.userId&&activeTab!=='cloud'?`<button type="button" class="btn btn-primary signup-shortcut" data-tab="cloud">新規登録 / ログイン</button>`:''}<span class="save-state"><span class="save-dot"></span> 自動保存</span>${undoSnapshot?btn('undo',`${icon('back',15)} 元に戻す`,'btn-outline undo-btn','aria-label="直前の変更を元に戻す"'):""}<span class="avatar">K</span></div></header>
+      <header class="topbar"><div class="breadcrumb">WORKSPACE <span>/</span> ${['analyze','compare','profit','environment','history','overlap','ai','cloud','data'].includes(activeTab)?{analyze:'行動分析',compare:'方法の比較',profit:'投資と利益',environment:'道具・定位置',history:'改善の記録',overlap:'待ち時間の並行設計',ai:'AI行動分析',cloud:'クラウド同期',data:'データ管理'}[activeTab]:''}</div><div class="topbar-right">${!cloud?.userId&&activeTab!=='cloud'?`<button type="button" class="btn btn-primary signup-shortcut" data-tab="cloud">新規登録 / ログイン</button>`:''}<span class="save-state"><span class="save-dot"></span> 自動保存</span>${undoSnapshot?btn('undo',`${icon('back',15)} 元に戻す`,'btn-outline undo-btn','aria-label="直前の変更を元に戻す"'):""}<span class="avatar">K</span></div></header>
       <div class="content-area">
-        ${activeTab==='data' ? renderData() : activeTab==='cloud'?renderCloud():activeTab==='ai'?renderAi():`${renderTop(g)}${activeTab==='analyze'?renderAnalyze(s):activeTab==='compare'?renderCompare():activeTab==='environment'?renderEnvironment():renderHistory()}`}
+        ${activeTab==='data' ? renderData() : activeTab==='cloud'?renderCloud():activeTab==='ai'?renderAi():activeTab==='overlap'?renderOverlap():activeTab==='profit'?`${renderTop(g)}${renderProfit()}`:`${renderTop(g)}${activeTab==='analyze'?renderAnalyze(s):activeTab==='compare'?renderCompare():activeTab==='environment'?renderEnvironment():renderHistory()}`}
       </div>
     </main>
   </div>`;
@@ -1249,7 +1419,7 @@ function render() {
   if(scrollState){const fresh=root.querySelector('.graph-scroll');if(fresh){fresh.scrollLeft=scrollState.x;fresh.scrollTop=scrollState.y;}}
 }
 function renderTop(g) {
-  return `<div class="page-heading"><div class="eyebrow">BEHAVIOR DESIGN LAB <span class="line"></span> 行動を設計する</div><div class="heading-row"><div><h1>${activeTab==='analyze'?'行動の連鎖を、見える形に。':activeTab==='compare'?'方法を変えると、何が変わる？':activeTab==='environment'?'必要なものに、定位置を。':'改善を、実際の結果で確かめる。'}</h1><p>やることを増やすのではなく、やらなくていいことを見つけよう。</p></div><div class="heading-art">◎</div></div></div>
+  return `<div class="page-heading"><div class="eyebrow">BEHAVIOR DESIGN LAB <span class="line"></span> 行動を設計する</div><div class="heading-row"><div><h1>${activeTab==='analyze'?'行動の連鎖を、見える形に。':activeTab==='compare'?'方法を変えると、何が変わる？':activeTab==='environment'?'必要なものに、定位置を。':activeTab==='profit'?'時間も、お金も、価値を生む投資に。':'改善を、実際の結果で確かめる。'}</h1><p>行動の結果が生む価値と、必要な時間・お金の両方を見つめる。</p></div><div class="heading-art">◎</div></div></div>
   <section class="goal-strip"><div class="goal-strip-left"><div class="goal-symbol">${icon('target',21)}</div><div class="goal-content"><div class="label">分析する目的</div><div class="select-wrap"><select id="goal-select" aria-label="分析する目的">${data.goals.map(x=>`<option value="${eAttr(x.id)}" ${selectedGoal===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>${icon('chevron',15)}</div><div class="goal-description">${esc(g?.description || '目的を設定して、行動を分析しましょう。')}</div></div></div><div class="goal-buttons">${btn('new-goal',`${icon('plus',16)} 目的を追加`,'btn-outline')}${g?btn('edit-goal',`${icon('edit',15)}`,'icon-btn','aria-label="目的を編集" title="目的を編集"'):''}</div></section>`;
 }
 function renderAnalyze(s) {
@@ -1387,14 +1557,70 @@ function renderCloud() {
 }
 function renderAi() {
  const s=scenario();const g=goal();
- return `<div class="page-heading"><div class="eyebrow">AI IMPROVEMENT LAB / v0.11</div><h1>総時間を減らす改善案を考える。</h1><p>AIは仮説を出すだけです。時間の短縮は実測で確かめます。</p></div>
- <section class="panel cloud-card"><h2>分析対象</h2><div class="cloud-form"><label class="form-field"><span>目的</span><select id="ai-goal-select">${selectOptions(data.goals.map(g=>[g.id,g.name]),selectedGoal)}</select></label><label class="form-field"><span>方法</span><select id="ai-scenario-select">${selectOptions(scenariosOfGoal().map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><p class="panel-desc">${s?`現在 ${getScenarioActions(data,s.id).length}行動、評価期間 ${horizonWeeks}週間。`:''}必要な行動が増えても総時間が短くなる方法を探します。AIへ送るのは選択中の目的・方法・行動とその時間だけです。送信前に機密情報が含まれていないか確認してください。</p>
+ return `<div class="page-heading"><div class="eyebrow">AI IMPROVEMENT LAB / v0.18</div><h1>利益を増やす改善案を考える。</h1><p>AIは仮説を出すだけです。金銭・時間の利益は実測で確かめます。</p></div>
+ <section class="panel cloud-card"><h2>分析対象</h2><div class="cloud-form"><label class="form-field"><span>目的</span><select id="ai-goal-select">${selectOptions(data.goals.map(g=>[g.id,g.name]),selectedGoal)}</select></label><label class="form-field"><span>方法</span><select id="ai-scenario-select">${selectOptions(scenariosOfGoal().map(s=>[s.id,s.name]),selectedScenario)}</select></label></div><p class="panel-desc">${s?`現在 ${getScenarioActions(data,s.id).length}行動、評価期間 ${horizonWeeks}週間。`:''}行動が増えても金銭・時間の純利益が高くなる方法を探します。AIへ送るのは選択中の目的・方法・行動と費用・収益の記録です。送信前に機密情報が含まれていないか確認してください。</p>
  ${btn('ai-analyze',`${icon('spark',16)} ${aiBusy?'分析中...':'AIで改善案を分析'}`,'btn-primary',(!cloud?.userId||!s||aiBusy)?'disabled':'')}
  ${!cloud?.userId?`<p class="panel-desc">本格的なAI分析には「クラウド同期」でログインし、Edge FunctionとAPIキーをサーバー側に設定してください。</p>`:''}
  ${aiMessage?`<p class="cloud-error">${esc(aiMessage)}</p>`:''}</section>
  ${aiSuggestions.length?`<div class="section-head"><div><span class="section-kicker">PROPOSALS</span><h2>AIの改善仮説 <span class="heading-counter">${aiSuggestions.length}件</span></h2></div></div><section class="ai-cards">${aiSuggestions.map(p=>`<article class="panel ai-proposal"><h3>${esc(p.title)}</h3><p>${esc(p.rationale)}</p><div class="ai-parts"><div><strong>減らす・置き換える候補</strong><ul>${p.reduce.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>提案なし</li>'}</ul></div><div><strong>新たに増える行動</strong><ul>${p.add.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>要確認</li>'}</ul></div></div><div class="ai-measure"><strong>検証方法</strong><p>${esc(p.measurementPlan)}</p></div>${p.risks.length?`<div class="ai-warning"><strong>注意・制約</strong><p>${p.risks.map(esc).join(' / ')}</p></div>`:''}<button class="btn btn-outline" data-action="ai-draft" data-ai-index="${p.id}">この案の検討用に方法を複製する</button></article>`).join('')}</section>`:''}
- <div class="bottom-message"><span class="message-icon">✳</span><div><strong>AIは、所要時間を勝手に埋めません。</strong><p>総時間 ＝ 初回準備 ＋ 評価期間×（実作業・後片付け・記録・維持管理）。未測定時間がある場合、改善判定は保留します。</p></div></div>`;
+ <div class="bottom-message"><span class="message-icon">✳</span><div><strong>AIは、収益や所要時間を勝手に埋めません。</strong><p>時間・金銭の収益から初期投資・実作業・後片付け・維持管理を差し引きます。未測定の収益や費用がある場合、利益の優劣は保留します。</p></div></div>`;
 }
+function renderProfit() {
+  const list=scenariosOfGoal();
+  const base=list.find(x=>x.isBaseline)||list[0];
+  const chosen=scenario()&&list.some(x=>x.id===scenario().id)?scenario():list[0];
+  const formReturns=chosen?.returns||{};
+  const weeks=horizonWeeks;
+  const r=chosen?projectProfit(data,chosen.id,weeks,timeYenPerHour):null;
+  const measured=(amount,formatter)=>amount===null?'未測定':formatter(amount);
+  const fm=(amount)=>`${Number(amount).toLocaleString('ja-JP',{maximumFractionDigits:1})}分`;
+  const number=(name,label,n,hint='')=>`<label class="form-field"><span>${label}</span><input type="number" step="any" min="0" max="1000000000" name="${name}" value="${eAttr(n??'')}" placeholder="未測定（空欄）">${hint?`<small>${hint}</small>`:''}</label>`;
+  const missingNote='金銭と時間は異なる単位です。円換算は利用者が明示した評価額による参考値であり、実際の現金利益ではありません。';
+  return `<section class="panel value-intro"><strong>最小化ではなく、得られる純利益を最大化する。</strong><p>行動の結果として得られる収入（円・使える時間）から、費やす費用（円・実作業時間）を引きます。購入・準備は投資、繰り返しの後片付けや管理も費用です。短期と長期で判断が変わるので期間を選びます。</p><p class="value-caution">${missingNote}</p></section>
+    <section class="panel value-form-panel"><h2>収入と成果を記録する</h2><p class="panel-desc">数値が分からなければ空欄のまま保存できます。0は実測してゼロと確認した場合に入力してください。</p>
+      ${list.length?`<div class="value-settings"><label class="form-field"><span>方法</span><select id="profit-scenario-select">${selectOptions(list.map(s=>[s.id,s.name]),chosen?.id)}</select></label><label class="form-field"><span>評価期間（週）</span><select id="profit-horizon">${selectOptions([1,4,12,26,52,104,260].map(v=>[String(v),`${v}週`]),String(weeks))}</select></label><label class="form-field"><span>時間の評価額（円/時・任意）</span><input id="profit-hourly-rate" type="number" min="0" max="1000000000" step="any" value="${eAttr(timeYenPerHour??'')}" placeholder="設定しない"></label></div>
+      <form id="profit-form" class="value-form"><div class="form-grid">${number('cashIncomeOnce','初回に得る収入（円）',formReturns.cashIncomeOnce)}${number('cashIncomePerWeek','毎週得る収入（円/週）',formReturns.cashIncomePerWeek)}${number('timeIncomeOnceMinutes','初回に得る利用可能な時間（分）',formReturns.timeIncomeOnceMinutes)}${number('timeIncomePerWeekMinutes','毎週得る利用可能な時間（分/週）',formReturns.timeIncomePerWeekMinutes)}</div><label class="check-field"><input type="checkbox" name="qualityConfirmed" ${formReturns.qualityConfirmed?'checked':''}><span><strong>結果の品質・安全性と成果の同等性を確認した</strong><small>違う成果しか得られない方法を、利益だけで優劣判定しません。</small></span></label><label class="form-field"><span>成果の説明・前提条件</span><textarea name="note" maxlength="1000" rows="2" placeholder="例：成果物は同品質。再作業や監視が必要か確認。">${esc(formReturns.note||'')}</textarea></label><button class="btn btn-primary" type="submit">${icon('check',16)} 収入・成果を保存して計算</button></form>`:`<p>先に目的を達成する方法を登録してください。</p>`}
+      <p class="value-disclaimer">費用と実作業時間は「方法を比較」の初期費用・管理時間と各行動の回数×費用・時間を使います。待ち時間の並行化で短くなる<strong>経過時間</strong>は自動的に労働時間や収入へ加えません。既存の費用削減や作業削減を「収入」に再計上しないでください。</p></section>
+    ${r?`<section class="panel value-results"><h2>${esc(chosen.name)} <small>${weeks}週間の評価</small></h2><div class="value-metrics"><div><small>現金収入 − 現金費用</small><strong>${measured(r.cashProfit,fmtYen)}</strong><span>${measured(r.cashIncome,fmtYen)} − ${fmtYen(r.cashCost)}</span></div><div><small>時間として得た利益 − 人の実作業時間</small><strong>${measured(r.timeProfit,fm)}</strong><span>${measured(r.timeIncome,fm)} − ${measured(r.timeCost,fm)}</span></div><div><small>参考：換算後の評価値</small><strong>${measured(r.score,fmtYen)}</strong><span>${timeYenPerHour===null?'時間の評価額が未設定':`設定：${fmtYen(timeYenPerHour)}/時`}</span></div></div><div class="value-mini">初期と繰り返し費用：金銭コスト ${fmtYen(r.cashCost)} / 実作業時間 ${measured(r.timeCost,fm)} ／ 金銭ROI：${r.cashRoi===null?'算定不可':`${r.cashRoi}%`}</div><p class="value-caution">${!r.complete?'未測定の値が残っています。純利益の優劣はまだ確定できません。':!r.qualityConfirmed?'結果の品質・安全性・同等性が未確認です。':'前提条件が確認済みとして計算しています。実測して検証してください。'}</p></section>`:''}
+    ${base&&list.length>1?`<section class="panel value-compare"><h2>方法別の純利益を比較する</h2><p class="panel-desc">比較基準は「${esc(base.name)}」。品質・収益が揃わない方法は順位を決めません。評価額が未設定なら、円と分を無理に合算しません。</p><div class="value-compare-list">${list.filter(s=>s.id!==base.id).map(s=>{
+      const c=compareProfit(data,base.id,s.id,weeks,timeYenPerHour);
+      const status={incomplete:'比較保留：未測定',unconfirmed:'比較保留：成果条件が未確認',dominates:'両方の利益で改善',dominated:'両方の利益で悪化',tradeoff:'円と時間で優劣が分かれる',equal:'両方の利益が同じ'}[c.status];
+      return `<div class="value-compare-row"><strong>${esc(s.name)}</strong><span>${status}</span><small>現金利益の差：${measured(c.cashDiff,fmtYen)} ／ 時間利益の差：${measured(c.timeDiff,fm)}${timeYenPerHour===null?'':` ／ 参考評価差：${measured(c.scoreDiff,fmtYen)}`}</small></div>`;}).join('')}</div></section>`:''}`;
+}
+function renderOverlap() {
+  const plans=data.overlapPlans||[];
+  const draft=plans.find(p=>p.id===editingOverlapId)||{name:'電子レンジと片付け',waitTask:'電子レンジで温める',otherTask:'食器を片付ける',setupMinutes:0,waitMinutes:3,otherMinutes:2,finishMinutes:0,switchMinutes:0,weeklyFrequency:5,safeConfirmed:false,independentConfirmed:false,existingWorkConfirmed:false};
+  const numberFieldPlan=(key,label,value,placeholder='例：0')=>`<label class="form-field"><span>${label}</span><input type="number" name="${key}" min="0" max="100000" step="0.1" value="${eAttr(value)}" placeholder="${placeholder}"></label>`;
+  const planRows=plans.map(p=>{
+    let r;try{r=calculateOverlap(p);}catch{return '<article class="panel overlap-result">入力データが不正です。JSONバックアップをご確認ください。</article>';}
+    const status=r.status==='unconfirmed'?'条件を確認中':r.status==='unmeasured'?'時間が未測定':r.status==='improved'?'経過時間の短縮候補':r.status==='worse'?'並行すると遅くなる':'時間の差なし';
+    return `<article class="panel overlap-result"><div class="overlap-result-head"><div><small>並行作業の検討</small><h3>${esc(p.name)}</h3></div><div class="overlap-result-actions">${btn('overlap-edit',`${icon('edit',15)} 編集`,'btn-outline',`data-id="${eAttr(p.id)}"`)}${btn('overlap-remove',`${icon('trash',15)} 削除`,'btn-outline',`data-id="${eAttr(p.id)}"`)}</div></div><div class="overlap-labels"><span>機械・待機：${esc(p.waitTask)}</span><span>別の既存作業：${esc(p.otherTask)}</span></div><p><strong>${status}</strong></p>
+      ${r.savedEach!==null?`<div class="overlap-metrics"><div><small>順番に行う</small><strong>${fmtMin(r.serialElapsed)}</strong></div><div><small>並行する</small><strong>${fmtMin(r.parallelElapsed)}</strong></div><div><small>1回の経過時間差</small><strong>${r.savedEach>0?'−':r.savedEach<0?'+':''}${fmtMin(Math.abs(r.savedEach))}</strong></div></div>
+      <div class="overlap-bars"><div><span>従来</span><div class="overlap-bar-track"><div class="overlap-bar-before" style="width:100%"></div></div></div><div><span>並行</span><div class="overlap-bar-track"><div class="overlap-bar-after" style="width:${Math.min(100,100*r.parallelElapsed/Math.max(r.serialElapsed,r.parallelElapsed,0.01)).toFixed(1)}%"></div></div></div></div>
+      <p class="overlap-calc">${p.weeklyFrequency}回/週なら、経過時間の差は <strong>${r.savedWeekly>0?'−':r.savedWeekly<0?'+':''}${fmtMin(Math.abs(r.savedWeekly))}/週</strong>、12週間では <strong>${r.savedPeriod>0?'−':r.savedPeriod<0?'+':''}${fmtMin(Math.abs(r.savedPeriod))}</strong> です。</p>
+      <p class="overlap-labor">人の実作業時間：従来 ${fmtMin(r.laborBefore)} → 並行 ${fmtMin(r.laborAfter)}（切替などの追加負担 ${fmtMin(r.laborExtra)}）。待ち時間そのものは人の労働時間に加算していません。</p>`:
+      `<p class="overlap-unconfirmed">${r.status==='unmeasured'?`未測定：${r.missing.map(x=>({setupMinutes:'開始準備',waitMinutes:'待ち時間',otherMinutes:'別作業',finishMinutes:'最後の処理',switchMinutes:'切替負担'}[x])).join('、')}。不明な時間をゼロと仮定しません。`:'安全・独立性・既存作業の3点を確認するまで、改善と判定しません。'}</p>`}
+      <p class="overlap-disclaimer">予測は単純な2作業のモデルです。作業の移動・監視・品質確認・待ち終了後の処理を含めて実測してください。</p></article>`;
+  }).join('');
+  return `<div class="page-heading"><div class="eyebrow">PARALLEL WORK / ELAPSED TIME <span class="line"></span> 待ち時間を設計する</div><div class="heading-row"><div><h1>待っている間に、別の作業を。</h1><p>行動数ではなく、目的が完了するまでの経過時間を短縮する。</p></div><div class="heading-art">⏱</div></div></div>
+   <section class="panel overlap-intro"><strong>機械が働く時間と、人が働く時間は別です。</strong><p>例えば電子レンジで3分温めている間に、後で行う2分の片付けを済ませると、順番に行う5分が3分になります。ただし、人の作業2分が消えたわけではありません。</p><p>温め終わらないとできない作業や、安全上目を離せない作業は重ねられません。</p></section>
+   <form id="overlap-form" class="panel overlap-form"><div class="panel-title">${editingOverlapId?'登録内容を編集して再計算':'並行できる組み合わせを検討'}</div><p class="panel-desc">所要時間が未測定なら空欄にしてください。保存後に短縮見込みを表示します。</p>
+    <div class="form-grid"><label class="form-field"><span>組み合わせの名前</span><input name="name" required maxlength="120" value="${eAttr(draft.name)}" placeholder="例：レンジ加熱中に片付け"></label>
+    <label class="form-field"><span>機械の運転・自動処理・待機</span><input name="waitTask" required maxlength="120" value="${eAttr(draft.waitTask)}" placeholder="例：乾燥を待つ"></label></div>
+    <div class="form-grid"><label class="form-field"><span>待ち時間中に行う既存の作業</span><input name="otherTask" required maxlength="120" value="${eAttr(draft.otherTask)}" placeholder="例：使い終わった道具を戻す"></label>
+      ${numberFieldPlan('weeklyFrequency','週に何回行うか',draft.weeklyFrequency,'例：5')}</div>
+    <div class="form-grid">${numberFieldPlan('setupMinutes','機械を始動するまでの準備（分）',draft.setupMinutes??'')}${numberFieldPlan('waitMinutes','自動運転・待ち時間（分）',draft.waitMinutes??'')}</div>
+    <div class="form-grid">${numberFieldPlan('otherMinutes','並行する既存作業の時間（分）',draft.otherMinutes??'')}${numberFieldPlan('finishMinutes','待ち終了後の取り出し・後片付け（分）',draft.finishMinutes??'')}</div>
+    <div class="form-grid">${numberFieldPlan('switchMinutes','切替・移動など、並行化で新たに増える負担（分）',draft.switchMinutes??'','例：0.5')}</div>
+    <div class="overlap-checks"><label><input name="safeConfirmed" type="checkbox" ${draft.safeConfirmed?'checked':''}><span><strong>安全に並行できることを確認した</strong><small>機器の取扱説明書、監視が必要な作業、火気・刃物・運転中の安全を確認してください。</small></span></label>
+      <label><input name="independentConfirmed" type="checkbox" ${draft.independentConfirmed?'checked':''}><span><strong>別作業は、待ち時間が終わる前に着手できる</strong><small>温め完了後の食品を使う調理など、完了待ちの作業は対象外です。</small></span></label>
+      <label><input name="existingWorkConfirmed" type="checkbox" ${draft.existingWorkConfirmed?'checked':''}><span><strong>別作業は、もともと後で行う必要があった作業</strong><small>新たに増やした作業を「削減時間」に計上しません。</small></span></label></div>
+    <button class="btn btn-primary" type="submit">${icon('clock',16)} ${editingOverlapId?'変更して再計算':'計算して保存'}</button>${editingOverlapId?btn('overlap-cancel-edit','編集をやめる','btn-outline'): ''}
+  </form>
+  ${plans.length?`<div class="section-head"><div><span class="section-kicker">SIMULATIONS</span><h2>保存した並行作業 <span class="heading-counter">${plans.length}件</span></h2></div></div>${planRows}`:''}
+  <div class="bottom-message"><span class="message-icon">✳</span><div><strong>経過時間の改善と、人の作業時間の改善を混同しません。</strong><p>安全が最優先。これらは計画上の試算であり、実際の短縮時間は同じ作業量で計測して確かめます。</p></div></div>`;
+}
+
 function renderData() {
   // Restricted previews can deny access to localStorage even when the page renders.
   let recovery = [];
@@ -1539,6 +1765,9 @@ function handleAction(el) {
   const type=el.dataset.action;
   if (!type) return;
   switch(type) {
+    case 'overlap-edit': editingOverlapId=el.dataset.id;render();root.querySelector('#overlap-form')?.scrollIntoView?.({behavior:'smooth'});break;
+    case 'overlap-cancel-edit': editingOverlapId=null;render();break;
+    case 'overlap-remove': if(confirm('この並行作業の検討を削除しますか？')) mutate(()=>{data.overlapPlans=data.overlapPlans.filter(p=>p.id!==el.dataset.id);});break;
     case 'new-goal': dialog={type:'goal'};renderDialog();break;
     case 'edit-goal': dialog={type:'goal',id:selectedGoal};renderDialog();break;
     case 'edit-scenario-by-id': if(!data.scenarios.some(s=>s.id===el.dataset.id&&s.goalId===selectedGoal))return;dialog={type:'scenario',id:el.dataset.id};renderDialog();break;
@@ -1846,6 +2075,9 @@ root.addEventListener('click',ev=>{
   const actionButton=ev.target.closest('[data-action]');if(actionButton)handleAction(actionButton);
 });
 root.addEventListener('change',async ev=>{
+  if(ev.target.id==='profit-scenario-select'){selectedScenario=ev.target.value;render();return;}
+  if(ev.target.id==='profit-horizon'){horizonWeeks=Number(ev.target.value)||12;render();return;}
+  if(ev.target.id==='profit-hourly-rate'){const raw=ev.target.value;timeYenPerHour=raw===''?null:Number(raw);if(timeYenPerHour!==null && (!Number.isFinite(timeYenPerHour)||timeYenPerHour<0||timeYenPerHour>1e9)){notify('評価額は0以上の数値です。',true);return;}render();return;}
   if(ev.target.id==='time-horizon'){horizonWeeks=Math.max(1,Math.min(260,Number(ev.target.value)||12));render();return;}
   if(ev.target.id==='ai-goal-select'){selectedGoal=ev.target.value;selectedScenario=scenariosOfGoal()[0]?.id||null;selectedAction=null;aiSuggestions=[];render();return;}
   if(ev.target.id==='ai-scenario-select'){selectedScenario=ev.target.value;aiSuggestions=[];render();return;}
@@ -1867,6 +2099,28 @@ root.addEventListener('change',async ev=>{
   }
 });
 root.addEventListener('submit',ev=>{
+  if(ev.target.id==='profit-form'){
+    ev.preventDefault();const f=ev.target,chosen=scenario();
+    if(!chosen){notify('方法を選択してください。',true);return;}
+    try{const val=k=>f.elements.namedItem(k)?.value??'';
+      const returns=returnsFromForm({cashIncomeOnce:val('cashIncomeOnce'),cashIncomePerWeek:val('cashIncomePerWeek'),timeIncomeOnceMinutes:val('timeIncomeOnceMinutes'),timeIncomePerWeekMinutes:val('timeIncomePerWeekMinutes'),qualityConfirmed:!!f.elements.namedItem('qualityConfirmed')?.checked,note:val('note')});
+      mutate(()=>{chosen.returns=returns;});notify('収入・成果を保存しました。');
+    }catch(err){notify(err.message,true);}return;
+  }
+  if(ev.target.id==='overlap-form') {
+    ev.preventDefault();
+    const f=ev.target;
+    const get=k=>String(f.elements.namedItem(k)?.value??'');
+    const checked=k=>!!f.elements.namedItem(k)?.checked;
+    try {
+      const p=overlapFromForm({name:get('name'),waitTask:get('waitTask'),otherTask:get('otherTask'),
+        setupMinutes:get('setupMinutes'),waitMinutes:get('waitMinutes'),otherMinutes:get('otherMinutes'),
+        finishMinutes:get('finishMinutes'),switchMinutes:get('switchMinutes'),weeklyFrequency:get('weeklyFrequency'),
+        safeConfirmed:checked('safeConfirmed'),independentConfirmed:checked('independentConfirmed'),existingWorkConfirmed:checked('existingWorkConfirmed')},editingOverlapId||id());
+      if(!editingOverlapId && (data.overlapPlans||[]).length>=500)throw new Error('これ以上の並行作業は保存できません。');
+      mutate(()=>{if(editingOverlapId){const index=data.overlapPlans.findIndex(x=>x.id===editingOverlapId);if(index===-1)throw new Error('編集元のデータがありません。');data.overlapPlans[index]=p;}else data.overlapPlans.push(p);editingOverlapId=null;});notify('並行作業の条件と試算を保存しました。');
+    }catch(err){notify(err.message,true);}return;
+  }
   if(ev.target.id==='cloud-config-form') {
     ev.preventDefault();const f=ev.target;
     try {
